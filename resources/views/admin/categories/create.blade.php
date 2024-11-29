@@ -24,6 +24,7 @@
                     <option value="">Select Category Type</option>
                     @foreach ($categoryTypes as $type)
                         <option value="{{ $type->category_type }}">{{ $type->category_type }}</option>
+                        
                     @endforeach
                     <option value="Other">Other</option>
                 </select>

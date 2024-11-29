@@ -1,6 +1,7 @@
 <?php
 // app/Http/Controllers/Admin/VehicleController.php
 namespace App\Http\Controllers\Admin;
+use Intervention\Image\Facades\Image;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -9,6 +10,8 @@ use App\Models\VehicleImage;
 use App\Models\Category;
 use App\Models\Feature;
 use App\Models\Listing;
+use Illuminate\Support\Facades\Storage;
+
 class VehicleController extends Controller
 {
     public function index()
@@ -26,7 +29,7 @@ class VehicleController extends Controller
     
     public function storeCar(Request $request)
     {
-        \Log::info('Attempting to create vehicle');
+        \Log::info(message: 'Attempting to create vehicle');
     
         // Validate the request
         $request->validate([
@@ -94,19 +97,32 @@ class VehicleController extends Controller
     {
         $vehicle = Vehicle::findOrFail($id);
         $vehicle->update($request->all());
-
+    
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
-                $path = $file->store('vehicles', 'public');
+                // Convert the image to WebP format
+                $image = Image::make($file)->encode('webp', 90);
+    
+                // Generate a unique file name
+                $filename = uniqid() . '.webp';
+    
+                // Store the image in the public storage
+                $path = 'vehicles/' . $filename;
+                Storage::disk('public')->put($path, $image);
+    
+                // Save the image path to the database
                 VehicleImage::create([
                     'vehicle_id' => $vehicle->vehicle_id,
                     'image_url' => $path,
                 ]);
             }
         }
-
+    
         return redirect()->route('admin.vehicles.edit', $vehicle->vehicle_id)->with('success', 'Vehicle updated successfully');
-    }    public function destroy(Vehicle $vehicle)
+    }
+    
+    
+    public function destroy(Vehicle $vehicle)
     {
         $vehicle->delete();
         return redirect()->route('admin.vehicles.index')->with('success', 'Vehicle deleted successfully.');

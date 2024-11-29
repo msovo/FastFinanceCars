@@ -17,7 +17,7 @@ class News extends Model
         'title',
         'content',
         'author_id',
-        'category',
+        'category_id',
         'thumbnail_url',
         'published_at',
     ];
@@ -29,8 +29,7 @@ class News extends Model
 
     public function categories()
     {
-        return $this->belongsToMany(Category::class, 'newscategories', 'news_id', 'category_id');
-    }
+  return $this->belongsTo(NewsCategory::class, 'category_id', 'category_id');    }
 
     public function images()
     {

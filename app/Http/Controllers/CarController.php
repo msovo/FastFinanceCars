@@ -6,6 +6,10 @@ use App\Models\News;
 use App\Models\Listing;
 use App\Models\Category;
 use App\Models\ListingComment;
+use App\Models\CarBrand;
+
+use App\Models\newscategory;
+
 use App\Models\ListingRating;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -66,18 +70,21 @@ $categories = Category::whereNotIn('category_type', ['Make', 'Model', 'Variant']
                              
     $featuredCars = Vehicle::whereHas('listing', function ($query) {
         $query->where('listing_status', 'active')->where('featured', true);
-    })->get();
+    })->get()
+    ->take(3);
 
     $sponsoredCars = Vehicle::whereHas('listing', function ($query) {
         $query->where('listing_status', 'active')->where('sponsored', true);
-    })->get();
+    })->get()
+    ->take(3);;
 
     $latestCars = Vehicle::whereHas('listing', function ($query) { 
         $query->where('listing_status', 'active');
     })->orderBy('listed_at', 'desc')->take(3)->get();
 
-    $news = News::orderBy('published_at', 'desc')->take(3)->get();
-
+    $news = newscategory::with(['news' => function ($query) {
+        $query->orderBy('published_at', 'desc')->take(3);
+    }])->get();
     // Data for the Make Analysis chart
     $makeCounts = DB::table('vehicles')
                     ->select('make', DB::raw('count(*) as count'))
@@ -86,6 +93,8 @@ $categories = Category::whereNotIn('category_type', ['Make', 'Model', 'Variant']
 
     $makeLabels = $makeCounts->pluck('make');
     $makeCounts = $makeCounts->pluck('count');
+
+    $carBrands = CarBrand::all();
 
     return view('home', compact(
         'featuredCars', 
@@ -98,7 +107,8 @@ $categories = Category::whereNotIn('category_type', ['Make', 'Model', 'Variant']
         'variants',
         'categoryTypes',
         'models',
-        'categories'
+        'categories',
+        'carBrands'
     ));
 }
 
@@ -200,18 +210,34 @@ public function list(Request $request)
     {
         $car = Vehicle::with('images', 'features')->findOrFail($id);
         $listing_id = DB::table('listings')->where('vehicle_id', $id)->value('listing_id');
+        $user_id = DB::table('listings')->where('vehicle_id', $id)->value('user_id');
+        $listing = Listing::where('vehicle_id', $id)->firstOrFail();
 
         $featuredCars = Listing::where('featured', 1)
         ->where('listing_status', 'active')
+        ->whereHas('vehicle', function ($query) use ($car) {
+            $query->where('model', $car->model);
+        })
         ->with('vehicle', 'images')
         ->paginate(3, ['*'], 'featured_page');
 
     $sponsoredCars = Listing::where('sponsored', 1)
-        ->where('listing_status', 'active')
-        ->with('vehicle', 'images')
+         ->where('listing_status', 'active')
+         ->whereHas('vehicle', function ($query) use ($car) {
+            $query->where('model', $car->model);
+        })        ->with('vehicle', 'images')
         ->paginate(3, ['*'], 'sponsored_page');
 
-        $news = News::where('title', 'like', '%' . $car->make . '%')
+
+        $dealershipCars = Listing::where('user_id', $user_id)
+        ->where('listing_status', 'active')
+        ->with(['vehicle', 'images', 'dealer' => function ($query) {
+            $query->select('user_id', 'dealership_name', 'license_number', 'verified', 'address', 'city_town', 'postal_code', 'logo', 'contact');
+        }])
+        ->paginate(3, ['*'], 'dealership_page');
+
+
+   $news = News::where('title', 'like', '%' . $car->make . '%')
                     ->orWhere('title', 'like', '%' . $car->model . '%')
                     ->orWhere('content', 'like', '%' . $car->make . '%')
                     ->orWhere('title', 'like', '%' . $car->variant . '%')
@@ -222,7 +248,7 @@ public function list(Request $request)
                     ->take(5)
                     ->get();
 
-                    return view('cars.show', compact('car', 'listing_id', 'featuredCars', 'sponsoredCars'))
+                    return view('cars.show', compact('car', 'listing_id', 'listing','featuredCars', 'sponsoredCars','dealershipCars'))
                     ->with('news', $news ?: collect());    }
 
     public function storeComment(Request $request, $listingId)
@@ -325,6 +351,7 @@ public function search(Request $request)
     $minYear = $request->input('minYear');
     $maxYear = $request->input('maxYear');
     $conditions = $request->input('conditions');
+    $brand = $request->input('brand');
     $makes = Vehicle::distinct()->pluck('make');
     $models = Vehicle::distinct()->pluck('model'); 
     $variants = Vehicle::distinct()->pluck('variant'); 
@@ -354,6 +381,10 @@ public function search(Request $request)
         }
         if ($conditions) {
             $cars->where('car_condition', $conditions);
+        }
+
+        if ($brand) {
+            $cars->where('make', $brand);
         }
         // Province filter
         if ($province) {

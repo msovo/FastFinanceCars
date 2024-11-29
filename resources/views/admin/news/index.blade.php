@@ -23,7 +23,7 @@
                 <td>{{ $item->title }}</td>
                 <td>{{ $item->content }}</td>
                 <td>{{ $item->author->name }}</td>
-                <td>{{ $item->category }}</td>
+                <td>{{ $item->categories->category_name }}</td>
                 <td>
                     @if($item->thumbnail_url)
                         <img src="{{ asset('storage/' . $item->thumbnail_url) }}" alt="Thumbnail" width="50">

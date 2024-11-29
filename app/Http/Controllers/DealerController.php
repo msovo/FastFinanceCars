@@ -614,6 +614,7 @@ public function storeDealership(Request $request)
         'license_number' => 'required|string|max:255',
         'address' => 'required|string|max:255',
         'postal_code' => 'required|string|max:255',
+        'contact' => 'required|string|max:13',
         'city_town' => 'required|string|max:255',
         'logo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);

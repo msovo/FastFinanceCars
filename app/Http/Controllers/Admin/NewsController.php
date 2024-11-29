@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\News;
 use App\Models\NewsImage;
-
+use Illuminate\Support\Facades\Log;
 use App\Models\NewsCategory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +16,7 @@ class NewsController extends Controller
     public function index()
     {
 
-        $news = News::with('author')->get();
+        $news = News::with(['author', 'categories'])->get();
         return view('admin.news.index', compact('news'));
     }
 
@@ -26,14 +26,19 @@ class NewsController extends Controller
         return view('admin.news.create', compact('categories'));
     }
 
-    public function store(Request $request)
-    {
+  
+
+public function store(Request $request)
+{
+    try {
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'category' => 'required|string',
-            'thumbnail_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'category_id' => 'required|integer',
+            'thumbnail_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,avif|max:2048',
         ]);
+
+        Log::info('Validation passed', $request->all());
 
         $news = new News($request->except('thumbnail_url'));
         $news->author_id = Auth::id(); // Set the author to the currently authenticated user
@@ -41,12 +46,18 @@ class NewsController extends Controller
         if ($request->hasFile('thumbnail_url')) {
             $path = $request->file('thumbnail_url')->store('thumbnails', 'public');
             $news->thumbnail_url = $path;
+            Log::info('Thumbnail uploaded', ['path' => $path]);
         }
 
         $news->save();
+        Log::info('News saved', ['news' => $news]);
 
         return redirect()->route('admin.news.index')->with('success', 'News created successfully.');
+    } catch (\Exception $e) {
+        Log::error('Error saving news', ['error' => $e->getMessage()]);
+        return redirect()->route('admin.news.index')->with('error', 'Failed to create news.');
     }
+}
 
     public function edit(News $news)
     {

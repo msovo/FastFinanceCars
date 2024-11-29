@@ -104,111 +104,23 @@
         padding: 20px;
         font-family: 'Arial', sans-serif; /* Changed font */
     }
-    .news-reviews .card {
-    margin-bottom: 20px;
-    border: none; 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-    transition: transform 0.2s; 
-}
-
-.news-reviews .card:hover {
-    transform: translateY(-5px); 
-}
-
-.news-reviews .card-img-top {
-    height: 200px; 
-    object-fit: cover; 
-}
-
-.news-reviews .card-body {
+    .category-section {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f8f9fa;
     padding: 15px;
 }
 
-.news-reviews .card-title {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
+.category-header {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 15px;
 }
-    .thumbnails {
-        display: flex;
-        justify-content: center; 
-        margin-top: 10px; 
-    }
 
-    .thumbnail-image {
-       max-height: 59px; 
-        object-fit: cover;
-        margin: 0 5px; 
-        cursor: pointer; 
-    }
-
-    .timeline {
-        position: relative;
-        padding: 20px 0;
-        list-style: none;
-        text-align: center;
-    }
-
-    .timeline:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 50%;
-        margin-left: -1px;
-        width: 2px;
-        background: #C5C5C5;
-    }
-
-    .timeline-item {
-        position: relative;
-        margin: 20px 0;
-    }
-
-    .timeline-item:before,
-    .timeline-item:after {
-        content: '';
-        display: table;
-    }
-
-    .timeline-item:after {
-        clear: both;
-    }
-
-    .timeline-item .timeline-img {
-        position: absolute;
-        left: 50%;
-        width: 100px;
-        height: 100px;
-        margin-left: -50px;
-        border-radius: 50%;
-        background: #fff;
-        border: 2px solid #C5C5C5;
-        overflow: hidden;
-    }
-
-    .timeline-item .timeline-img img {
-        width: 100%;
-        height: auto;
-    }
-
-    .timeline-item .timeline-content {
-        position: relative;
-        width: 45%;
-        padding: 20px;
-        background: #fff;
-        border: 1px solid #C5C5C5;
-        border-radius: 5px;
-        text-align: left;
-    }
-
-    .timeline-item:nth-child(odd) .timeline-content {
-        left: 0;
-    }
-
-    .timeline-item:nth-child(even) .timeline-content {
-        left: 55%;
-    }
-
+.card-img-top img {
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+}
     .carousel-inner {
     height: 59vh;
     width: 100%;
@@ -251,7 +163,35 @@
     .news-reviews .news-item {
         margin-bottom: 20px; 
     }
+    .category-section {
+    padding: 15px;
+}
 
+.category-header {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.view-all-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 10px;
+}
+
+.card-img-top img {
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.card-body {
+    background-color: transparent;
+}
+
+.card-title, .card-text {
+    color: inherit;
+}
     @media (min-width: 768px) { 
         .news-reviews .news-grid {
             display: none; 
@@ -623,6 +563,8 @@
             <div class="row" id="recently-viewed-cars-list">
                 <!-- Recently viewed cars will be appended here by JavaScript -->
             </div>
+            <div id="pagination-controls"></div>
+
         </div>
 
         <div id="recent-searches" class="engagement-section" style="display: none;">
@@ -822,50 +764,55 @@
 
 
 
-
-<div class="container news-reviews">
-    <h2 class="section-title text-center">News & Reviews</h2>
-    <div class="news-grid d-md-none"> 
-        @foreach($news as $article)
-            <div class="row news-item">
-                <div class="col-4"> 
-                    @if($article->thumbnail_url)
-                        <img src="{{ asset('storage/' . $article->thumbnail_url) }}" alt="Thumbnail" class="img-fluid">
-                    @endif
+@foreach($news as $category)
+    <div class="category-section mb-4">
+        <div class="category-header p-2">
+            <h5>{{ $category->category_name }}</h5>
+            <p>{{ $category->description }}</p>
+            <a href="{{ route('news.show', $category->category_id) }}" class="btn btn-primary view-all-btn">View All {{ $category->category_name }} News</a>
+        </div>
+        <div class="row">
+            @foreach($category->news as $article)
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-img-top">
+                            @if($article->thumbnail_url)
+                                <img src="{{ asset('storage/' . $article->thumbnail_url) }}" alt="Thumbnail" class="img-fluid">
+                            @endif
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $article->title }}</h5>
+                            <p class="card-text">{{ Str::limit($article->content, 100) }}</p>
+                            <a href="{{ route('news.show', $article->news_id) }}" class="btn btn-secondary">Read More</a>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-8"> 
-                    <h5>{{ $article->title }}</h5>
-                    <p>{{ Str::limit($article->content, 100) }}</p>
-                    <a href="{{ route('news.show', $article->news_id) }}" class="btn btn-secondary">Read More</a>
-                </div>
-            </div>
-        @endforeach
+            @endforeach
+        </div>
     </div>
+@endforeach
 
-    </div>
-
-    <div class="timeline d-none d-md-block"> 
-        @foreach($news as $article)
-            <div class="timeline-item">
-                <div class="timeline-img">
-                    @if($article->thumbnail_url)
-                        <img src="{{ asset('storage/' . $article->thumbnail_url) }}" alt="Thumbnail" class="img-fluid">
-                    @endif
-                </div>
-                <div class="timeline-content">
-                    <h4>{{ $article->title }}</h4>
-                    <p>{{ Str::limit($article->content, 100) }}</p>
-                    <a href="{{ route('news.show', $article->news_id) }}" class="btn btn-secondary">Read More</a>
-                </div>
-            </div>
-        @endforeach
-    </div>
-
-    <div class="text-center mt-4">
-        <a href="{{ route('news.index') }}" class="btn btn-primary">View All News</a>
-    </div>
+<div class="text-center mt-4">
+    <a href="{{ route('news.index') }}" class="btn btn-primary">View All News</a>
 </div>
 
+</div>
+
+
+
+<div class="container mt-5">
+        <h1 class="text-center mb-4">Car Brands</h1>
+        
+        <div class="row row-cols-4 g-3">
+            @foreach ($carBrands as $brand)
+                <div class="col">
+                    <button type="button" class="btn btn-outline-dark w-100" onclick="submitForm('{{ $brand->name }}')">
+                        {{ $brand->name }}
+                    </button>
+                </div>
+            @endforeach
+        </div>
+    </div>
 
 
     <div class="make-analysis">
@@ -977,6 +924,26 @@
     });
 });
 
+                   
+function submitForm(brand) {
+            // Create a form element dynamically
+            const form = document.createElement('form');
+            form.method = 'GET';
+            form.action = "{{ route('cars.search') }}";
+
+            // Add a hidden input to the form with the 'make' value
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'brand';
+            input.value = brand;
+            input.id = 'brand'
+
+            form.appendChild(input);
+
+            // Add the form to the body and submit it
+            document.body.appendChild(form);
+            form.submit();
+        }
 
 $(document).ready(function() {
 
@@ -1088,70 +1055,122 @@ function getCookie(name) {
             alert('Start searching functionality not implemented yet.');
         }
         showSection('recently-viewed-cars')
-function listRecentViewedCars()
-{
-    $("#recently-viewed-cars-list").html('')
+        function listRecentViewedCars() {
+    $("#recently-viewed-cars-list").html(""); // Clear the container
     var recentlyViewedCars = getCookie("recentlyViewedCars");
-            if (recentlyViewedCars) {
-                recentlyViewedCars = JSON.parse(recentlyViewedCars);
-                var container = $("#recently-viewed-cars");
 
-                recentlyViewedCars.forEach(function(car) {
-                    var carHtml = `
-                        <div class="col-md-4 car-card" id="content-engagement">
-                            <div class="card" onclick="location.href='/cars/${car.id}';" style="cursor: pointer;">
-                                ${car.images.length > 0 ? `
-                                <div class="main-image-container">
-                                    <img src="${car.images[0].url}" class="card-img-top main-image" alt="${car.make} ${car.model}">
-                                    <span class="image-count" style="bottom: 20px; left: 0;">
-                                        <i class="fas fa-camera"></i> ${car.images.length}
+    if (recentlyViewedCars) {
+        recentlyViewedCars = JSON.parse(recentlyViewedCars);
+        const carsPerPage = 3; // Number of cars to show per page
+        let currentPage = 1;
+        const totalPages = Math.ceil(recentlyViewedCars.length / carsPerPage);
+
+        // Function to render a specific page
+        function renderPage(page) {
+            const start = (page - 1) * carsPerPage;
+            const end = start + carsPerPage;
+            const carsToDisplay = recentlyViewedCars.slice(start, end);
+
+            // Clear the container and render cars
+            $("#recently-viewed-cars-list").html("");
+            carsToDisplay.forEach(function (car) {
+                var carHtml = `
+                    <div class="col-md-4 car-card" id="content-engagement">
+                        <div class="card" onclick="location.href='/cars/${car.vehicle_id}';" style="cursor: pointer;">
+                            ${car.images.length > 0 ? `
+                            <div class="main-image-container">
+                                <img src="${car.images[0].url}" class="card-img-top main-image" alt="${car.make} ${car.model}">
+                                <span class="image-count" style="bottom: 20px; left: 0;">
+                                    <i class="fas fa-camera"></i> ${car.images.length}
+                                </span>
+                            </div>` : `
+                            <div class="main-image-container">
+                                <img src="default-image.jpg" class="card-img-top main-image" alt="Default Image">
+                            </div>`}
+                            <div class="row thumbnails">
+                                ${car.images.slice(0, 3).map(image => `
+                                <div class="col-4">
+                                    <img src="${image.url}" class="thumbnail-image" alt="${car.make} ${car.model} thumbnail">
+                                </div>`).join('')}
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-calendar-alt"></i> ${car.year} ${car.make} ${car.model}
+                                </h5>
+                                <p class="card-text">
+                                    <i class="fas fa-cogs"></i> ${car.transmission} 
+                                    <i class="fas fa-road"></i> ${car.mileage} km 
+                                </p>
+                                <p class="card-text-price text-danger">
+                                    R${car.price.toFixed(2)}
+                                </p>
+                                <p class="card-text-p text-danger">
+                                    R${calculateMonthlyPayment(car.price)} p/m 
+                                    <span class="badge" style="background-color: ${car.car_condition === 'used' ? 'red' : 'blue'};color:white;">
+                                        ${car.car_condition}
                                     </span>
-                                </div>` : `
-                                <div class="main-image-container">
-                                    <img src="default-image.jpg" class="card-img-top main-image" alt="Default Image">
-                                </div>`}
-                                <div class="row thumbnails">
-                                    ${car.images.slice(0, 3).map(image => `
-                                    <div class="col-4">
-                                        <img src="${image.url}" class="thumbnail-image" alt="${car.make} ${car.model} thumbnail">
-                                    </div>`).join('')}
-                                </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        <i class="fas fa-calendar-alt"></i> ${car.year} ${car.make} ${car.model}
-                                    </h5>
-                                    <p class="card-text">
-                                        <i class="fas fa-cogs"></i> ${car.transmission} 
-                                        <i class="fas fa-road"></i> ${car.mileage} km 
-                                    </p>
-                                      <p class="card-text-price text-danger">
-                          
-                                         R${car.price.toFixed(2)}
-                                   </p>
-                                    <p class="card-text-p text-danger">
-                                        R${calculateMonthlyPayment(car.price)} p/m 
-                                        <span class="badge" style="background-color: ${car.car_condition === 'used' ? 'red' : 'blue'};color:white;">
-                                            ${car.car_condition}
-                                        </span>
-                                    </p>
-                                </div>
+                                </p>
                             </div>
                         </div>
-                    `;
-                    $('#recently-viewed-cars-list').append(carHtml)
-                   // container.append(carHtml);
-                });
-            }else {
-                $('#recently-viewed-cars-list').html(`
-                    <div class="no-engagement">
-                        <i class="fas fa-exclamation-triangle warning-icon"></i>
-                        <p>You have no recently viewed cars yet.</p>
-                        <button onclick="startSearching()">Start Searching</button>
                     </div>
-                `);
+                `;
+                $("#recently-viewed-cars-list").append(carHtml);
+            });
+
+            // Update pagination controls
+            updatePaginationControls();
+        }
+
+        // Function to update pagination controls
+        function updatePaginationControls() {
+            let paginationHtml = `
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                            <button class="page-link" onclick="changePage(${currentPage - 1})">Previous</button>
+                        </li>
+            `;
+
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHtml += `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <button class="page-link" onclick="changePage(${i})">${i}</button>
+                    </li>
+                `;
             }
 
+            paginationHtml += `
+                        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                            <button class="page-link" onclick="changePage(${currentPage + 1})">Next</button>
+                        </li>
+                    </ul>
+                </nav>
+            `;
+
+            $("#pagination-controls").html(paginationHtml); // Update pagination container
+        }
+
+        // Function to change the page
+        window.changePage = function (page) {
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderPage(currentPage);
+            }
+        };
+
+        // Initial render
+        renderPage(currentPage);
+    } else {
+        $("#recently-viewed-cars-list").html(`
+            <div class="no-engagement">
+                <i class="fas fa-exclamation-triangle warning-icon"></i>
+                <p>You have no recently viewed cars yet.</p>
+                <button onclick="startSearching()">Start Searching</button>
+            </div>
+        `);
+    }
 }
+
 function populateSelect(elementId, min, max, step) {
             const select = document.getElementById(elementId);
             for (let i = min; i <= max; i += step) {

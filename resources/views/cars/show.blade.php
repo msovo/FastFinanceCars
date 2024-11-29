@@ -366,6 +366,44 @@
     color: #ccc;
     pointer-events: none;
 }
+.custom-card-body {
+    padding: 20px;
+    margin-bottom: 10px;
+}
+
+.custom-card-body h4 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.custom-card-body .badge-primary {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 0.9rem;
+    margin-left: 10px;
+}
+
+.custom-card-body .img-fluid {
+    border: 2px solid #ddd;
+    padding: 5px;
+    background-color: #fff;
+}
+
+
+.card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    font-size: 1.25rem;
+}
+
+.card-text-dealer {
+    font-size: 0.7rem;
+    color: black;
+}
 
 </style>
 <div class="container mt-5">
@@ -392,7 +430,23 @@
     </div>
 @endif
     </div>
-
+    <div class="custom-card-body">
+    <div class="row align-items-center">
+        <div class="col-md" >
+            <h4>
+                Supplied By {{ $listing->dealer->dealership_name }}
+                @if($listing->dealer->verified)
+                    <span class="badge badge-primary">
+                        <i class="fas fa-check-circle"></i> Verified
+                    </span>
+                @endif
+            </h4>
+        </div>
+        <div class="col-md" style="float:left">
+            <img src="{{ asset('storage/' . $listing->dealer->logo) }}" alt="Dealership Logo" class="img-fluid rounded-circle" style="max-width: 100px;">
+        </div>
+    </div>
+</div>
     <div class="row">
     <div class="col-md-8">
         <h4>
@@ -429,8 +483,23 @@
     </div>
 
  
-    <div class="col-md-4">
+    <div class="col-md-4" style=" background:white;border-radius:8px;">
     <h3>Interested in this car?</h3>
+    <p><span class="btn-danger">{{ $listing->dealer->dealership_name }}</span> would love to hear from you, so please complete this form and we'll get in touch.</p>
+<div class="dealership-contact mt-3 w-100" style="border-radius:5px; text-align:center; background-color: white; color:blue; padding-top:5px;">
+    <p>Contact: <span id="dealership-contact">{{ substr($listing->dealer->contact, 0, 4) }}****</span> 
+    <button id="show-contact-btn" onclick="showContact()" class="btn btn-outline-dark">Show Number</button></p>
+    <div id="contact-methods" style="display: none;">
+        <p>Select a method to contact the dealer:</p>
+        <a href="tel:{{ $listing->dealer->contact }}" class="btn btn-outline-primary">
+            <i class="fas fa-phone"></i> Call
+        </a>
+        <a href="https://api.whatsapp.com/send?phone={{ $listing->dealer->contact }}&text=Hi, I am interested in this car: {{ route('cars.show', $listing->vehicle->vehicle_id) }}" class="btn btn-outline-success">
+            <i class="fab fa-whatsapp"></i> WhatsApp
+        </a>
+    </div>
+</div>
+
     <form action="{{ route('inquiries.store') }}" method="POST">
         @csrf
         @guest
@@ -467,36 +536,39 @@
         </div>
         <input type="hidden" name="listing_id" value="{{ $listing_id }}">
         <div class="row form-group">
-           <div class="col"> <label class="col-sm-2 control-label">Subscribe</label></div>
-           <div class="col"> <label for="car-alert">Car alert</label>
-            <input type="checkbox" name="car-alert" id="car-alert"/></div>
+            <div class="col"> <label class="col-sm-2 control-label">Subscribe</label></div>
+            <div class="col"> <label for="car-alert">Car alert</label>
+                <input type="checkbox" name="car-alert" id="car-alert"/>
+            </div>
             <div class="col"> <label for="car-news">Car News</label>
-            <input type="checkbox" name="car-news" id="car-news"/>
+                <input type="checkbox" name="car-news" id="car-news"/>
             </div>
         </div>
         <button type="submit" class="btn btn-primary w-100">Submit Inquiry</button>
         <br/>
-        <button type="button" class="btn btn-outline-success  w-100"> WhatsApp Dealer</button>
-        <p>By submiting your contact to the dealer you accept our terms and conditions and policy rules</p>
-
+        <button type="button" class="btn btn-outline-success w-100" onclick="window.location.href='https://api.whatsapp.com/send?phone={{ $listing->dealer->contact }}&text=Hi, I am interested in this car: {{ route('cars.show', $listing->vehicle->vehicle_id) }}'">WhatsApp Dealer</button>
+        <p>By submitting your contact to the dealer you accept our terms and conditions and policy rules</p>
     </form>
     <div class="row" style="text-align:center">
-    <div class="col" style="text-align:right;">Share</div>
-     <div class="social-share col" style="text-align:left">
-    <a class="whatsapp" href="https://api.whatsapp.com/send?text=Check%20this%20out, affordable cars available :%20" target="_blank">
-      <i class="fab fa-whatsapp btn-outline-success" style="font-size:22px;" ></i>
-    </a>
-    <a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u=" target="_blank">
-      <i class="fab fa-facebook-f btn-outline-primary" style="font-size:22px;" ></i>
-    </a>
-    <a class="x" href="https://twitter.com/intent/tweet?url=" target="_blank">
-      <i class="fab fa-x-twitter btn-outline-dark" style="font-size:22px;"></i>
-    </a>
-    <a class="instagram" href="https://www.instagram.com/" target="_blank">
-      <i class="fab fa-instagram btn-outline-danger" style="font-size:22px;"></i>
-    </a>
-  </div>
-  </div>
+        <div class="col" style="text-align:right;">Share</div>
+        <div class="social-share col" style="text-align:left">
+            <a class="whatsapp" href="https://api.whatsapp.com/send?text=Check%20this%20out, affordable cars available :%20{{ route('cars.show', $listing->vehicle->vehicle_id) }}" target="_blank">
+                <i class="fab fa-whatsapp btn-outline-success" style="font-size:22px;"></i>
+            </a>
+            <a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u={{ route('cars.show', $listing->vehicle->vehicle_id) }}" target="_blank">
+                <i class="fab fa-facebook-f btn-outline-primary" style="font-size:22px;"></i>
+            </a>
+            <a class="x" href="https://twitter.com/intent/tweet?url={{ route('cars.show', $listing->vehicle->vehicle_id) }}" target="_blank">
+                <i class="fab fa-x-twitter btn-outline-dark" style="font-size:22px;"></i>
+            </a>
+            <a class="instagram" href="https://www.instagram.com/" target="_blank">
+                <i class="fab fa-instagram btn-outline-danger" style="font-size:22px;"></i>
+            </a>
+        </div>
+    </div>
+    <div class="dealership-contact mt-3">
+        <p>Address: {{ $listing->dealer->address }}, {{ $listing->dealer->city_town }}, {{ $listing->dealer->province }}</p>
+    </div>
 </div>
     <div class="col-md-4 car-details-mobile">
         <div class="car-details">
@@ -650,42 +722,37 @@
 
 <div class="container mt-5">
     <div class="row">
-        <!-- Left Sidebar for Search, Sort, and Filter -->
-        <div class="col-md-3">
-            <!-- Search, Sort, and Filter Form -->
-            <div class="card mb-4">
-    <div class="card-header bg-primary text-white">
-        <h5>Search & Filter</h5>
-    </div>
-    <div class="card-body">
-        <!-- Search Form -->
-        <form id="searchForm">
-            <div class="form-group">
-                <label for="search">Search</label>
-                <input type="text" class="form-control" id="search" name="search" placeholder="Search...">
-            </div>
-            <div class="form-group">
-                <label for="sort">Sort By</label>
-                <select class="form-control" id="sort" name="sort">
-                    <option value="date_d">Date Descending</option>
-                    <option value="date_a">Date Ascending</option>
-                    <option value="price_d">Price Descending</option>
-                    <option value="price_a">Price Ascending</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="filter">Filter</label>
-                <select class="form-control" id="filter" name="filter">
-                    <option value="featured">Featured</option>
-                    <option value="sponsored">Sponsored</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Apply</button>
-        </form>
-    </div>
-</div>
+  
 
+    <div class="col-md-3">
+    <!-- Search, Sort, and Filter Form -->
+
+  
+        <div class="card-header bg-primary text-white">
+            <h5 class="text-center m-0">Discover Cars From {{ $listing->dealer->dealership_name }}</h5>
         </div>
+        <div class="card-body">
+            @foreach($dealershipCars as $car)
+                <div class="card mb-3 border-0 shadow-sm" 
+                     onclick="location.href='{{ route('cars.show', $car->vehicle->vehicle_id) }}';" 
+                     style="cursor: pointer; transition: transform 0.2s;">
+                    <img src="{{ asset('storage/' . $car->vehicle->images->first()->image_url) }}" 
+                         class="card-img-top rounded-top" 
+                         alt="Car Image" 
+                         style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary fw-bold">{{ $car->vehicle->name }}</h5>
+                        <p class="card-text mb-2"><strong>Price:</strong> R{{ $car->vehicle->price }}</p>
+                        <p class="card-text mb-2"><strong>Model:</strong> {{ $car->vehicle->model }}</p>
+                        <p class="card-text mb-2"><strong>Year:</strong> {{ $car->vehicle->year }}</p>
+                        <p class="card-text mb-2"><strong>Mileage:</strong> {{ number_format($car->vehicle->mileage) }} km</p>
+                        <p class="card-text"><strong>Condition:</strong> {{ $car->vehicle->car_condition }}</p>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+   
+</div>
 
         <!-- Main Content Area -->
         <div class="col-md-9">
@@ -833,7 +900,22 @@
 @endsection
 
 @section('scripts')
+
 <script>
+function showContact() {
+    var contactSpan = document.getElementById('dealership-contact');
+    var showContactBtn = document.getElementById('show-contact-btn');
+    var contactMethods = document.getElementById('contact-methods');
+
+    if (contactSpan.textContent.includes('****')) {
+        contactSpan.textContent = '{{ $listing->dealer->contact }}';
+        showContactBtn.textContent = 'Contact Dealer';
+        contactMethods.style.display = 'block';
+    } else {
+        contactMethods.style.display = 'block';
+    }
+}
+
 function updateInterestRateValue(value) {
     document.getElementById('interestRateValue').innerText = `${value}%`;
 }
@@ -868,11 +950,7 @@ function calculatePayment() {
       document.getElementById('balloonPaymentInfo').innerText = `R${balloonAmount.toFixed(2)}`;
     }
 
-</script>
 
-
-
-<script>
 $(document).ready(function() {
     $('.clickable-image').on('click', function() {
         const slideTo = $(this).data('slide-to');
@@ -889,12 +967,12 @@ $(document).ready(function() {
 });
 
 var car = {
-    vehicle_id: "{{ $car->vehicle_id }}", // Assuming you have a car ID
+    vehicle_id: {{ $car->vehicle_id }}, // Assuming you have a car ID
         mileage: "{{ $car->mileage }}",
         transmission: "{{ $car->transmission }}",
         fuel_type: "{{ $car->fuel_type }}",
         color: "{{ $car->color }}",
-        condition: "{{ ucfirst($car->car_condition) }}",
+        car_condition: "{{ ucfirst($car->car_condition) }}",
         body_type: "{{ $car->body_type }}",
         engine_size: "{{ $car->engine_size }}",
         description: "{{ $car->description }}",
@@ -987,14 +1065,8 @@ if (recentlyViewedCars.length > 0) {
     renderRecentlyViewedCars(recentlyViewedCars);
 }
 
-    .recently-viewed .d-flex {
-    -ms-overflow-style: none; /* Internet Explorer 10+ */
-    scrollbar-width: none; /* Firefox */
-}
 
-.recently-viewed .d-flex::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
-}
+
 document.addEventListener('DOMContentLoaded', function () {
     // Smooth scrolling to the target section if there's a hash in the URL
     const hash = window.location.hash;

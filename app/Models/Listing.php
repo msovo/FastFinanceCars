@@ -40,5 +40,8 @@ class Listing extends Model
     {
         return $this->hasMany(VehicleImage::class, 'vehicle_id', 'vehicle_id');
     }
- 
+    public function dealer()
+    {
+        return $this->belongsTo(Dealer::class, 'user_id', 'user_id');
+    }
 }

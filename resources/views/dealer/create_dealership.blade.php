@@ -15,6 +15,10 @@
                 <input type="text" class="form-control" id="license_number" name="license_number" required>
             </div>
             <div class="form-group">
+                <label for="contact">contact</label>
+                <input type="text" class="form-control" id="contact" name="contact" required>
+            </div>
+            <div class="form-group">
                 <label for="address">Address</label>
                 <input type="text" class="form-control" id="address" name="address" required>
             </div>

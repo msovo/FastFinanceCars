@@ -15,6 +15,7 @@ class Dealer extends Model
     protected $fillable = [
         'user_id',
         'dealership_name',
+        'contact',
         'license_number',
         'verified',
         'address',
@@ -28,10 +29,10 @@ class Dealer extends Model
         return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
-    public function listings()
-    {
-        return $this->hasMany(Listing::class, 'dealer_id');
-    }
-
+ // Define the inverse relationship if needed
+ public function listings()
+ {
+     return $this->hasMany(Listing::class, 'user_id', 'user_id');
+ }
     
 }

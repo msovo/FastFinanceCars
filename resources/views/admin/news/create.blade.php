@@ -15,10 +15,11 @@
             <textarea class="form-control" id="content" name="content" required></textarea>
         </div>
         <div class="form-group">
-            <label for="category">Category</label>
-            <select class="form-control" id="category" name="category" required>
+            <label for="category_id">Category</label>
+            <select class="form-control" id="category_id" name="category_id" required>
                 @foreach($categories as $category)
                 <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
+                
                 @endforeach
             </select>
         </div>
