@@ -10,6 +10,8 @@ use App\Models\Rating;
 use App\Models\Poll;
 use App\Models\PollOption;
 use App\Models\PollVote;
+use App\Models\Vehicle;
+
 use App\Models\User;
 
 class PublicNewsController extends Controller
@@ -45,13 +47,40 @@ class PublicNewsController extends Controller
     public function show(News $news)
     {
         $news->load('images', 'author');
+        if ($news->images->isEmpty()) {
+            // Add a placeholder image
+            $news->images->push((object) ['image_url' => 'path/to/placeholder.jpg']);
+        }
+        // Extract keywords from the news content
+        $keywords = explode(' ', $news->content);
     
-        $sponsoredVehicles = Listing::where('sponsored', 1)
+        // Search for vehicles that match the keywords
+        $vehicleIds = Vehicle::where(function ($query) use ($keywords) {
+            foreach ($keywords as $keyword) {
+                $query->orWhere('make', 'like', "%$keyword%")
+                      ->orWhere('model', 'like', "%$keyword%")
+                      ->orWhere('variant', 'like', "%$keyword%");
+            }
+        })->pluck('vehicle_id');
+    
+        // Fetch sponsored and featured listings based on matched vehicles
+        $sponsoredVehicles = Listing::whereIn('vehicle_id', $vehicleIds)
+                                    ->where('sponsored', 1)
                                     ->where('listing_status', 'active')
                                     ->latest()
                                     ->take(5)
                                     ->with(['vehicle', 'images'])
                                     ->get();
+    
+        // If no sponsored vehicles are found, fall back to the original query
+        if ($sponsoredVehicles->isEmpty()) {
+            $sponsoredVehicles = Listing::where('sponsored', 1)
+                                        ->where('listing_status', 'active')
+                                        ->latest()
+                                        ->take(5)
+                                        ->with(['vehicle', 'images'])
+                                        ->get();
+        }
     
         $relatedNews = News::where('category', $news->category)
                            ->where('news_id', '!=', $news->news_id)
@@ -61,10 +90,8 @@ class PublicNewsController extends Controller
                            ->get();
     
         $comments = Comments::where('news_id', $news->news_id)
-                            ->with('user:user_id,username') // Ensure the user relationship is loaded with the correct keys
+                            ->with('user:user_id,username')
                             ->get();
-    
-  
     
         $averageRating = Rating::where('news_id', $news->news_id)->avg('rating');
         $poll = Poll::with('options')->latest()->first();

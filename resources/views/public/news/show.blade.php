@@ -16,7 +16,7 @@
     display: inline-block;
     margin-right: 5px;
     max-width: 100px; /* Adjust the size as needed */
-    max-height: 100px; /* Adjust the size as needed */
+    max-height: 70px; /* Adjust the size as needed */
 }
 .thumbnail-image {
         display: flex;
@@ -51,6 +51,7 @@
     .thumbnail-image {
         width: 100%;
         height: auto;
+        margin: 0 !important;
     }
     .image-count {
         position: absolute;
@@ -74,13 +75,17 @@
                     <img id="mainImage" src="{{ asset('storage/' . $news->thumbnail_url) }}" class="d-block w-100" alt="Main Image" style="height: 50vh; object-fit: cover;">
                 </div>
                 @endif
-                @foreach($news->images as $image)
+                        @if($news->images->isNotEmpty())
+            @foreach($news->images as $image)
                 @if($image->image_url)
-                <div class="carousel-item">
-                    <img src="{{ asset('storage/' . $image->image_url) }}" class="d-block w-100" alt="News Image" style="height: 50vh; object-fit: cover;">
-                </div>
+                    <div class="carousel-item">
+                        <img src="{{ asset('storage/' . $image->image_url) }}" class="d-block w-100" alt="News Image" style="height: 50vh; object-fit: cover;">
+                    </div>
                 @endif
-                @endforeach
+            @endforeach
+        @else
+            <p>No images available.</p>
+        @endif
             </div>
             <a class="carousel-control-prev" href="#newsCarousel" role="button" data-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -94,18 +99,17 @@
         <!-- Thumbnails -->
         <div class="carousel-thumbnails mt-2">
             <div class="row">
-                @if($news->thumbnail_url)
-                <div class="col">
-                    <img src="{{ asset('storage/' . $news->thumbnail_url) }}" class="img-thumbnail related-image" alt="Thumbnail" style="height: 12.5vh; object-fit: cover; cursor: pointer;" data-target="#newsCarousel" data-slide-to="0">
-                </div>
-                @endif
-                @foreach($news->images as $index => $image)
-                @if($image->image_url)
-                <div class="col">
-                    <img src="{{ asset('storage/' . $image->image_url) }}" class="img-thumbnail related-image" alt="Thumbnail" style="height: 12.5vh; object-fit: cover; cursor: pointer;" data-target="#newsCarousel" data-slide-to="{{ $index + 1 }}">
-                </div>
-                @endif
-                @endforeach
+            @if($news->images->isNotEmpty())
+    @foreach($news->images as $index => $image)
+        @if($image && $image->image_url)
+            <div class="col">
+                <img src="{{ asset('storage/' . $image->image_url) }}" class="img-thumbnail related-image" alt="Thumbnail" style="height: 12.5vh; object-fit: cover; cursor: pointer;" data-target="#newsCarousel" data-slide-to="{{ $index }}">
+            </div>
+        @endif
+    @endforeach
+@else
+    <p>No images available.</p>
+@endif
             </div>
         </div>
     </div>
@@ -128,80 +132,10 @@
     </div>
 </div>
 
-    <!-- Sponsored Vehicles -->
-    <div class="row mt-4">
-    <div class="col-12">
-        <h2>Sponsored Vehicles</h2>
-        <div class="row">
-            @foreach($sponsoredVehicles->take(3) as $vehicle)
-                <div class="col-md-4 mb-4">
-                    <div class="card" onclick="location.href='{{ route('cars.show', $vehicle->vehicle_id) }}';" style="cursor: pointer;">
-                        @if($vehicle->images->isNotEmpty())
-                            <div class="main-image-container">
-                                <img src="{{ asset('storage/' . $vehicle->images->first()->image_url) }}" class="d-block w-100 main-image" alt="Sponsored Vehicle Image">
-                                <span class="position-absolute bottom-0 start-0 bg-dark text-white px-2 py-1" style="bottom: 20px; left: 0;">
-                                    <i class="fas fa-camera"></i> {{ $vehicle->images->count() }}
-                                </span>
-                            </div>
-                        @else
-                            <div class="main-image-container">
-                                <img src="default-image.jpg" class="d-block w-100 main-image" alt="Default Image">
-                            </div>
-                        @endif
-                        <div class="row thumbnails mt-2">
-                            @foreach($vehicle->images as $image)
-                                <div class="col-4">
-                                    <img src="{{ asset('storage/' . $image->image_url) }}" class="img-thumbnail thumbnail-image" alt="Thumbnail">
-                                </div>
-                            @endforeach
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                <i class="fas fa-car"></i> {{ $vehicle->make }} {{ $vehicle->model }}
-                            </h5>
-                            <p class="card-text">
-                                <i class="fas fa-calendar-alt"></i> {{ $vehicle->year }}   
-                                <i class="fas fa-road"></i> {{ $vehicle->mileage }} km   
-                                <i class="fas fa-money-bill-wave"></i> R{{ number_format($vehicle->price, 2) }}  
-                            </p>
-                            <p class="card-text text-danger">
-                                R{{ number_format(calculateMonthlyPayment($vehicle->price), 2) }} p/m 
-                                <span class="badge" style="background-color: {{ $vehicle->car_condition == 'Used' ? 'red' : 'blue' }};">
-                                    {{ ucfirst($vehicle->car_condition) }}
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </div>
-</div>
 
 
-    <!-- Related News -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <h2>Related News</h2>
-            <div class="row">
-                @foreach($relatedNews as $newsItem)
-                <div class="col-md-4 mb-4">
-                    <div class="card" style="height: 100%;">
-                        <img src="{{ asset('storage/' . $newsItem->images->first()->image_url) }}" class="d-block w-100" alt="Related News Image" style="height: 30vh; object-fit: cover;">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $newsItem->title }}</h5>
-                            <p class="card-text">{{ Str::limit($newsItem->content, 150) }}</p>
-                            <a href="{{ route('news.show', $newsItem->news_id) }}" class="btn btn-primary">Read More</a>
-                            <p><strong>Author:</strong> {{ $newsItem->author->name }}</p>
-                            <p><strong>Category:</strong> {{ $newsItem->category }}</p>
-                            <p><strong>Published At:</strong> {{ $newsItem->published_at }}</p>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
+
+
 
     <!-- Ad Placeholders -->
     <div class="row mt-4">
@@ -287,7 +221,84 @@
             </div>
         </div>
     </div>
+
+
+      <!-- Related News -->
+      <div class="row mt-4">
+        <div class="col-12">
+            <h2>Related News</h2>
+            <div class="row">
+                @foreach($relatedNews->take(6) as $newsItem)
+                <div class="col-md-4 mb-4">
+                    <div class="card" style="height: 100%;">
+                        <img src="{{ asset('storage/' . $newsItem->thumbnail_url) }}" class="d-block w-100" alt="Related News Image" style="height: 30vh; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $newsItem->title }}</h5>
+                            <p class="card-text">{{ Str::limit($newsItem->content, 150) }}</p>
+                            <a href="{{ route('news.show', $newsItem->news_id) }}" class="btn btn-primary">Read More</a>
+                            <p><strong>Author:</strong> {{ $newsItem->author->name }}</p>
+                            <p><strong>Category:</strong> {{ $newsItem->category }}</p>
+                            <p><strong>Published At:</strong> {{ $newsItem->published_at }}</p>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
+    <!-- Sponsored Vehicles -->
+    <div class="row mt-4">
+    <div class="col-12">
+        <h2>Sponsored Vehicles</h2>
+        <div class="row">
+            @foreach($sponsoredVehicles as $vehicle)
+                <div class="col-md-4 mb-4">
+                    <div class="card" onclick="location.href='{{ route('cars.show', $vehicle->vehicle->vehicle_id) }}';" style="cursor: pointer;">
+                        @if($vehicle->images->isNotEmpty())
+                            <div class="main-image-container">
+                                <img src="{{ asset('storage/' . $vehicle->images->first()->image_url) }}" class="d-block w-100 main-image" alt="Sponsored Vehicle Image">
+                                <span class="position-absolute bottom-0 start-0 bg-dark text-white px-2 py-1" style="bottom: 20px; left: 0;">
+                                    <i class="fas fa-camera"></i> {{ $vehicle->images->count() }}
+                                </span>
+                            </div>
+                        @else
+                            <div class="main-image-container">
+                                <img src="default-image.jpg" class="d-block w-100 main-image" alt="Default Image">
+                            </div>
+                        @endif
+                        <div class="row thumbnails mt-2">
+                            @foreach($vehicle->images->take(3) as $image)
+                                <div class="col-4">
+                                    <img src="{{ asset('storage/' . $image->image_url) }}" class="img-thumbnail thumbnail-image" alt="Thumbnail">
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-car"></i> {{ $vehicle->vehicle->make }} {{ $vehicle->vehicle->model }}
+                            </h5>
+                            <p class="card-text">
+                                <i class="fas fa-calendar-alt"></i> {{ $vehicle->vehicle->year }}   
+                                <i class="fas fa-road"></i> {{ $vehicle->vehicle->mileage }} km   
+                                <i class="fas fa-money-bill-wave"></i> R{{ number_format($vehicle->vehicle->price, 2) }}  
+                            </p>
+                            <p class="card-text text-danger">
+                                R{{ number_format(calculateMonthlyPayment($vehicle->vehicle->price), 2) }} p/m 
+                                <span class="badge" style="background-color: {{ $vehicle->vehicle->car_condition == 'Used' ? 'red' : 'blue' }};">
+                                    {{ ucfirst($vehicle->vehicle->car_condition) }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
 </div>
+
+</div>
+  
 
 <script>
 

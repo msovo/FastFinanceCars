@@ -763,18 +763,16 @@
 
 
 
-
-@foreach($news as $category)
+@foreach($news as $categoryName => $articles)
     <div class="category-section mb-4">
         <div class="category-header p-2">
-            <h5>{{ $category->category_name }}</h5>
-            <p>{{ $category->description }}</p>
-            <a href="{{ route('news.show', $category->category_id) }}" class="btn btn-primary view-all-btn">View All {{ $category->category_name }} News</a>
+            <h5>{{ $categoryName }}</h5>
+            <a href="{{ route('news.show', $categoryName) }}" class="btn btn-primary view-all-btn">View All {{ $categoryName }} News</a>
         </div>
         <div class="row">
-            @foreach($category->news as $article)
+            @foreach($articles as $article)
                 <div class="col-md-4">
-                    <div class="card mb-3">
+                    <a href="{{ route('news.show', $article->news_id) }}" class="card mb-3 text-decoration-none text-dark">
                         <div class="card-img-top">
                             @if($article->thumbnail_url)
                                 <img src="{{ asset('storage/' . $article->thumbnail_url) }}" alt="Thumbnail" class="img-fluid">
@@ -783,9 +781,8 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ $article->title }}</h5>
                             <p class="card-text">{{ Str::limit($article->content, 100) }}</p>
-                            <a href="{{ route('news.show', $article->news_id) }}" class="btn btn-secondary">Read More</a>
                         </div>
-                    </div>
+                    </a>
                 </div>
             @endforeach
         </div>

@@ -17,6 +17,8 @@ use App\Models\NewsCategory;
 use Illuminate\Support\Facades\Auth;
 use App\Models\NewsImage;
 use App\Models\Dealer;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 
 
@@ -296,10 +298,40 @@ public function addCarImages()
 
 public function storeCarImages(Request $request)
 {
+    // Custom validation messages
+    $messages = [
+        'images.*.required' => 'Each image is required.',
+        'images.*.image' => 'Each file must be an image.',
+        'images.*.mimes' => 'Each image must be a file of type: jpeg, png, jpg, gif, webp.',
+        'images.*.max' => 'Each image may not be greater than 2MB.',
+        'features.required' => 'The features field is required.',
+        'features.string' => 'The features field must be a string.',
+    ];
+
+    // Validate the request with custom messages
+    $request->validate([
+        'images.*' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        'features' => 'required|string',
+    ], $messages);
+
     // Handle file uploads and save features
     $images = $request->file('images');
     foreach ($images as $image) {
-        // Save each image
+        // Convert the image to WebP format
+        $webpImage = Image::make($image)->encode('webp', 90);
+        
+        // Generate a unique file name
+        $filename = uniqid() . '.webp';
+        
+        // Store the image in the public storage
+        $path = 'vehicles/' . $filename;
+        Storage::disk('public')->put($path, $webpImage);
+        
+        // Save the image path to the database
+        VehicleImage::create([
+            'vehicle_id' => $request->vehicle_id,
+            'image_url' => $path,
+        ]);
     }
 
     $features = $request->input('features');
@@ -307,7 +339,6 @@ public function storeCarImages(Request $request)
 
     return redirect()->route('dealer.manage.listings')->with('success', 'Car images and features added successfully!');
 }
-
 // DealerController.php
 
 // DealerController.php
@@ -370,38 +401,78 @@ public function getVehiclesData()
 
     public function updateVehicle(Request $request, $id)
     {
+        // Validate the request
+        $request->validate([
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ], [
+            'images.*.image' => 'Each file must be an image.',
+            'images.*.mimes' => 'Each image must be a file of type: jpeg, png, jpg, gif, webp.',
+            'images.*.max' => 'Each image may not be greater than 2MB.',
+        ]);
+    
         $vehicle = Vehicle::findOrFail($id);
         $vehicle->update($request->all());
-
+    
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
-                $path = $file->store('vehicles', 'public');
+                // Convert the image to WebP format
+                $webpImage = Image::make($file)->encode('webp', 90);
+                
+                // Generate a unique file name
+                $filename = uniqid() . '.webp';
+                
+                // Store the image in the public storage
+                $path = 'vehicles/' . $filename;
+                Storage::disk('public')->put($path, $webpImage);
+                
+                // Save the image path to the database
                 VehicleImage::create([
                     'vehicle_id' => $vehicle->vehicle_id,
                     'image_url' => $path,
                 ]);
             }
         }
-
+    
         return redirect()->route('dealer.vehicles.view', $vehicle->vehicle_id)->with('success', 'Vehicle updated successfully');
     }
-
     public function addVehicleImages(Request $request, $id)
     {
+        // Validate the request
+        $request->validate([
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ], [
+            'images.*.required' => 'Each image is required.',
+            'images.*.image' => 'Each file must be an image.',
+            'images.*.mimes' => 'Each image must be a file of type: jpeg, png, jpg, gif, webp.',
+            'images.*.max' => 'Each image may not be greater than 2MB.',
+        ]);
+    
         $vehicle = Vehicle::findOrFail($id);
-
+    
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
-                $path = $file->store('vehicles', 'public');
+                // Convert the image to WebP format
+                $webpImage = Image::make($file)->encode('webp', 90);
+                
+                // Generate a unique file name
+                $filename = uniqid() . '.webp';
+                
+                // Store the image in the public storage
+                $path = 'vehicles/' . $filename;
+                Storage::disk('public')->put($path, $webpImage);
+                
+                // Save the image path to the database
                 VehicleImage::create([
                     'vehicle_id' => $vehicle->vehicle_id,
                     'image_url' => $path,
                 ]);
             }
         }
-
+    
         return redirect()->route('dealer.vehicles.view', $vehicle->vehicle_id)->with('success', 'Images added successfully');
     }
+    
+    
 
     public function addVehicleFeatures(Request $request, $id)
     {

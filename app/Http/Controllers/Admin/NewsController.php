@@ -1,6 +1,7 @@
 <?php
 // app/Http/Controllers/Admin/NewsController.php
 namespace App\Http\Controllers\Admin;
+use Intervention\Image\Facades\Image;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -42,12 +43,24 @@ public function store(Request $request)
 
         $news = new News($request->except('thumbnail_url'));
         $news->author_id = Auth::id(); // Set the author to the currently authenticated user
-
         if ($request->hasFile('thumbnail_url')) {
-            $path = $request->file('thumbnail_url')->store('thumbnails', 'public');
+            $file = $request->file('thumbnail_url');
+            
+            // Convert the thumbnail to WebP format
+            $thumbnail = Image::make($file)->encode('webp', 90);
+            
+            // Generate a unique file name
+            $filename = uniqid() . '.webp';
+            
+            // Store the thumbnail in the public storage
+            $path = 'thumbnails/' . $filename;
+            Storage::disk('public')->put($path, $thumbnail);
+            
+            // Save the thumbnail path to the database
             $news->thumbnail_url = $path;
             Log::info('Thumbnail uploaded', ['path' => $path]);
         }
+        
 
         $news->save();
         Log::info('News saved', ['news' => $news]);

@@ -82,9 +82,13 @@ $categories = Category::whereNotIn('category_type', ['Make', 'Model', 'Variant']
         $query->where('listing_status', 'active');
     })->orderBy('listed_at', 'desc')->take(3)->get();
 
-    $news = newscategory::with(['news' => function ($query) {
-        $query->orderBy('published_at', 'desc')->take(3);
-    }])->get();
+    $newsCategories = NewsCategory::all();
+    $news = [];
+
+    foreach ($newsCategories as $category) {
+        $news[$category->category_name] = $category->news()->orderBy('published_at', 'desc')->take(3)->get();
+    }
+
     // Data for the Make Analysis chart
     $makeCounts = DB::table('vehicles')
                     ->select('make', DB::raw('count(*) as count'))
@@ -108,7 +112,8 @@ $categories = Category::whereNotIn('category_type', ['Make', 'Model', 'Variant']
         'categoryTypes',
         'models',
         'categories',
-        'carBrands'
+        'carBrands',
+        'newsCategories'
     ));
 }
 

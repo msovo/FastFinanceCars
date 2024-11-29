@@ -18,6 +18,7 @@ class News extends Model
         'content',
         'author_id',
         'category_id',
+        'category',
         'thumbnail_url',
         'published_at',
     ];
