@@ -1,12 +1,15 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Car_brand;
 use App\Models\Vehicle;
 use App\Models\News;
 use App\Models\Listing;
 use App\Models\Category;
 use App\Models\ListingComment;
 use App\Models\CarBrand;
+use App\Models\CarModel;
+use App\Models\Variant;
 
 use App\Models\newscategory;
 
@@ -534,4 +537,23 @@ private function monthlyPaymentToPrice($monthlyPayment) {
     return round($price, 2);
 }
 // ... (monthlyPaymentToPrice helper function) ...
+
+
+public function getMakes()
+{
+    $makes = Car_brand::all();
+    return view('financecalculator', compact('makes'));
+}
+
+public function CargetModels($make_id)
+{
+    $models = CarModel::where('make_id', $make_id)->get();
+    return response()->json($models);
+}
+
+public function CargetVariants($model_id)
+{
+    $variants = Variant::where('model_id', $model_id)->get();
+    return response()->json($variants);
+}
 }

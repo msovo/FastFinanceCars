@@ -1,15 +1,10 @@
 <?php
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CarBrand extends Model
+class Car_brand extends Model
 {
-    use HasFactory;
-
-    protected $table = 'car_brands';
     protected $fillable = ['name'];
 
     public function models()

@@ -30,7 +30,7 @@
             <div class="col-md-3 col-6 mb-4">
                 <h5>Services</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#">Car Finance Calculator</a></li>
+                    <li> <a class="nav-link" href="{{ route('makes') }}">Car Finance Calculator</a>  </li>                  </li>
                     <li><a href="#">Car Finance</a></li>
                     <li><a href="#">Car Insurance</a></li>
                     <li><a href="#">K53 Help Guides</a></li>

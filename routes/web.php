@@ -285,3 +285,12 @@ Route::middleware(['auth', 'user_type:seller'])->group(function () {
     Route::post('/seller/store-news', [SellerController::class, 'storeNews'])->name('store.news');
 });
 
+
+
+Route::get('/models/{make_id}', [CarController::class, 'CargetModels']);
+Route::get('/variants/{model_id}', [CarController::class, 'CargetVariants']);
+Route::get('/makes', [CarController::class, 'getMakes'])->name('makes');
+
+Route::get('/finance/calculator', [CarController::class, 'showFinanceCalculator'])->name('finance.calculator');
+
+

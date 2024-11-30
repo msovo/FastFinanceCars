@@ -72,7 +72,6 @@
 
         #monthlyPayment, #balloonPaymentInfo {
             font-size: 1.25rem;
-            color: #004d40; /* Darker green text */
             font-weight: bold;
         }
 
