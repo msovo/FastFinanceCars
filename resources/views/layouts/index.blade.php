@@ -579,22 +579,22 @@
                         Sell my Car
                     </a>
                     <div class="dropdown-menu" aria-labelledby="sellCarDropdown">
-                        <a class="dropdown-item" href="{{ route('signup') }}">Sell Privately</a>
+                        <a class="dropdown-item" href="{{ route('privateSellerGuide') }}">Sell Privately</a>
+                        <a class="dropdown-item" href="{{ route('DealerSellerGuide') }}">As a Dealer</a>
+
                     </div>
                 </li>
 
                 <!-- Value my Car Dropdown -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="valueCarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Value my Car
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('dealerships.index') }}" id="valueCarDropdown">
+                        Dealerships
+
                     </a>
-                    <div class="dropdown-menu" aria-labelledby="valueCarDropdown">
-                        <a class="dropdown-item" href="#">Car Valuation</a>
-                        <a class="dropdown-item" href="#">Get an Offer</a>
-                    </div>
+                    
                 </li>
 
-                <!-- Car Subscriptions -->
+                <!-- CSubscriptions -->
                 <li class="nav-item">
                     <a class="nav-link" href="#">Car Subscriptions</a>
                 </li>
@@ -626,7 +626,9 @@
                         Tools & Services
                     </a>
                     <div class="dropdown-menu" aria-labelledby="toolsServicesDropdown">
-                    <a class="dropdown-item"  href="{{ route('makes') }}">Car Finance Calculator</a>
+                    <a class="dropdown-item"  href="{{ route('financeCalculator') }}">Car Finance Calculator</a>
+                    <a class="dropdown-item"  href="{{ route('finance') }}">Car Finance</a>
+
                     <a class="dropdown-item" href="#">Insurance Quotes</a>
                     </div>
                 </li>
@@ -731,7 +733,7 @@
                     Tools & Services
                 </a>
                 <div class="collapse" id="toolsServicesCollapse">
-                <a class="dropdown-item"  href="{{ route('makes') }}">Car Finance Calculator</a>
+                <a class="dropdown-item"  href="{{ route('financeCalculator') }}">Car Finance Calculator</a>
                                    <a class="dropdown-item" href="#">Insurance Quotes</a>
                 </div>
             </li>

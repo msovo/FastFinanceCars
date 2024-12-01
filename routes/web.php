@@ -291,13 +291,26 @@ Route::get('/products', function () {
 
 Route::get('/models/{make_id}', [CarController::class, 'CargetModels']);
 Route::get('/variants/{model_id}', [CarController::class, 'CargetVariants']);
-Route::get('/makes', [CarController::class, 'getMakes'])->name('makes');
+Route::get('/financeCalculator', [CarController::class, 'getMakes'])->name('financeCalculator');
+
+Route::get('/finance', function () {
+    return view('finance');
+})->name('finance');
+
 
 Route::get('/finance/calculator', [CarController::class, 'showFinanceCalculator'])->name('finance.calculator');
+
 Route::get('/faq', function () {
     return view('faq');
 })->name('faq');
 
+Route::get('/privateSellerGuide', function () {
+    return view('privateSellerGuide');
+})->name('privateSellerGuide');
+
+Route::get('/DealerSellerGuide', function () {
+    return view('DealerSellerGuide');
+})->name('DealerSellerGuide');
 
 
 Route::middleware(['auth'])->group(function () {
@@ -310,3 +323,6 @@ Route::post('/guest-chat-messages', [ChatMessageController::class, 'store']);
 
 Route::post('/registerguest', [ChatMessageController::class, 'register'])->name('registerguest');
 
+Route::get('dealerships.index', [CarController::class, 'showDealerships'])->name('dealerships.index');
+Route::get('/dealerships.show/{id}', [CarController::class, 'showDealership'])->name('dealerships.show');
+Route::get('dealerships.search', [CarController::class, 'searchDealer'])->name('dealerships.search');

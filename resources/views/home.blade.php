@@ -784,7 +784,7 @@
         <div class="row">
             @foreach($articles as $article)
                 <div class="col-md-4">
-                    <a href="{{ route('news.show', $article->news_id) }}" class="card mb-3 text-decoration-none text-dark">
+                    <a href="{{ route('news.show', parameters: $article->news_id) }}" class="card mb-3 text-decoration-none text-dark">
                         <div class="card-img-top">
                             @if($article->thumbnail_url)
                                 <img src="{{ asset('storage/' . $article->thumbnail_url) }}" alt="Thumbnail" class="img-fluid">

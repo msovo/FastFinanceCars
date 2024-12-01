@@ -10,6 +10,8 @@ use App\Models\ListingComment;
 use App\Models\CarBrand;
 use App\Models\CarModel;
 use App\Models\Variant;
+use App\Models\Dealer;
+use Illuminate\Support\Facades\View;
 
 use App\Models\newscategory;
 
@@ -559,4 +561,68 @@ public function CargetVariants($model_id)
     $variants = Variant::where('model_id', $model_id)->get();
     return response()->json($variants);
 }
+
+
+
+public function showDealerships(Request $request)
+{
+
+    $dealerships = Dealer::withCount(['listings as total_cars' => function ($query) {
+        $query->where('listing_status', 'active');
+    }])
+    ->withCount(['listings as car_makes_count' => function ($query) {
+        $query->join('vehicles', 'listings.vehicle_id', '=', 'vehicles.vehicle_id')
+              ->select(DB::raw('count(distinct vehicles.make)'));
+    }])
+    ->withCount(['listings as car_models_count' => function ($query) {
+        $query->join('vehicles', 'listings.vehicle_id', '=', 'vehicles.vehicle_id')
+              ->select(DB::raw('count(distinct vehicles.model)'));
+    }])
+    ->paginate(10);
+
+    $sponsoredCars = Listing::where('sponsored', true)
+                            ->latest()
+                            ->take(5)
+                            ->get();
+
+    $provinces = Dealer::select('province', DB::raw('count(*) as total'))
+                       ->groupBy('province')
+                       ->get();
+
+    return view('dealerships.index', compact('dealerships', 'sponsoredCars', 'provinces'));
+}
+
+public function showDealership($id)
+{
+    \Log::info(  $id);
+
+    $dealership = Dealer::with(['listings' => function ($query) {
+        $query->where('listing_status', 'active')
+              ->with(['vehicle', 'images']);
+    }])->findOrFail($id);
+
+    return view('dealerships.show', compact('dealership'));
+}
+
+public function searchDealer(Request $request)
+{
+    $query = $request->input('query', '');
+    $province = $request->input('province', '');
+    \Log::info(  $province);
+
+    $dealerships = Dealer::query()
+        ->when($query, function ($queryBuilder) use ($query) {
+            $queryBuilder->where('dealership_name', 'like', "%$query%");
+        })
+        ->when($province, function ($queryBuilder) use ($province) {
+            $queryBuilder->where('province', $province);
+        })
+        ->paginate(10); // Adjust pagination as needed
+
+    $html = View::make('partials.dealership_list', compact('dealerships'))->render();
+
+    return response()->json(['html' => $html]);
+}
+
+
 }
