@@ -374,6 +374,14 @@
         .card-body{
             padding-bottom: 0 !important;
         }
+
+        .advanced-search .btn {
+        background-color: #ff6a00;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 5px;
+        text-transform: uppercase;
+    }
 </style>
 
 </style>
@@ -762,12 +770,16 @@
 
 
 
-
+<h2>Latest Articles</h2>
 @foreach($news as $categoryName => $articles)
     <div class="category-section mb-4">
         <div class="category-header p-2">
             <h5>{{ $categoryName }}</h5>
-            <a href="{{ route('news.show', $categoryName) }}" class="btn btn-primary view-all-btn">View All {{ $categoryName }} News</a>
+<form action="{{ route('newssearch') }}" method="GET" class="d-flex align-items-center">
+    <input type="hidden" name="category" value="{{ $articles->first()->category_id }}" />
+    <button type="submit" class="btn btn-primary view-all-btn">View All {{ $categoryName }} Articles</button>
+</form>
+
         </div>
         <div class="row">
             @foreach($articles as $article)

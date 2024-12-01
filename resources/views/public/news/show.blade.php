@@ -229,16 +229,15 @@
             <h2>Related News</h2>
             <div class="row">
                 @foreach($relatedNews->take(6) as $newsItem)
-                <div class="col-md-4 mb-4">
+                <div class="col-md-4 mb-4" onclick="location.href='{{ route('news.show', $newsItem->news_id) }}';">
                     <div class="card" style="height: 100%;">
                         <img src="{{ asset('storage/' . $newsItem->thumbnail_url) }}" class="d-block w-100" alt="Related News Image" style="height: 30vh; object-fit: cover;">
                         <div class="card-body">
                             <h5 class="card-title">{{ $newsItem->title }}</h5>
-                            <p class="card-text">{{ Str::limit($newsItem->content, 150) }}</p>
-                            <a href="{{ route('news.show', $newsItem->news_id) }}" class="btn btn-primary">Read More</a>
-                            <p><strong>Author:</strong> {{ $newsItem->author->name }}</p>
-                            <p><strong>Category:</strong> {{ $newsItem->category }}</p>
-                            <p><strong>Published At:</strong> {{ $newsItem->published_at }}</p>
+                            <p class="card-text">{{ Str::limit($newsItem->content, 100) }}</p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            By {{ $newsItem->author->username }} | {{ $newsItem->published_at }}
                         </div>
                     </div>
                 </div>

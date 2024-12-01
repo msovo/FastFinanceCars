@@ -169,45 +169,411 @@
     }
 
 
+
+
+    /* Chat button fixed at the bottom-left corner */
+    #chat-button {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background-color: #ff4500; /* Orange color */
+        color: white;
+        border: none;
+        padding: 15px;
+        cursor: pointer;
+        border-radius: 50%;
+        z-index: 9999; /* Make sure the button is always on top */
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Chat box container with subtle gradient background */
+    #chat-box {
+        display: none;
+        position: fixed;
+        bottom: 80px;
+        left: 20px;
+        width: 350px;
+        height: 450px;
+        background-color: #ff4500; /* Orange color */
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 9999; /* Ensures it's on top of everything */
+        overflow-y: scroll-y;
+    }
+
+    /* Display the chat box when open */
+    #chat-box.open {
+        display: block;
+    }
+
+    /* Message container with scrollable content */
+    #messages {
+        height: 280px;
+        overflow-y: auto;
+        margin-bottom: 15px;
+        padding-right: 10px;
+    }
+
+    /* Input field for typing messages */
+    #message-input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    /* Send button */
+    #send-button {
+        background-color: #2196f3; /* Lighter Blue */
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    /* Header of the chat box with user icon */
+    .chat-header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .chat-header img {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .chat-header h5 {
+        margin: 0;
+        font-size: 18px;
+        color: white;
+    }
+
+    /* Container for user info (name and email input) */
+    .guest-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        position: relative;
+        bottom: 100px;
+    }
+
+    .guest-info input {
+        width: 90%;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .guest-info button {
+        background-color: #ff5722; /* Coral */
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    #chat-box {
+    border: 1px solid #ccc;
+    width: 300px;
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
+    border-radius: 8px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#chat-box.open {
+    display: flex;
+}
+
+.chat-header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+}
+
+.chat-header h5 {
+    margin: 0 0 0 10px;
+    font-size: 16px;
+}
+
+#messages {
+    padding: 10px;
+    overflow-y: auto;
+    max-height: 200px;
+    flex-grow: 1;
+}
+
+.chat-message {
+    background-color: #e6e6e6;
+    margin-bottom: 5px;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+#message-input,
+#guest-info input {
+    width: 90%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#send-button,
+#register-button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#send-button:hover,
+#register-button:hover {
+    background-color: #444;
+}
+#close-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    float:right !important; 
+}
+
+#close-button:hover {
+    color: #ff4500; /* Highlight color on hover */
+}
+
+.text-chat-header{
+    font-size: 24px;
+    font-weight: bold;
+    color: white !important;
+}
+
+.message-status {
+    margin-left: 10px;
+    color: green;
+    font-weight: bold;
+}
+
     </style>
 </head>
 <body>
 
 
+<style>
+    /* Wrapper for the entire navigation bar */
+    .navbar-wrapper {
+        background: linear-gradient(135deg, #ff4e50, #ff6a00); /* Red to orange gradient for a vibrant, automotive feel */
+        padding: 10px 0;
+    }
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light nav-custom">
-    <a class="navbar-brand" href="{{ url('/') }}">Fast Finance Cars</a>
+    /* Navbar styling */
+    .navbar {
+        padding: 10px 50px;
+        font-size: 16px;
+        font-family: 'Arial', sans-serif;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
 
-    <button class="navbar-toggler" type="button" data-toggle="offcanvas" data-target="#mobileMenu">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    .navbar-light .navbar-nav .nav-link {
+        color: white !important; /* White text color for the links */
+        padding: 10px 20px;
+    }
 
-    <div class="collapse navbar-collapse" id="navbarNav"> 
-      <ul class="navbar-nav mr-auto">
-        
-        <li class="nav-item dropdown">
+    /* Hover effects for nav links */
+    .navbar-light .navbar-nav .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+    }
+
+    .navbar-light .navbar-nav .nav-item.dropdown:hover > .dropdown-menu {
+        display: block;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Navbar brand/logo */
+    .navbar-brand {
+        font-size: 1.8rem;
+        color: white;
+        font-weight: bold;
+    }
+
+    .navbar-brand:hover {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    /* Navbar dropdown */
+    .dropdown-menu {
+        background-color: #ffffff;
+        border: none;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .dropdown-item {
+        font-size: 14px;
+        padding: 12px 20px;
+        color: #333;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f7f7f7;
+        color: #007bff;
+    }
+
+    /* Navbar toggle button for mobile */
+    .navbar-toggler-icon {
+        background-color: white;
+    }
+
+    /* Profile image and account dropdown */
+    .nav-item img {
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+
+    .nav-item .dropdown-menu a {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    /* Button background color */
+
+
+    .btn:hover {
+        background-color: #ff4e50;
+    }
+.message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.user-message {
+    background-color: #007bff; /* Blue */
+    color: white;
+    text-align: left;
+    margin-left: auto;
+}
+
+.admin-message {
+    background-color: #f1f1f1; /* Light gray */
+    color: #333;
+    text-align: left;
+    margin-right: auto;
+}
+/* General message styles */
+.message {
+    padding: 10px;
+    margin: 5px 0;
+    max-width: 60%;
+    border-radius: 10px;
+    word-wrap: break-word;
+    display: inline-block;
+}
+
+/* Admin messages */
+.admin-message {
+    background-color: #e6f7ff;
+    color: #00529b;
+    align-self: flex-start;
+    text-align: left;
+    border: 1px solid #b3d4fc;
+    border-radius: 10px 10px 10px 0; /* Rounded corners */
+}
+
+/* Guest messages */
+.guest-message {
+    background-color: #f1f1f1;
+    color: #333;
+    align-self: flex-end;
+    text-align: right;
+    border: 1px solid #ccc;
+    border-radius: 10px 10px 0 10px; /* Rounded corners */
+}
+
+/* Messages container */
+#messages {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+</style>
+@if(Auth::check())
+        <meta name="user-id" content="{{ Auth::id() }}">
+    @endif
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+<!-- Navbar wrapped in a div -->
+<div class="navbar-wrapper">
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="{{ url('/') }}">Fast Finance Cars</a>
+
+        <button class="navbar-toggler" type="button" data-toggle="offcanvas" data-target="#mobileMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <!-- Buy a Car Dropdown -->
+                <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="buyCarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Buy a Car
                     </a>
                     <div class="dropdown-menu" aria-labelledby="buyCarDropdown">
-                    <form id="searchForm" action="{{ route('cars.search') }}" method="GET">
-                    <input type="text" class="hide" style="display:none" id="conditions" name="conditions" value="New" />
+                        <form id="searchForm" action="{{ route('cars.search') }}" method="GET">
+                            <input type="text" class="hide" style="display:none" id="conditions" name="conditions" value="New" />
+                            <button type="submit" class="dropdown-item">New Cars</button>
+                        </form>
 
-                    <button type="submit" class="dropdown-item" href="#">New Cars</button>
-
-                    </form>
-
-
-                    <form id="searchForm" action="{{ route('cars.search') }}" method="GET">
-                    <input type="text" class="hide" style="display:none" id="conditions" name="conditions" value="Used" />
-
-                    <button type="submit" class="dropdown-item" href="#">Used Cars</button>
-
-                    </form>
-                       
-                        
+                        <form id="searchForm" action="{{ route('cars.search') }}" method="GET">
+                            <input type="text" class="hide" style="display:none" id="conditions" name="conditions" value="Used" />
+                            <button type="submit" class="dropdown-item">Used Cars</button>
+                        </form>
                     </div>
                 </li>
+
+                <!-- Sell my Car Dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="sellCarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Sell my Car
@@ -216,6 +582,8 @@
                         <a class="dropdown-item" href="{{ route('signup') }}">Sell Privately</a>
                     </div>
                 </li>
+
+                <!-- Value my Car Dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="valueCarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Value my Car
@@ -225,32 +593,50 @@
                         <a class="dropdown-item" href="#">Get an Offer</a>
                     </div>
                 </li>
+
+                <!-- Car Subscriptions -->
                 <li class="nav-item">
                     <a class="nav-link" href="#">Car Subscriptions</a>
                 </li>
+
+                <!-- News & Reviews Dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="newsReviewsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         News & Reviews
                     </a>
                     <div class="dropdown-menu" aria-labelledby="newsReviewsDropdown">
-                        <a class="dropdown-item" href="#">Latest News</a>
-                        <a class="dropdown-item" href="#">Car Reviews</a>
+                    <form action="{{ route('newssearch') }}" method="GET" class="d-flex align-items-center">
+                <input type="hidden" name="category" value=2 />
+                <button class="dropdown-item"  type="submit" > Car Reviews</button>
+               </form>
+               <form action="{{ route('newssearch') }}" method="GET" class="d-flex align-items-center">
+                <input type="hidden" name="category" value=3 />
+                <button class="dropdown-item" type="submit" > Finances Articles </button>
+               </form>
+               <form action="{{ route('newssearch') }}" method="GET" class="d-flex align-items-center">
+                <input type="hidden" name="category" value=1 />
+                <button class="dropdown-item" type="submit"> Blogs articles</button>
+               </form>
                     </div>
                 </li>
+
+                <!-- Tools & Services Dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="toolsServicesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Tools & Services
                     </a>
                     <div class="dropdown-menu" aria-labelledby="toolsServicesDropdown">
-                        <a class="dropdown-item" href="#" onclick="openModal()">Loan Calculator</a>
-                        <a class="dropdown-item" href="#">Insurance Quotes</a>
+                    <a class="dropdown-item"  href="{{ route('makes') }}">Car Finance Calculator</a>
+                    <a class="dropdown-item" href="#">Insurance Quotes</a>
                     </div>
                 </li>
             </ul>
+
+            <!-- Authentication Links -->
             <ul class="navbar-nav ml-auto">
                 @guest
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route(name: 'login') }}">Sign In</a>
+                    <a class="nav-link" href="{{ route('login') }}">Sign In</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('signup') }}">Sign Up</a>
@@ -280,8 +666,9 @@
                 @endguest
             </ul>
         </div>
-    </div>
-</nav>
+    </nav>
+</div>
+
 
 <div class="offcanvas-menu" id="mobileMenu">
     <span class="close-button" data-toggle="offcanvas" data-target="#mobileMenu">&times;</span>
@@ -323,8 +710,20 @@
                     News & Reviews
                 </a>
                 <div class="collapse" id="newsReviewsCollapse">
-                    <a class="dropdown-item" href="#">Latest News</a>
-                    <a class="dropdown-item" href="#">Car Reviews</a>
+
+                <form action="{{ route('newssearch') }}" method="GET" class="d-flex align-items-center">
+                <input type="hidden" name="category" value=2 />
+                <button type="submit" class="dropdown-item"> Car Reviews</button>
+               </form>
+               <form action="{{ route('newssearch') }}" method="GET" class="d-flex align-items-center">
+                <input type="hidden" name="category" value=3 />
+                <button type="submit" cclass="dropdown-item"> Finances Articles </button>
+               </form>
+               <form action="{{ route('newssearch') }}" method="GET" class="d-flex align-items-center">
+                <input type="hidden" name="category" value=1 />
+                <button type="submit" class="dropdown-item"> Blogs articles</button>
+               </form>
+                 
                 </div>
             </li>
             <li class="nav-item">
@@ -332,8 +731,8 @@
                     Tools & Services
                 </a>
                 <div class="collapse" id="toolsServicesCollapse">
-                    <a class="dropdown-item" href="#" onclick="openModal()">Loan Calculator</a>
-                    <a class="dropdown-item" href="#">Insurance Quotes</a>
+                <a class="dropdown-item"  href="{{ route('makes') }}">Car Finance Calculator</a>
+                                   <a class="dropdown-item" href="#">Insurance Quotes</a>
                 </div>
             </li>
         </ul>
@@ -376,6 +775,43 @@
     <div class="Customcontainer">
         @yield('content')
     </div>
+    <button id="chat-button">💬</button>
+
+    <div class="CustomcontainerChat">
+<div id="chat-box">
+    <div class="row  chat-header">
+        <div class="col-2">
+        <i class="fa fa-user" aria-hidden="true"></i>
+
+        </div>
+        <div class="col-md-8">
+    <!-- Placeholder for user icon -->
+        <h5 class="text-chat-header">Chat with Us</h5>
+        </div>
+   <div class="col-md-2">
+   <button id="close-button" onclick="hideChatMessage()">×</button> <!-- Close button -->
+
+   </div>
+
+    </div>
+    <div id="messages"></div>
+    <div class="guest-info" id="guest-info">
+        <input type="text" id="guest-name" placeholder="Enter your name">
+        <input type="email" id="guest-email" placeholder="Enter your email">
+        <button id="register-button">Start Chat</button>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+        <textarea type="text" id="message-input" placeholder="Type your message..." style="display:none;"></textarea>
+
+        </div>
+        <div clas="col-md-4">
+        <button id="send-button" style="display:none;">Send</button>
+
+        </div>
+    </div>
+</div>
+</div>
     @include('layouts.footer')
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -384,6 +820,204 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
+
+        function hideChatMessage(){
+            $(".CustomcontainerChat").hide();
+        }
+    let guestId = localStorage.getItem('guestId');
+    let guestAlias = localStorage.getItem('guestAlias');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const chatButton = document.getElementById('chat-button');
+    const chatBox = document.getElementById('chat-box');
+    const closeButton = document.getElementById('close-button');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const messagesContainer = document.getElementById('messages');
+    const guestInfo = document.getElementById('guest-info');
+    const registerButton = document.getElementById('register-button');
+    const guestNameInput = document.getElementById('guest-name');
+    const guestEmailInput = document.getElementById('guest-email');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    let guestId = localStorage.getItem('guestId');
+    let guestAlias = localStorage.getItem('guestAlias');
+
+    // Hide the guest info form and show chat input if guestId exists
+    if (guestId) {
+        guestInfo.style.display = 'none';
+        messageInput.style.display = 'block';
+        sendButton.style.display = 'block';
+    }
+
+    chatButton.addEventListener('click', () => {
+        $(".CustomcontainerChat").show();
+        chatBox.classList.toggle('open');
+        if (chatBox.classList.contains('open') && guestId) {
+            loadMessages();
+        } else if (!guestId) {
+            guestInfo.style.display = 'block';
+            messageInput.style.display = 'none';
+            sendButton.style.display = 'none';
+        }
+    });
+
+    closeButton.addEventListener('click', () => {
+        chatBox.classList.remove('open');
+    });
+
+    registerButton.addEventListener('click', () => {
+        const name = guestNameInput.value.trim();
+        const email = guestEmailInput.value.trim();
+
+        if (name && email) {
+            registerGuest(name, email);
+        } else {
+            alert('Please enter both your name and email.');
+        }
+    });
+
+    sendButton.addEventListener('click', () => {
+        const message = messageInput.value.trim();
+        if (message) {
+            sendMessageToServer(message);
+            messageInput.value = '';
+        }
+    });
+});
+
+function displayMessage(messageObj) {
+    const messagesContainer = document.getElementById('messages');
+
+    // Avoid duplicate messages
+    if (document.querySelector(`[data-message-id="${messageObj.id}"]`)) {
+        return;
+    }
+
+    const messageElement = document.createElement('div');
+    const isAdmin = messageObj.is_admin === 1;
+
+    messageElement.className = isAdmin ? 'message admin-message' : 'message guest-message';
+    messageElement.setAttribute('data-message-id', messageObj.id); // Assign unique ID
+    messageElement.textContent = messageObj.message;
+
+    messagesContainer.appendChild(messageElement);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight; // Auto-scroll
+}
+
+// Define the async function to send messages
+async function sendMessageToServer(message) {
+    try {
+        console.log('Sending message:', message);
+        const response = await fetch('/guest-chat-messages', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+            },
+            body: JSON.stringify({
+                message: message,
+                guest_id: guestId,
+                guest_alias: guestAlias,
+            }),
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(error);
+        }
+
+        const result = await response.json();
+        console.log('Message saved:', result);
+
+        if (result.status === 'success') {
+            // Update the message status to show double ticks
+            updateMessageStatus(result.data.id, '✓✓');
+        }
+    } catch (error) {
+        console.error('Error sending message to server:', error);
+    }
+}
+
+function updateMessageStatus(messageId, status) {
+    const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+    if (messageElement) {
+        const statusElement = document.createElement('span');
+        statusElement.className = 'message-status';
+        statusElement.textContent = status;
+        messageElement.appendChild(statusElement);
+    }
+}
+
+async function loadMessages() {
+    try {
+        const response = await fetch(`/guest-chat-messages?guest_id=${guestId}`);
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(error);
+        }
+
+        const messages = await response.json();
+        const messagesContainer = document.getElementById('messages');
+        messagesContainer.innerHTML = ''; // Clear the container before reloading
+
+        // Append each message
+        messages.forEach(displayMessage);
+    } catch (error) {
+        console.error('Error loading messages:', error);
+    }
+}
+
+// Polling for new messages every 5 seconds
+setInterval(async () => {
+    try {
+        const response = await fetch(`/guest-chat-messages?guest_id=${guestId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch messages');
+        }
+
+        const messages = await response.json();
+        const messagesContainer = document.getElementById('messages');
+        const existingMessages = Array.from(messagesContainer.children).map(
+            (el) => el.getAttribute('data-message-id')
+        );
+
+        // Add only new messages
+        messages.forEach((msg) => {
+            if (!existingMessages.includes(msg.id.toString())) {
+                displayMessage(msg);
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+    }
+}, 5000);
+
+function registerGuest(name, email) {
+    fetch('/registerguest', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify({ name, email }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            guestId = data.guest_id;
+            localStorage.setItem('guestId', guestId);
+            localStorage.setItem('guestAlias', name);
+
+            // Hide guest info form and show chat input
+            guestInfo.style.display = 'none';
+            messageInput.style.display = 'block';
+            sendButton.style.display = 'block';
+
+            loadMessages();
+        })
+        .catch(error => console.error('Error registering guest:', error));
+}
+
         $(document).ready(function() {
             // Search form submission
             $('#searchForm').on('submit', function(event) {

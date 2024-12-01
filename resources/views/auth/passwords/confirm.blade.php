@@ -1,8 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    .customizerow{
+    margin:0 !important;
+    margin-top: 20px !important;
+
+}
+</style>
 <div class="container">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center customizerow">
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">{{ __('Confirm Password') }}</div>

@@ -21,27 +21,17 @@ class PublicNewsController extends Controller
         $news = News::orderBy('published_at', 'desc')->take(3)->get();
         return view('home', compact('news'));
     }
-
     public function index()
     {
-        $news = News::with(['author', 'images'])->get();
-        $categories = NewsCategory::all();
+       
+    $newsCategories = NewsCategory::all();
+    $news = [];
 
-        $latestFeaturedVehicles = Listing::where('featured', 1)
-                                         ->where('listing_status', 'active')
-                                         ->latest()
-                                         ->take(3)
-                                         ->with(['vehicle', 'images'])
-                                         ->get();
-
-        $sponsoredVehicles = Listing::where('sponsored', 1)
-                                    ->where('listing_status', 'active')
-                                    ->latest()
-                                    ->take(3)
-                                    ->with(['vehicle', 'images'])
-                                    ->get();
-
-        return view('public.news.index', compact('news', 'categories', 'latestFeaturedVehicles', 'sponsoredVehicles'));
+    foreach ($newsCategories as $category) {
+        $news[$category->category_name] = $category->news()->orderBy('published_at', 'desc')->take(3)->get();
+    }
+    
+        return view('public.news.index', compact('news', 'newsCategories', 'news'));
     }
 
     public function show(News $news)
@@ -98,6 +88,35 @@ class PublicNewsController extends Controller
     
         return view('public.news.show', compact('news', 'sponsoredVehicles', 'relatedNews', 'comments', 'averageRating', 'poll'));
     }
+    
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $category = $request->query('category');
+        $sort = $request->query('sort', 'desc'); // Default to descending
+    
+        if (empty($search) && empty($category)) {
+            return redirect()->route('news.index')->with('message', 'Please enter a search term or select a category.');
+        }
+    
+        $news = News::query()
+                    ->when($search, function ($query) use ($search) {
+                        $query->where('title', 'LIKE', "%$search%")
+                              ->orWhere('content', 'LIKE', "%$search%");
+                    })
+                    ->when($category, function ($query) use ($category) {
+                        $query->where('category_id', $category);
+                    })
+                    ->orderBy('published_at', $sort)
+                    ->paginate(10);
+    
+        $news->load('author', 'images');
+        $categories = NewsCategory::all();
+        $selectedCategory = NewsCategory::find($category);
+    
+        return view('public.news.search', compact('news', 'search', 'categories', 'selectedCategory'));
+    }
+    
     
     
 

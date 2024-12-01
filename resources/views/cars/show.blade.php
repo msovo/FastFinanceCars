@@ -655,67 +655,79 @@
     </div>
 
 
-    <div class="mt-5">
-      <h3>Finance Calculator</h3>
-      <div class="row">
+        <!-- Row 1: Finance Calculator -->
+        <div class="row mt-4">
+        <!-- Column 1: Finance Form -->
         <div class="col-md-6">
-          <form id="financeCalculator">
-            <div class="form-group">
-              <label for="price">Car Price</label>
-              <input type="number" class="form-control" id="price" name="price" value="250000" required>
-            </div>
-            <div class="form-group">
-              <label for="deposit">Deposit Amount</label>
-              <input type="number" class="form-control" id="deposit" name="deposit" value="0" required>
-            </div>
-            <div class="form-group">
-              <label for="tradeInValue">Less Trade-In Value</label>
-              <input type="number" class="form-control" id="tradeInValue" name="tradeInValue" value="0" required>
-            </div>
-            <div class="form-group">
-              <label for="interestRate">Interest Rate (%)</label>
-              <input type="range" class="form-control-range" id="interestRate" name="interestRate" min="9" max="20" value="15" oninput="updateInterestRateValue(this.value)">
-              <span id="interestRateValue">15%</span>
-            </div>
-            <div class="form-group">
-              <label for="loanTerm">Loan Term (months)</label>
-              <input type="range" class="form-control-range" id="loanTerm" name="loanTerm" min="45" max="90" value="60" step="3" oninput="updateLoanTermValue(this.value)">
-              <span id="loanTermValue">60 months</span>
-            </div>
-            <div class="form-group">
-              <label for="balloonPayment">Balloon Payment (%)</label>
-              <input type="range" class="form-control-range" id="balloonPayment" name="balloonPayment" min="0" max="50" value="0" oninput="updateBalloonPaymentValue(this.value)">
-              <span id="balloonPaymentValue">0%</span>
-            </div>
-            <button type="button" class="btn btn-primary" onclick="calculatePayment()">Calculate</button>
-          </form>
+            <form id="financeCalculator" class="bg-light p-4 rounded shadow-sm">
+                <h4 class="text-primary">Finance Calculator</h4>
+                <div class="form-group">
+                    <label for="price">Car Price</label>
+                    <input oninput="calculatePayment()" type="number" class="form-control" id="price" name="price" value="100000" required>
+                </div>
+                <div class="form-group">
+                    <label for="deposit">Deposit Amount</label>
+                    <input oninput="calculatePayment()"  type="number" class="form-control" id="deposit" name="deposit" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="tradeInValue">Trade-In Value</label>
+                    <input oninput="calculatePayment()"  type="number" class="form-control" id="tradeInValue" name="tradeInValue" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="interestRate">Interest Rate (%)</label>
+                    <input onchange="calculatePayment()"  type="range" class="form-control-range" id="interestRate" name="interestRate" min="9" max="20" value="13.75" oninput="updateInterestRateValue(this.value)">
+                    <span id="interestRateValue">15%</span>
+                </div>
+                <div class="form-group">
+                    <label for="loanTerm">Loan Term (months)</label>
+                    <input onchange="calculatePayment()"  type="range" class="form-control-range" id="loanTerm" name="loanTerm" min="45" max="90" value="72" step="3" oninput="updateLoanTermValue(this.value)">
+                    <span id="loanTermValue">60 months</span>
+                </div>
+                <div class="form-group">
+                    <label for="balloonPayment">Balloon Payment (%)</label>
+                    <input onchange="calculatePayment()"  type="range" class="form-control-range" id="balloonPayment" name="balloonPayment" min="0" max="50" value="0" oninput="updateBalloonPaymentValue(this.value)">
+                    <span id="balloonPaymentValue">0%</span>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="calculatePayment()">Calculate</button>
+            </form>
         </div>
 
-        <div class="col-md-6">
-          <div id="paymentInfo">
-            <h3>Payment Summary</h3>
-            <div class="output-row">
-              <span>Monthly Payment:</span> <span id="monthlyPayment">R0.00</span>
+        <!-- Column 2: Results Section -->
+        <div class="col-md-6 card mt-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="card-title">Payment Summary</h5>
             </div>
-            <div class="output-row">
-              <span>Total Loan Value:</span> <span id="totalLoanValue">R0.00</span>
+            <div class="card-body">
+                <div class="row">
+                    <table  class="table table-dark table-bordered w-100" style="color:white">
+                       <tr> <td>Monthly Payment: </td> <td id="monthlyPayment">R0.00</td></tr>
+                       <tr>   <td>Total Loan Value: </td> <td id="totalLoanValue">R0.00</td></tr>
+                       <tr>  <td>Total Interest: </td> <td  id="totalInterest">R0.00</td></tr>
+                   
+                       <tr>  <td>Total Payment: </td> <td  id="totalPayment">R0.00</td></tr>
+                       <tr>  <td>Balloon Payment Due: </td> <td id="balloonPaymentDue">R0.00</td></tr>
+                       <tr>  <td>Trade-In Value: </td> <td id="tradeInValueCal">R0.00</td></tr>
+                    </table>
+                </div>
             </div>
-            <div class="output-row">
-              <span>Total Interest:</span> <span id="totalInterest">R0.00</span>
-            </div>
-            <div class="output-row">
-              <span>Total Payment:</span> <span id="totalPayment">R0.00</span>
-            </div>
-            <div class="output-row">
-              <span>Balloon Payment Due:</span> <span id="balloonPaymentInfo">R0.00</span>
-            </div>
-            <p class="disclaimer">
-              * Please note that these calculations are estimates only and should be confirmed with your finance provider. They do not include license and registration fees, finance provider fees, or any other associated administrative fees. Car finance is subject to bank approval with an accredited finance provider.
+            <p class="mt-3 text-muted">
+                <strong>Note:</strong> The loan and trade-in calculations provided are estimates. Actual values may vary depending on financial providers. It is advisable to consult financial institutions for precise values. Use the car filter above to find vehicles within the calculated loan range.
             </p>
-          </div>
         </div>
-      </div>
     </div>
+
+  <!-- Graph Section -->
+  <div class="row mt-5">
+        <div class="col-12">
+            <div class="p-4 bg-light rounded shadow-sm">
+                <h4>Payment Over Time & Predicted Depreciation</h4>
+                <canvas id="paymentGraph" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+
+   
+</div>
  
     </div>
 
@@ -732,21 +744,21 @@
             <h5 class="text-center m-0">Discover Cars From {{ $listing->dealer->dealership_name }}</h5>
         </div>
         <div class="card-body">
-            @foreach($dealershipCars as $car)
+            @foreach($dealershipCars as $dcar)
                 <div class="card mb-3 border-0 shadow-sm" 
-                     onclick="location.href='{{ route('cars.show', $car->vehicle->vehicle_id) }}';" 
+                     onclick="location.href='{{ route('cars.show', $dcar) }}';" 
                      style="cursor: pointer; transition: transform 0.2s;">
-                    <img src="{{ asset('storage/' . $car->vehicle->images->first()->image_url) }}" 
+                    <img src="{{ asset('storage/' . $dcar->vehicle->images->first()->image_url) }}" 
                          class="card-img-top rounded-top" 
                          alt="Car Image" 
                          style="height: 200px; object-fit: cover;">
                     <div class="card-body">
-                        <h5 class="card-title text-primary fw-bold">{{ $car->vehicle->name }}</h5>
-                        <p class="card-text mb-2"><strong>Price:</strong> R{{ $car->vehicle->price }}</p>
-                        <p class="card-text mb-2"><strong>Model:</strong> {{ $car->vehicle->model }}</p>
-                        <p class="card-text mb-2"><strong>Year:</strong> {{ $car->vehicle->year }}</p>
-                        <p class="card-text mb-2"><strong>Mileage:</strong> {{ number_format($car->vehicle->mileage) }} km</p>
-                        <p class="card-text"><strong>Condition:</strong> {{ $car->vehicle->car_condition }}</p>
+                        <h5 class="card-title text-primary fw-bold">{{ $dcar->vehicle->name }}</h5>
+                        <p class="card-text mb-2"><strong>Price:</strong> R{{ $dcar->vehicle->price }}</p>
+                        <p class="card-text mb-2"><strong>Model:</strong> {{ $dcar->vehicle->model }}</p>
+                        <p class="card-text mb-2"><strong>Year:</strong> {{ $dcar->vehicle->year }}</p>
+                        <p class="card-text mb-2"><strong>Mileage:</strong> {{ number_format($dcar->vehicle->mileage) }} km</p>
+                        <p class="card-text"><strong>Condition:</strong> {{ $dcar->vehicle->car_condition }}</p>
                     </div>
                 </div>
             @endforeach
@@ -900,8 +912,12 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    
+let chart; // Declare the chart variable in the outer scope
+
 function showContact() {
     var contactSpan = document.getElementById('dealership-contact');
     var showContactBtn = document.getElementById('show-contact-btn');
@@ -916,39 +932,148 @@ function showContact() {
     }
 }
 
+function formatToZAR(amount) {
+    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+}
+function displayVariantDetails() {
+    const variantId = document.getElementById('variant').value;
+    if (variantId) {
+        fetch(`/api/variant/details/${variantId}`)
+            .then(response => response.json())
+            .then(data => {
+                let content = `
+                    <h4>Variant Details:</h4>
+                    <p><strong>Price:</strong> R${data.price}</p>
+                    <p><strong>Color:</strong> ${data.color}</p>
+                    <p><strong>Engine Size:</strong> ${data.engine_size}</p>
+                `;
+                document.getElementById('dynamicContent').innerHTML = content;
+            })
+            .catch(error => console.error('Error fetching variant details:', error));
+    }
+}
 function updateInterestRateValue(value) {
-    document.getElementById('interestRateValue').innerText = `${value}%`;
+    document.getElementById('interestRateValue').innerText = value + '%';
 }
 
 function updateLoanTermValue(value) {
-    document.getElementById('loanTermValue').innerText = `${value} months`;
+    document.getElementById('loanTermValue').innerText = value + ' months';
 }
 
 function updateBalloonPaymentValue(value) {
-    document.getElementById('balloonPaymentValue').innerText = `${value}%`;
+    document.getElementById('balloonPaymentValue').innerText = value + '%';
 }
 function calculatePayment() {
-      const price = parseFloat(document.getElementById('price').value);
-      const deposit = parseFloat(document.getElementById('deposit').value);
-      const tradeInValue = parseFloat(document.getElementById('tradeInValue').value);
-      const interestRate = parseFloat(document.getElementById('interestRate').value) / 100 / 12;
-      const loanTerm = parseInt(document.getElementById('loanTerm').value);
-      const balloonPayment = parseFloat(document.getElementById('balloonPayment').value) / 100;
+    const price = parseFloat(document.getElementById('price').value);
+    const deposit = parseFloat(document.getElementById('deposit').value);
+    const interestRate = parseFloat(document.getElementById('interestRate').value) / 100;
+    const loanTerm = parseInt(document.getElementById('loanTerm').value);
+    const balloonPayment = parseFloat(document.getElementById('balloonPayment').value) / 100;
+    const tradeInAssetValue=parseFloat(document.getElementById('tradeInValue').value);
+    // Calculate loan amount (Price - Deposit)
+    const loanAmount = price - (deposit + tradeInAssetValue);
 
-      const adjustedPrice = price - tradeInValue - deposit;
-      const balloonAmount = adjustedPrice * balloonPayment;
-      const loanAmount = adjustedPrice - balloonAmount;
-      const monthlyPayment = (loanAmount * interestRate) / (1 - Math.pow(1 + interestRate, -loanTerm));
-      const totalLoanValue = monthlyPayment * loanTerm;
-      const totalInterest = totalLoanValue - loanAmount;
-      const totalPayment = totalLoanValue + balloonAmount;
+    // Balloon payment (based on percentage of loan amount)
+    const balloon = loanAmount * balloonPayment;
 
-      document.getElementById('monthlyPayment').innerText = `R${monthlyPayment.toFixed(2)}`;
-      document.getElementById('totalLoanValue').innerText = `R${totalLoanValue.toFixed(2)}`;
-      document.getElementById('totalInterest').innerText = `R${totalInterest.toFixed(2)}`;
-      document.getElementById('totalPayment').innerText = `R${totalPayment.toFixed(2)}`;
-      document.getElementById('balloonPaymentInfo').innerText = `R${balloonAmount.toFixed(2)}`;
+    // Monthly payment calculation (simplified formula)
+    const principal = loanAmount - balloon;
+    const monthlyInterestRate = interestRate / 12;
+    const monthlyPayment = (principal * monthlyInterestRate) / (1 - Math.pow(1 + monthlyInterestRate, -loanTerm));
+
+    // Total loan value, total interest, and other results
+    const totalLoanValue = principal + balloon;
+    const totalInterest = (monthlyPayment * loanTerm) - principal;
+    const totalPayment = totalLoanValue + totalInterest;
+
+    // Depreciation and Trade-In calculation
+    const depreciationRate = 0.15; // Example: 15% annual depreciation
+    const depreciationValue = price * Math.pow(1 - depreciationRate, loanTerm / 12);  // Depreciation value after loanTerm years
+    const tradeInValue = price * Math.pow(1 - depreciationRate * 0.85, loanTerm / 12); // Adjusted for trade-in prediction (lower depreciation rate)
+
+    // Update the DOM with calculated values
+    document.getElementById('monthlyPayment').textContent = `${formatToZAR(monthlyPayment)}`;
+    document.getElementById('totalLoanValue').textContent = `${formatToZAR(totalLoanValue)}`;
+    document.getElementById('totalInterest').textContent = `${formatToZAR(totalInterest)}`;
+    document.getElementById('totalPayment').textContent = `${formatToZAR(totalPayment)}`;
+    document.getElementById('balloonPaymentDue').textContent = `${formatToZAR(balloon)}`;
+    document.getElementById('tradeInValueCal').textContent = `${formatToZAR(tradeInAssetValue)}`;
+
+    // Update the graph for Payment Over Time & Predicted Depreciation and Trade-In
+    setDepreciationAndTradeInGraph(depreciationValue, tradeInValue, monthlyPayment, loanTerm);
+}
+
+
+function setDepreciationAndTradeInGraph(depreciationValue, tradeInValue, monthlyPayment, loanTerm) {
+    // Data for the graph
+    const months = Array.from({ length: loanTerm }, (_, i) => i + 1); // Loan term months
+    const depreciationValues = months.map(month => depreciationValue * Math.pow(1 - 0.15, month / 12));
+    const tradeInValues = months.map(month => tradeInValue * Math.pow(1 - 0.15 * 0.85, month / 12));
+
+    // Loan repayment over time
+    const loanRepaymentValues = months.map((_, i) => monthlyPayment * (i + 1));
+
+    // Create the chart
+    const ctx = document.getElementById('paymentGraph').getContext('2d');
+
+    // Destroy the existing chart instance if it exists
+    if (chart) {
+        chart.destroy();
     }
+
+    // Clear the canvas content
+    $("#paymentGraph").html('');
+
+    // Create a new chart instance
+    chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    label: 'Depreciation Value',
+                    data: depreciationValues,
+                    borderColor: 'red',
+                    fill: false
+                },
+                {
+                    label: 'Trade-In Value (Predicted)',
+                    data: tradeInValues,
+                    borderColor: 'green',
+                    fill: false
+                },
+                {
+                    label: 'Loan Repayment Value',
+                    data: loanRepaymentValues,
+                    borderColor: 'blue',
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Months'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Value (R)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+$(document).ready(function() {
+    calculatePayment()
+})
 
 
 $(document).ready(function() {

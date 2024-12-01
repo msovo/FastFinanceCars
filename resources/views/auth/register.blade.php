@@ -1,6 +1,68 @@
 @extends('layouts.app')
 
 @section('content')
+<style type="text/css">
+
+body {
+    background: linear-gradient(to right, #ff4e50, #f9d423); /* Red to coral gradient */
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    margin-top: 50px;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background: linear-gradient(to right, #4e54c8, #8f94fb); /* Blue gradient */
+    color: white;
+    font-size: 1.5rem;
+    text-align: center;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.card-body {
+    background: white;
+    padding: 30px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+.form-control:focus {
+    border-color: #ff4e50;
+    box-shadow: 0 0 5px rgba(255, 78, 80, 0.5);
+}
+
+.btn-primary {
+    background: linear-gradient(to right, #ff4e50, #f9d423); /* Red to coral gradient */
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(to right, #f9d423, #ff4e50); /* Coral to red gradient */
+}
+
+.invalid-feedback {
+    color: #ff4e50;
+}
+</style>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">

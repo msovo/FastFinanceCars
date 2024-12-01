@@ -2,7 +2,14 @@
 @extends('layouts.index')
 
 @section('content')
-<div class="row justify-content-center">
+<style>
+    .customizerow{
+    margin:0 !important;
+    margin-top: 20px !important;
+
+}
+</style>
+<div class="row justify-content-center customizerow">
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">Reset Password</div>

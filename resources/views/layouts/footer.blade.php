@@ -1,53 +1,59 @@
-<footer class="bg-light text-dark mt-5">
+<footer class="bg-gradient mt-5">
     <div class="container py-4">
         <div class="row">
             <div class="col-md-3 col-6 mb-4">
                 <h5>About Us</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">Feedback</a></li>
-                    <li><a href="#">Frequently Asked Questions</a></li>
-                    <li><a href="#">Industry Reports</a></li>
+                    <li><a class="dropdown-item" href="#">About Us</a></li>
+                    <li><a class="dropdown-item" class="dropdown-item" href="{{ route('faq') }}">Frequently Asked Questions</a></li>
                 </ul>
             </div>
             <div class="col-md-3 col-6 mb-4">
                 <h5>Dealers</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#">Manage</a></li>
-                    <li><a href="#">Products & Offers</a></li>
+                    @auth
+                    <li><a class="dropdown-item" href="{{ route('dealer.dashboard') }}">Manage Dealership</a></li>
+                    @else
+                    <li><a class="dropdown-item" href="{{ route('login') }}">Manage Dealership</a></li>
+                    @endauth
+                    <li><a class="dropdown-item" href="{{ route('products') }}">Products and Services</a></li>
                 </ul>
             </div>
             <div class="col-md-3 col-6 mb-4">
                 <h5>Other Vehicles</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#">Used & New Cars</a></li>
-                    <li><a href="#">Bikes</a></li>
-                    <li><a href="#">Trucks, Tractors, Vans & More</a></li>
-                    <li><a href="#">Boats & Caravans</a></li>
+                    <!-- Vehicle search forms for different body types -->
+                    @foreach (['Hatchback', 'Coupe', 'Trucks', 'Sedan', 'Cabriolet'] as $body_type)
+                    <li>
+                        <form id="searchForm" action="{{ route('cars.search') }}" method="GET">
+                            <input type="text" class="hide" style="display:none" id="body_typefooter" name="body_typefooter" value="{{ $body_type }}" />
+                            <button type="submit" class="dropdown-item">{{ $body_type }}</button>
+                        </form>
+                    </li>
+                    @endforeach
                 </ul>
             </div>
+
+
             <div class="col-md-3 col-6 mb-4">
                 <h5>Services</h5>
                 <ul class="list-unstyled">
-                    <li> <a class="nav-link" href="{{ route('makes') }}">Car Finance Calculator</a>  </li>                  </li>
-                    <li><a href="#">Car Finance</a></li>
-                    <li><a href="#">Car Insurance</a></li>
-                    <li><a href="#">K53 Help Guides</a></li>
+                    <li><a class="dropdown-item"  href="{{ route('makes') }}">Car Finance Calculator</a></li>
+                    <li><a class="dropdown-item" href="{{ route('affordability') }}">Calculate Affordability</a></li>
                 </ul>
             </div>
         </div>
-        <div class="row mt-4" style="background-color: #b22222; height: 200px;">
+        <div class="row mt-4" style="background-color: #ff6600; height: 200px;"> <!-- Orange background -->
             <div class="col-md-6 col-12 d-flex flex-column justify-content-center align-items-center">
                 <h5 class="text-white">Register for Newsletters</h5>
                 <form class="newsletter-form w-75">
                     <input type="email" class="form-control mb-2" placeholder="Enter your email" required>
-                    <button type="submit" class="btn btn-primary w-100">Subscribe</button>
+                    <button type="submit" class="btn btn-dark w-100">Subscribe</button>
                 </form>
             </div>
             <div class="col-md-6 col-12 d-flex flex-column justify-content-center align-items-center">
                 <h5 class="text-white">Affordability Calculator</h5>
-                <a href="{{ route('affordability') }}" class="btn btn-primary w-75">Calculate Affordability</a>
+                <a href="{{ route('affordability') }}" class="btn btn-dark w-75">Calculate Affordability</a>
             </div>
         </div>
     </div>
@@ -58,9 +64,10 @@
 
 <style>
     footer {
-        background-color: #b22222; /* Firebrick red */
-        color: white;
+        background: gainsboro; /* Gradient mix of dark blue, red, and orange */
+        color: black;
         font-family: 'Helvetica Neue', sans-serif;
+        border: 2px; solid coral;
     }
     footer h5 {
         font-weight: bold;
@@ -79,13 +86,21 @@
     .newsletter-form input {
         border-radius: 8px;
         border: 1px solid white;
-        background-color: #b22222;
+        background-color: #003366; /* Dark blue for form input */
         color: white;
     }
     .newsletter-form button {
         border-radius: 8px;
-        background-color: blue;
+        background-color: #b22222; /* Red for subscribe button */
         color: white;
+    }
+    .btn-dark {
+        background-color: #333; /* Dark color for buttons */
+        border: none;
+        color: white;
+    }
+    .btn-dark:hover {
+        background-color: #444; /* Slightly lighter dark for hover */
     }
     @media (max-width: 767px) {
         footer .col-6 {

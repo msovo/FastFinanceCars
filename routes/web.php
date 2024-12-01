@@ -22,7 +22,7 @@ use App\Http\Controllers\Admin\NewsCategoryController;
 use App\Http\Controllers\PublicNewsController;
 use App\Http\Controllers\DealerController;
 use App\Http\Controllers\SellerController;
-
+use App\Http\Controllers\ChatMessageController;
 
 
 /*
@@ -207,7 +207,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 Route::get('/news', [PublicNewsController::class, 'index'])->name('news.index');
 Route::get('/news/{news}', [PublicNewsController::class, 'show'])->name('news.show');
 
-// Other routes...
+Route::get('/newssearch', [PublicNewsController::class, 'search'])->name('newssearch');
 
 Route::post('/news/{news}/comment', [PublicNewsController::class, 'storeComment'])->name('news.comment');
 Route::post('/news/{news}/rate', [PublicNewsController::class, 'storeRating'])->name('news.rate');
@@ -285,12 +285,28 @@ Route::middleware(['auth', 'user_type:seller'])->group(function () {
     Route::post('/seller/store-news', [SellerController::class, 'storeNews'])->name('store.news');
 });
 
-
+Route::get('/products', function () {
+    return view('products');
+})->name('products');
 
 Route::get('/models/{make_id}', [CarController::class, 'CargetModels']);
 Route::get('/variants/{model_id}', [CarController::class, 'CargetVariants']);
 Route::get('/makes', [CarController::class, 'getMakes'])->name('makes');
 
 Route::get('/finance/calculator', [CarController::class, 'showFinanceCalculator'])->name('finance.calculator');
+Route::get('/faq', function () {
+    return view('faq');
+})->name('faq');
 
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/chat-messages', [ChatMessageController::class, 'index']);
+    Route::post('/chat-messages', [ChatMessageController::class, 'store']);
+});
+
+Route::get('/guest-chat-messages', [ChatMessageController::class, 'index']);
+Route::post('/guest-chat-messages', [ChatMessageController::class, 'store']);
+
+Route::post('/registerguest', [ChatMessageController::class, 'register'])->name('registerguest');
 

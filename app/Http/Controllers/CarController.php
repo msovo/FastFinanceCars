@@ -364,7 +364,7 @@ public function search(Request $request)
     $models = Vehicle::distinct()->pluck('model'); 
     $variants = Vehicle::distinct()->pluck('variant'); 
     $categoryTypes = Category::whereNotIn('category_type', ['Make', 'Model', 'Variant'])->get();
-
+    $bodytype=$request->input('body_typefooter');
     $cars = Vehicle::query();
 
     // Keyword search
@@ -389,6 +389,9 @@ public function search(Request $request)
         }
         if ($conditions) {
             $cars->where('car_condition', $conditions);
+        }
+        if ($bodytype) {
+            $cars->where('body_type', $bodytype);
         }
 
         if ($brand) {

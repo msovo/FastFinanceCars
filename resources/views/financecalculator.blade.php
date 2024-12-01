@@ -24,7 +24,7 @@
                 <h4 class="text-primary">Finance Calculator</h4>
                 <div class="form-group">
                     <label for="price">Car Price</label>
-                    <input type="number" class="form-control" id="price" name="price" required>
+                    <input type="number" class="form-control" id="price" name="price" value="100000" required>
                 </div>
                 <div class="form-group">
                     <label for="deposit">Deposit Amount</label>
@@ -36,12 +36,12 @@
                 </div>
                 <div class="form-group">
                     <label for="interestRate">Interest Rate (%)</label>
-                    <input type="range" class="form-control-range" id="interestRate" name="interestRate" min="9" max="20" value="15" oninput="updateInterestRateValue(this.value)">
+                    <input type="range" class="form-control-range" id="interestRate" name="interestRate" min="9" max="20" value="13.75" oninput="updateInterestRateValue(this.value)">
                     <span id="interestRateValue">15%</span>
                 </div>
                 <div class="form-group">
                     <label for="loanTerm">Loan Term (months)</label>
-                    <input type="range" class="form-control-range" id="loanTerm" name="loanTerm" min="45" max="90" value="60" step="3" oninput="updateLoanTermValue(this.value)">
+                    <input type="range" class="form-control-range" id="loanTerm" name="loanTerm" min="45" max="90" value="72" step="3" oninput="updateLoanTermValue(this.value)">
                     <span id="loanTermValue">60 months</span>
                 </div>
                 <div class="form-group">
@@ -87,35 +87,7 @@
         </div>
     </div>
 
-    <!-- Row 2: Vehicle Filter -->
-    <div class="row mt-5">
-        <!-- Column 1: Make, Model, and Variant Selects -->
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="make">Select Make</label>
-                <select id="make" class="form-control" onchange="fetchModels()">
-                    <option value="">Select Make</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="model">Select Model</label>
-                <select id="model" class="form-control" onchange="fetchVariants()">
-                    <option value="">Select Model</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="variant">Select Variant</label>
-                <select id="variant" class="form-control" onchange="displayVariantDetails()">
-                    <option value="">Select Variant</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Column 2: Dynamic Content Based on Selection -->
-        <div class="col-md-6" id="dynamicContent">
-            <h5 class="text-center">Details will appear here based on your selection.</h5>
-        </div>
-    </div>
+   
 </div>
 
 @endsection
@@ -314,6 +286,10 @@ function setDepreciationAndTradeInGraph(depreciationValue, tradeInValue, monthly
     });
 }
 
+
+$(document).ready(function() {
+    calculatePayment()
+})
 
 </script>
 @endsection
