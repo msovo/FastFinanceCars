@@ -596,55 +596,6 @@
     
 
 
-    <div class="car-listingFeture">
-    <h2>Featured Cars</h2>
-    <div class="row">
-        @foreach($featuredCars->take(3) as $car)
-            <div class="col-md-4 car-card">
-                <div class="card" onclick="location.href='{{ route('cars.show', $car->vehicle_id) }}';" style="cursor: pointer;">
-                    @if($car->images->isNotEmpty())
-                        <div class="main-image-container">
-                            <img src="{{ asset('storage/' . $car->images->first()->image_url) }}" class="card-img-top main-image" alt="{{ $car->make }} {{ $car->model }}">
-                            <span class="image-count" style="bottom: 20px; left: 0;">
-                                <i class="fas fa-camera"></i> {{ $car->images->count() }}
-                            </span>
-                        </div>
-                    @else
-                        <div class="main-image-container">
-                            <img src="default-image.jpg" class="card-img-top main-image" alt="Default Image">
-                        </div>
-                    @endif
-                    <div class="row thumbnails">
-                        @foreach ($car->images->slice(1, 3) as $image)
-                            <div class="col-4">
-                                <img src="{{ asset('storage/' . $image->image_url) }}" class="thumbnail-image" alt="{{ $car->make }} {{ $car->model }} thumbnail">
-                            </div>
-                        @endforeach
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="fas fa-calendar-alt"></i> {{ $car->year }} &nbsp; 
-                            {{ $car->make }} {{ $car->model }}
-                        </h5>
-                        <p class="card-text">
-                            <i class="fas fa-cogs"></i> {{ $car->transmission }} &nbsp; 
-                            <i class="fas fa-road"></i> {{ $car->mileage }} km &nbsp; 
-                        </p>
-                        <p class="card-text-price text-danger">
-                       R{{ number_format($car->price, 2) }} &nbsp;
-                        </p>
-                        <p class="card-text-p text-danger">
-                            R{{ number_format(calculateMonthlyPayment($car->price), 2) }} p/m 
-                            <span class="badge" style="background-color: {{ $car->car_condition == 'Used' ? 'red' : 'blue' }};color:white;">
-                                {{ $car->car_condition}}
-                            </span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </div>
-</div>
 
 <div class="sponsored-cars">
     <h2 class="section-title">Sponsored Cars</h2>

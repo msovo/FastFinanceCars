@@ -1,48 +1,6 @@
 @extends('layouts.index')
 
 @section('content')
-<div class="container my-5" style="background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
-    <h2>Affordability Calculator</h2>
-    <div class="row">
-        <div class="col-md-6">
-            <form id="affordability-form">
-                <div class="form-group">
-                    <label for="netIncome">Monthly Income after Tax</label>
-                    <input type="number" class="form-control" id="netIncome" name="netIncome" required>
-                </div>
-                <div class="form-group">
-                    <label for="currentCarPayments">Current Monthly Car Payments</label>
-                    <input type="number" class="form-control" id="currentCarPayments" name="currentCarPayments" required>
-                </div>
-                <div class="form-group">
-                    <label for="otherCreditExpenses">Monthly Expenses for Other Credit</label>
-                    <input type="number" class="form-control" id="otherCreditExpenses" name="otherCreditExpenses" required>
-                </div>
-                <div class="form-group">
-                    <label for="creditScore">Credit Score</label>
-                    <div class="slider-container">
-                        <input type="range" class="form-control-range" id="creditScore" name="creditScore" min="0" max="100" step="1" oninput="updateCreditScoreLabel(this.value)">
-                        <span id="creditScoreLabel">50%</span>
-                        <span id="creditScoreIcon" class="slider-icon"></span>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Calculate</button>
-            </form>
-        </div>
-        <div class="col-md-6">
-            <div id="affordability-result" class="mt-4"></div>
-            <div id="car-results" class="mt-4"></div>
-        </div>
-    </div>
-    <di id="car-list-card" >
-    <div id="affordable-cars" class="row mb-3"></div>
-    <div id="risky-cars" class="row mb-3 "></div>
-    <div id="search-results" class="row mb-3"></div>
-</div>
-
-
-</div>
-
 <style>
 
 .thumbnails {
@@ -403,6 +361,50 @@
         }
     }
 </style>
+
+<div class="container my-5" style="background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
+    <h2>Affordability Calculator</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <form id="affordability-form">
+                <div class="form-group">
+                    <label for="netIncome">Monthly Income after Tax</label>
+                    <input type="number" class="form-control" id="netIncome" name="netIncome" required>
+                </div>
+                <div class="form-group">
+                    <label for="currentCarPayments">Current Monthly Car Payments</label>
+                    <input type="number" class="form-control" id="currentCarPayments" name="currentCarPayments" required>
+                </div>
+                <div class="form-group">
+                    <label for="otherCreditExpenses">Monthly Expenses for Other Credit</label>
+                    <input type="number" class="form-control" id="otherCreditExpenses" name="otherCreditExpenses" required>
+                </div>
+                <div class="form-group">
+                    <label for="creditScore">Credit Score</label>
+                    <div class="slider-container">
+                        <input type="range" class="form-control-range" id="creditScore" name="creditScore" min="0" max="100" step="1" oninput="updateCreditScoreLabel(this.value)">
+                        <span id="creditScoreLabel">50%</span>
+                        <span id="creditScoreIcon" class="slider-icon"></span>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Calculate</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <div id="affordability-result" class="mt-4"></div>
+            <div id="car-results" class="mt-4"></div>
+        </div>
+    </div>
+    <di id="car-list-card" >
+    <div id="affordable-cars" class="row mb-3"></div>
+    <div id="risky-cars" class="row mb-3 "></div>
+    <div id="search-results" class="row mb-3"></div>
+</div>
+
+
+</div>
+
+
 
 
 

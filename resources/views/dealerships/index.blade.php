@@ -85,7 +85,7 @@
                             </div>
                     <div class="card-body">
                             <div class="text-center mb-3">
-                              
+                               
                                 @if($dealership->logo)
                                     <img src="{{ asset('storage/' . $dealership->logo) }}" alt="{{ $dealership->dealership_name }}" class="dealership-logo rounded">
                                 @else

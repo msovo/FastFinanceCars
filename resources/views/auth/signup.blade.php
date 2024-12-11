@@ -82,7 +82,6 @@ body {
 
 }
 </style>
-@extends('layouts.index')
 
 @section('content')
 <div class="row justify-content-center customizerow">
