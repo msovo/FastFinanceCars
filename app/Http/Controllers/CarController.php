@@ -67,7 +67,7 @@ public function index()
                        ->distinct('category_type') 
                        ->pluck('category_type'); 
 
-$categories = Category::whereNotIn('category_type', ['Make', 'Model', 'Variant'])
+    $categories = Category::whereNotIn('category_type', ['Make', 'Model', 'Variant'])
                     ->orderBy('category_name')
                     ->get()
                     ->groupBy('category_type'); 
@@ -103,7 +103,24 @@ $categories = Category::whereNotIn('category_type', ['Make', 'Model', 'Variant']
     $makeLabels = $makeCounts->pluck('make');
     $makeCounts = $makeCounts->pluck('count');
 
-    $carBrands = CarBrand::all();
+   // $carBrands = CarBrand::all();
+
+    $Carbrands = CarBrand::withCount(['models as vehicle_count' => function ($query) {
+        $query->join('vehicles', 'models.id', '=', 'vehicles.model_id');
+    }])->get();
+
+    // Get all models with their vehicle counts
+    $Carmodels = CarModel::withCount(['variants as vehicle_count' => function ($query) {
+        $query->join('vehicles', 'variants.id', '=', 'vehicles.variant_id');
+    }])->get();
+
+    // Get all variants with their vehicle counts
+    $Carvariants = Variant::withCount(['vehicles'])->get();
+
+    dd($variants);
+    dd($Carbrands);
+    dd($Carmodels);
+
 
     return view('home', compact(
         'featuredCars', 
@@ -118,9 +135,14 @@ $categories = Category::whereNotIn('category_type', ['Make', 'Model', 'Variant']
         'models',
         'categories',
         'carBrands',
+        'Carvariants',
+        'Carmodels',
         'newsCategories'
     ));
+    
 }
+
+
 
 public function getModels(Request $request)
 {

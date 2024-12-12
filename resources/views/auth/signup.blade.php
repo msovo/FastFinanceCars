@@ -81,8 +81,8 @@ body {
     margin-top: 20px !important;
 
 }
-</style>
 
+</style>
 @section('content')
 <div class="row justify-content-center customizerow">
     <div class="col-md-6">
