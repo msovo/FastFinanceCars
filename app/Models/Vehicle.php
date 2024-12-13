@@ -74,5 +74,9 @@ class Vehicle extends Model
     {
         return $this->hasOne(Listing::class, 'vehicle_id');
     }
+    public function model() {
+        return $this->belongsTo(CarModel::class);
+    }
+
 
 }

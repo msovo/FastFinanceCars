@@ -11,4 +11,8 @@ class Variant extends Model
     {
         return $this->belongsTo(CarModel::class);
     }
+
+    public function vehicles() {
+        return $this->hasOne(Vehicle::class);
+    }
 }

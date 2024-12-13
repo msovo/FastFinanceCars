@@ -11,8 +11,12 @@ class CarBrand extends Model
 
     protected $table = 'car_brands';
     protected $fillable = ['name'];
-
     public function models()
+    {
+        return $this->hasMany(CarModel::class);
+    }
+
+    public function vehicles()
     {
         return $this->hasMany(Vehicle::class);
     }

@@ -285,12 +285,17 @@
 /* ... other styles ... */
 
 </style>
-<div class="advanced-search">
+<div class="advanced-search" >
     <form id="searchForm" action="{{ route('cars.search') }}" method="GET">
         <div class="form-group">
-            <input type="text" class="form-control" id="keyword" name="keyword" placeholder="Keyword Search (Make, Model, Variant)">
-        </div>
+            <input  type="text" class="form-control" id="keyword" name="keyword" placeholder="Keyword Search (Make, Model, Variant)">
+            <div id="search-results" class="dropdown-menu" style="height:50vh;overflow-y:scroll; position:absolute; top:59px;left:0; width:100%;height:240px;">
+    <!-- Filtered results will be displayed here -->
+    </div>
+    <ul id='appendlistofSelcted' style="height:50vh;overflow-y:scroll; position:absolute; top:59px;right:0; width:35%;height:240px;z-index:9999;color:grey;display:none;"></ul>
 
+        </div>
+    
         <div class="form-row mt-0">
             <div class="form-group col-12 col-md-6"> 
                 <div class="dropdown">
@@ -305,33 +310,31 @@
                 </div>
             </div>
             <div class="form-group col-12 col-md-6"> 
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="makeDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Select a Car(s) 
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="makeDropdown">
-                        @foreach ($makes as $make)
-                            <div class="dropdown-item">
-                                <div class="form-check d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <input class="form-check-input make-checkbox" type="checkbox" name="make[]" id="make-{{ $make }}" value="{{ $make }}">
-                                        <label class="form-check-label" for="make-{{ $make }}">
-                                            {{ $make }}
-                                        </label>
-                                    </div>
-                                    <button type="button" class="btn btn-sm expand-models-btn collapsed" data-make="{{ $make }}" data-toggle="collapse" data-target="#models-{{ $make }}">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </button>
-                                </div>
-                                <div class="collapse" id="models-{{ $make }}">
-                                    <!-- Models will be loaded here -->
-                                </div>
-                            </div>
-                        @endforeach
+ <div class="dropdownCancel">
+        <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="makeDropdown"  aria-haspopup="true" aria-expanded="false">Select a Car(s) </button>
+        <div class="dropdown-menu dropdown-menuFilter"  aria-labelledby="makeDropdown" style="height:50vh;overflow-y:scroll;">
+            @foreach ($carBrands as $make)
+                <div class="dropdown-item">
+                    <div class="form-check d-flex justify-content-between align-items-center">
+                        <div>
+                            <input onchange='getSelectedCheckFilterOnSearch({{$make->id }}, "brand","{{$make->name}}","filter")' class="form-check-input make-checkbox" type="checkbox" name="car_brand_id[]" id="brand-{{ $make->id }}" value="{{ $make->id }}">
+                            <label id="brand{{ $make->id }}" class="form-check-label" for="brand-{{ $make->name }}">
+                                {{ $make->name }} ( {{ $make->vehicle_count }})
+                            </label>
+                        </div>
+                        <button type="button" onclick="getModelID({{ $make->id }})" class=" btn-sm expand-models-btn collapsed" data-make="{{ $make->id }}" data-toggle="collapse" data-target="#models-{{ $make->id }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="collapse" id="models-{{ $make->id }}">
+                        <!-- Models will be loaded here -->
                     </div>
                 </div>
-            </div>
+            @endforeach
+          </div>
         </div>
+    </div>
+</div>
 
         <div class="form-row">
             <div class="form-group col-md-6">
@@ -386,45 +389,17 @@
             </div>
         </div>
 
-       <div class="form-row">
-            <div class="form-group col-md-6">
-                <label for="minMileage">Min Mileage</label>
-                <select class="form-control" id="minMileage" name="minMileage">
-                    <option value="">Select Min Mileage</option>
-                </select>
-            </div>
-            <div class="form-group col-md-6">
-                <label for="maxMileage">Max Mileage</label>
-                <select class="form-control" id="maxMileage" name="maxMileage">
-                    <option value="">Select Max Mileage</option>
-                 
-                </select>
-            </div>
-        </div> 
 
         <a href="#" id="toggleMoreFilters">More Filters</a>
-
-        <div class="more-filters">
-            <button class="close-btn" id="closeFilters">×</button>
-            @foreach ($categoryTypes as $categoryType)
-                <div class="category-section">
-                    <div class="category-header">{{ $categoryType }}</div>
-                    <div class="category-body">
-                        @foreach ($categories[$categoryType] as $category)
-                            <button type="button" class="btn btn-outline-secondary filter-btn" data-filter-name="{{ str_replace(' ', '_', strtolower($categoryType)) }}" data-filter-value="{{ $category->category_name }}">
-                                {{ $category->category_name }}
-                            </button>
-                        @endforeach
-                    </div>
-                </div>
-            @endforeach
-        </div>
 <div class="row">
         <button type="submit" class="btn btn-primary col">Search Cars</button>
         <button type="button" class="btn btn-secondary col" id="resetFilters">Reset Filters</button>
         </div>
     </form>
 </div>
+
+
+
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-3">
@@ -512,9 +487,7 @@
     @endforeach
 </div>
 
-        <div class="d-flex justify-content-center">
-            {{ $cars->links() }}
-        </div>
+     
     @endif
 </div>
 

@@ -105,21 +105,21 @@ public function index()
 
    // $carBrands = CarBrand::all();
 
-    $Carbrands = CarBrand::withCount(['models as vehicle_count' => function ($query) {
-        $query->join('vehicles', 'models.id', '=', 'vehicles.model_id');
-    }])->get();
+   $carBrands = CarBrand::withCount(['vehicles as vehicle_count' => function ($query) {
+    $query->whereColumn('vehicles.car_brand_id', 'car_brands.id');}])->get();
 
+    
     // Get all models with their vehicle counts
-    $Carmodels = CarModel::withCount(['variants as vehicle_count' => function ($query) {
-        $query->join('vehicles', 'variants.id', '=', 'vehicles.variant_id');
+    $Carmodels = CarModel::withCount(['vehicles as vehicle_count' => function ($query) {
+        $query->whereColumn('vehicles.car_model_id', 'car_models.id');
     }])->get();
 
     // Get all variants with their vehicle counts
-    $Carvariants = Variant::withCount(['vehicles'])->get();
+    $Carvariants = Variant::withCount(['vehicles as vehicle_count' => function ($query) {
+        $query->whereColumn('vehicles.variant_id', 'variants.id');
+    }])->get();
+   // dd($Carbrands);
 
-    dd($variants);
-    dd($Carbrands);
-    dd($Carmodels);
 
 
     return view('home', compact(
@@ -366,7 +366,7 @@ public function list(Request $request)
 
 // CarsController.php
 
-public function search(Request $request)
+/* public function search(Request $request)
 {
     $keyword = $request->input('keyword');
     $make = $request->input('make');
@@ -547,7 +547,79 @@ $makeCounts = $makeCounts->pluck('count');
             'categories'
         ));
     }
+*/
+
+public function search(Request $request)
+{
+    $query = Vehicle::whereHas('listing', function ($query) {
+        $query->where('listing_status', 'active');
+    });
+
+    // Filter by selected brands
+    if ($request->filled('car_brand_id')) {
+        $query->whereIn('car_brand_id', $request->car_brand_id);
+    }
+
+    // Filter by selected models
+    if ($request->filled('car_model_id')) {
+        $query->whereIn('car_model_id', $request->car_model_id);
+    }
+
+    // Filter by selected variants
+    if ($request->filled('variant_id')) {
+        $query->whereIn('variant_id', $request->variant_id);
+    }
+
+    // Price filter
+    if ($request->filled('price_min')) {
+        $query->where('price', '>=', $request->price_min);
+    }
+    if ($request->filled('price_max')) {
+        $query->where('price', '<=', $request->price_max);
+    }
+
+    // Mileage filter
+    if ($request->filled('mileage_max')) {
+        $query->where('mileage', '<=', $request->mileage_max);
+    }
+
+    // Province filter
+    if ($request->filled('province')) {
+        $query->whereHas('listing.dealership.province', function ($locationQuery) use ($request) {
+            $locationQuery->whereIn('province', $request->province);
+        });
+    }
+
+    // Debugging: Check the query
+    $query->with('images');
+    // Paginate results
+    $cars = $query->get();
+
+   // $carBrands = CarBrand::all();
+
+   $carBrands = CarBrand::withCount(['vehicles as vehicle_count' => function ($query) {
+    $query->whereColumn('vehicles.car_brand_id', 'car_brands.id');}])->get();
+
     
+    // Get all models with their vehicle counts
+    $Carmodels = CarModel::withCount(['vehicles as vehicle_count' => function ($query) {
+        $query->whereColumn('vehicles.car_model_id', 'car_models.id');
+    }])->get();
+
+    // Get all variants with their vehicle counts
+    $Carvariants = Variant::withCount(['vehicles as vehicle_count' => function ($query) {
+        $query->whereColumn('vehicles.variant_id', 'variants.id');
+    }])->get();
+   // dd($Carbrands);
+
+
+    // Return results to the Blade view
+    return view('cars.index', compact('cars',
+    'carBrands',
+    'Carmodels',
+    'Carvariants'));
+}
+
 
 private function monthlyPaymentToPrice($monthlyPayment) {
     $interestRate = 0.15; 
