@@ -284,9 +284,44 @@
 }
 /* ... other styles ... */
 
+.pagination-summary {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.pagination-links .pagination {
+    justify-content: center;
+    margin: 0;
+}
+
+.pagination-links .page-item .page-link {
+    color: #0056b3; /* Blue color for links */
+    border: 1px solid #ccc;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination-links .page-item.active .page-link {
+    background-color: #0056b3; /* Active link blue */
+    border-color: #0056b3;
+    color: #fff;
+}
+
+.pagination-links .page-item:hover .page-link {
+    background-color: #ff0000; /* Red on hover */
+    color: #fff;
+}
+
+.pagination-controls {
+    font-size: 0.85rem;
+    color: #777;
+}
+
 </style>
+
+
+<div class="filter-container">
 <div class="advanced-search" >
-    <form id="searchForm" action="{{ route('cars.search') }}" method="GET">
+    <form id="searchForm">
         <div class="form-group">
             <input  type="text" class="form-control" id="keyword" name="keyword" placeholder="Keyword Search (Make, Model, Variant)">
             <div id="search-results" class="dropdown-menu" style="height:50vh;overflow-y:scroll; position:absolute; top:59px;left:0; width:100%;height:240px;">
@@ -295,28 +330,55 @@
     <ul id='appendlistofSelcted' style="height:50vh;overflow-y:scroll; position:absolute; top:59px;right:0; width:35%;height:240px;z-index:9999;color:grey;display:none;"></ul>
 
         </div>
-    
+                        <?php
+                $provinces = [
+                    "Eastern Cape",
+                    "Free State",
+                    "Gauteng",
+                    "KwaZulu-Natal",
+                    "Limpopo",
+                    "Mpumalanga",
+                    "Northern Cape",
+                    "North West",
+                    "Western Cape"
+                ];
+                ?>
         <div class="form-row mt-0">
-            <div class="form-group col-12 col-md-6"> 
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="provinceDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <div class="form-group col-12 col"> 
+                <div class="dropdownP">
+                    <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="provinceDropdown" aria-haspopup="true" aria-expanded="false">
                         Select Province(s)
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="provinceDropdown">
+                    <div class="dropdown-menu dropdown-menuProvince" aria-labelledby="provinceDropdown" style="height:50vh;overflow-y:scroll;">
                         <div class="province-checkboxes">
-                            <!-- Province checkboxes here -->
+                       
+        <?php foreach ($provinces as $province): ?>
+            <div class="dropdown-item">
+                <div class="form-check d-flex justify-content-between align-items-center">
+                    <div>
+                        <input onchange='getSelectedCheckFilterOnSearchProvince("<?php echo $province; ?>", "province", "<?php echo $province; ?>", "filter")' class="form-check-input province-checkbox" type="checkbox" name="province[]" id="province-<?php echo str_replace(' ', '-', $province); ?>" value="<?php echo $province; ?>">
+                        <label id="province<?php echo str_replace(' ', '', $province); ?>" class="form-check-label" for="province-<?php echo str_replace(' ', '-', $province); ?>">
+                            <?php echo $province; ?>
+                        </label>
+                    </div>
+                    <button type="button" onclick="getModelID('<?php echo $province; ?>')" class="btn-sm expand-models-btn collapsed" data-province="<?php echo $province; ?>" data-toggle="collapse" data-target="#models-<?php echo str_replace(' ', '-', $province); ?>">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        <?php endforeach; ?>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="form-group col-12 col-md-6"> 
- <div class="dropdownCancel">
+            <div class="form-group col-12 col"> 
+    <div class="dropdownr">
         <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="makeDropdown"  aria-haspopup="true" aria-expanded="false">Select a Car(s) </button>
         <div class="dropdown-menu dropdown-menuFilter"  aria-labelledby="makeDropdown" style="height:50vh;overflow-y:scroll;">
             @foreach ($carBrands as $make)
                 <div class="dropdown-item">
                     <div class="form-check d-flex justify-content-between align-items-center">
-                        <div>
+                        <div>           
                             <input onchange='getSelectedCheckFilterOnSearch({{$make->id }}, "brand","{{$make->name}}","filter")' class="form-check-input make-checkbox" type="checkbox" name="car_brand_id[]" id="brand-{{ $make->id }}" value="{{ $make->id }}">
                             <label id="brand{{ $make->id }}" class="form-check-label" for="brand-{{ $make->name }}">
                                 {{ $make->name }} ( {{ $make->vehicle_count }})
@@ -331,10 +393,10 @@
                     </div>
                 </div>
             @endforeach
-          </div>
         </div>
     </div>
 </div>
+        </div>
 
         <div class="form-row">
             <div class="form-group col-md-6">
@@ -391,23 +453,57 @@
 
 
         <a href="#" id="toggleMoreFilters">More Filters</a>
+
+
 <div class="row">
-        <button type="submit" class="btn btn-primary col">Search Cars</button>
-        <button type="button" class="btn btn-secondary col" id="resetFilters">Reset Filters</button>
+        <button type="button" onclick="getFormDataAndSubmit()" id="submitformbtn" class="btn btn-primary col">Search Cars</button>
+        <button type="button" onclick="resetFormAdvanced()" class="btn btn-secondary col" id="resetFilters">Reset Filters</button>
         </div>
     </form>
 </div>
-
+</div>
 
 
 <div class="container mt-5">
+
+
+
+
     <div class="row">
         <div class="col-md-3">
           
         </div>
 
         <div class="col-md-8">
-        <div class="car-listing">
+
+                <div class="row" >
+                    <!-- Pagination Summary -->              
+
+                    <div class="col">
+                        <div class="col-12">
+                            <div class="pagination-links d-flex justify-content-center">
+                                {{ $cars->links('pagination::bootstrap-5') }}
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col text-right">
+                    <select class="form-control d-inline w-auto" id="sortBy">
+                        <option value="price_asc" {{ request('sortBy') == 'price_asc' ? 'selected' : '' }}>Sort by Price (Low to High)</option>
+                        <option value="price_desc" {{ request('sortBy') == 'price_desc' ? 'selected' : '' }}>Sort by Price (High to Low)</option>
+                        <option value="mileage_asc" {{ request('sortBy') == 'mileage_asc' ? 'selected' : '' }}>Sort by Mileage (Low to High)</option>
+                        <option value="mileage_desc" {{ request('sortBy') == 'mileage_desc' ? 'selected' : '' }}>Sort by Mileage (High to Low)</option>
+                        <option value="year_asc" {{ request('sortBy') == 'year_asc' ? 'selected' : '' }}>Sort by Year (Low to High)</option>
+                        <option value="year_desc" {{ request('sortBy') == 'year_desc' ? 'selected' : '' }}>Sort by Year (High to Low)</option>
+                        <option value="year_desc" {{ request('sortBy') == 'year_desc' ? 'selected' : '' }}>Newest First</option>
+
+                    </select>
+                </div>
+    </div>
+
+
+<div class="car-listing">
     <h2>Search Results</h2>
     @if($cars->isEmpty())
         <p>No cars found matching your criteria.</p>
@@ -490,7 +586,13 @@
      
     @endif
 </div>
-
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="pagination-links d-flex justify-content-center">
+            {{ $cars->links('pagination::bootstrap-5') }}
+        </div>
+    </div>
+</div>
 </div>
 
         <div class="col-md-1">
@@ -516,6 +618,466 @@ function calculateMonthlyPayment(price) {
 
     return monthlyPayment.toFixed(2);
 }
+</script>
+<script>
+
+function updateSearchResults() {
+        $.ajax({
+            url: '{{ route("cars.search") }}',
+            type: 'GET',
+            data: urlParams.toString(),
+            success: function(response) {  
+                $('.car-listing').html(response);     
+                rebindPaginationLinks();                                                           
+            }
+        });
+    }
+
+var urlParams=''
+$(document).ready(function() {
+    // Store the URL parameters in a variable
+    urlParams= new URLSearchParams(window.location.search);
+
+    // Function to update the search results
+ 
+
+    // Event listener for the sort dropdown
+    $('#sortBy').change(function() {
+        urlParams.set('sortBy', $(this).val());
+        updateSearchResults();
+    });
+  
+
+    // Event listener for the reset button
+    $('#resetFilters').click(function() {
+        urlParams = new URLSearchParams();
+        $('#searchForm')[0].reset();
+        updateSearchResults();
+    });
+
+    // Event listener for pagination links
+    $(document).on('click', '.pagination a', function(event) {
+        event.preventDefault();
+        urlParams.set('page', $(this).attr('href').split('page=')[1]);
+        updateSearchResults();
+        
+    });
+
+    rebindPaginationLinks()
+});
+
+
+
+function getFormDataAndSubmit(){
+            event.preventDefault();
+            var formData = $('#searchForm').serializeArray();
+            urlParams = new URLSearchParams();
+            $.each(formData, function(index, field) {
+                urlParams.append(field.name, field.value);
+            });
+            updateSearchResults();           
+ };
+
+
+ function rebindPaginationLinks() {
+            console.log('Rebinding pagination links');
+            $('.pagination a').off('click').on('click', function(event) {
+                event.preventDefault();
+                alert('Pagination link clicked');
+                urlParams.set('page', $(this).attr('href').split('page=')[1]);
+                updateSearchResults();
+            });
+}
+
+
+
+
+</script>
+
+<script>
+    $('#toggleMoreFilters').on('click', function(e) {
+            e.preventDefault();
+            $('.more-filters').toggleClass('show');
+        });
+
+        $('#closeFilters').on('click', function(e) {
+            e.preventDefault();
+            $('.more-filters').removeClass('show');
+        });
+
+        // Hide the more-filters div when clicking outside of it
+        $(document).on('click', function(event) {
+            if (!$(event.target).closest('.more-filters, #toggleMoreFilters').length) {
+                $('.more-filters').removeClass('show');
+            }
+        });
+        document.getElementById('resetFilters').addEventListener('click', function() {
+        document.getElementById('searchForm').reset();
+    
+    // Reset dropdowns and other custom elements if necessary
+        document.querySelectorAll('.dropdown-toggle').forEach(function(dropdown) {
+        dropdown.innerHTML = dropdown.getAttribute('aria-labelledby') === 'provinceDropdown' ? 'Select Province(s)' : 'Select a Car(s)';
+    });
+    
+    // Collapse any expanded model sections
+    document.querySelectorAll('.collapse').forEach(function(collapse) {
+        collapse.classList.remove('show');
+    });
+});
+
+                   
+function submitForm(brand) {
+            // Create a form element dynamically
+            const form = document.createElement('form');
+            form.method = 'GET';
+            form.action = "{{ route('cars.search') }}";
+
+            // Add a hidden input to the form with the 'make' value
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'car_brand';
+            input.value = parseInt(brand);
+            input.id = 'brand'
+
+            form.appendChild(input);
+
+            // Add the form to the body and submit it
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+function getModelID(id){
+
+        var model_id = $(this).data('make');
+        var modelsContainer = $('#models-' + id);
+
+        // Toggle the collapse
+        modelsContainer.collapse('toggle');
+
+        if (modelsContainer.find('.models-list').length === 0) {
+            // AJAX call to fetch models
+
+                var modelsArr=@json($Carmodels)
+                
+                //modelsArr=JSON.parse(modelsArr)
+                models=modelsArr.filter(function(model) {
+                    return model.car_brand_id === id;
+                })
+
+                    var modelsHtml = '<div class="models-list" style="margin-left:10px;">';
+                    $.each(models, function(index, model) {
+                        modelsHtml += '<div class="form-check d-flex justify-content-between align-items-center">';
+                        modelsHtml += '<div>';
+                        modelsHtml +=`<input onchange='getSelectedCheckFilterOnSearch(${model.id }, "model","${model.name}","filter")' class="form-check-input" type="checkbox" name="car_model_id[]" id="model-${ model.id }" value="${ model.id }">`;
+                        modelsHtml += '<label  class="form-check-label" for="model-' + model.name + '">' + model.name + '(' + model.vehicle_count +')' + '</label>';
+                        modelsHtml += '</div>';
+
+                        modelsHtml += '<button type="button" onclick="getVariantID('+ model.id + ')" style="border:none;background:none;" class="expand-variants-btn collapsed" data-make="' + model.id + '" data-model="' + model.id + '" data-toggle="collapse" data-target="#variants-' + model.car_brand_id + '-' + model.id + '">';
+                        modelsHtml += '<i class="fas fa-chevron-right"></i>';
+                        modelsHtml += '</button>';
+                        modelsHtml += '</div>';
+                        modelsHtml += '<div class="collapse" id="variants-' + model.id + '-' + model.id + '">';
+                        modelsHtml += '</div>';
+                    });
+                    modelsHtml += '</div>';
+                    modelsContainer.html(modelsHtml);
+                }
+        
+        }
+
+function getVariantID(id){
+
+    var variantArr=@json($Carvariants)
+                
+                //modelsArr=JSON.parse(modelsArr)
+                variant=variantArr.filter(function(variant) {
+                    return variant.car_model_id === id;
+                })
+
+
+        var make = $(this).data('make');
+        var model = $(this).data('model');
+        var variantsContainer = $('#variants-' + id + '-' + id);
+
+        // Toggle the collapse
+        variantsContainer.collapse('toggle');
+
+        if (variantsContainer.find('.variants-list').length === 0) {
+            // AJAX call to fetch variants
+      
+                    var variantsHtml = '<div class="variants-list" style="margin-left:20px;">';
+                    $.each(variant, function(index, variant) {
+                        variantsHtml += '<div class="form-check">';
+                        variantsHtml += `<input onchange='getSelectedCheckFilterOnSearch(${variant.id }, "variant","${variant.name}","filter")' class="form-check-input" type="checkbox" name="variant_id[]" id="variant-${ variant.id }" value=" ${ variant.id } ">`;
+                        variantsHtml += '<label class="form-check-label" for="variant-' + variant.id + '">' + variant.name + ' (' + variant.vehicle_count + ')</label>';
+                        variantsHtml += '</div>';
+                    });
+                    variantsHtml += '</div>';
+                    variantsContainer.html(variantsHtml);
+                }
+}
+
+function populateSelect(elementId, min, max, step) {
+            const select = document.getElementById(elementId);
+            for (let i = min; i <= max; i += step) {
+                const option = document.createElement("option");
+                option.value = i;
+                option.text = i.toLocaleString();
+                select.appendChild(option);
+            }
+        }
+$(document).ready(function() {
+
+        populateSelect("minPrice", 5000, 1500000, 25000);
+        populateSelect("maxPrice", 5000, 1500000, 25000);
+       /// populateSelect("minMileage", 0, 500000, 5000);
+       // populateSelect("maxMileage", 0, 500000, 5000);
+    // Handle Make checkbox changes (to show/hide models)
+
+});
+
+</script>
+<script>
+    // Prevent dropdown from closing when clicking inside the dropdown
+    document.querySelector('.dropdown-menuFilter').addEventListener('click', function (event) {
+        event.stopPropagation();
+    });
+    document.querySelector('.dropdown-menuProvince').addEventListener('click', function (event) {
+        event.stopPropagation();
+    });
+    // Close dropdown when clicking outside the dropdown
+    document.addEventListener('click', function (event) {
+        var dropdown = document.getElementById('makeDropdown');
+        var dropdownMenu = document.querySelector('.dropdown-menuFilter');
+
+        if (!dropdown.contains(event.target) && !dropdownMenu.contains(event.target)) {
+            $(dropdownMenu).removeClass('show');
+            $(dropdown).attr('aria-expanded', 'false');
+        }
+    });
+    document.addEventListener('click', function (event) {
+        var dropdown = document.getElementById('provinceDropdown');
+        var dropdownMenu = document.querySelector('.dropdown-menuProvince');
+
+        if (!dropdown.contains(event.target) && !dropdownMenu.contains(event.target)) {
+            $(dropdownMenu).removeClass('show');
+            $(dropdown).attr('aria-expanded', 'false');
+        }
+    });
+
+    
+    document.addEventListener('click', function (event) {
+        var dropdown = document.getElementById('search-results');
+       // var dropdownMenu = document.querySelector('.dropdown-menu');
+
+        if (!dropdown.contains(event.target)) {
+            $(dropdown).removeClass('show');
+            $(dropdown).attr('aria-expanded', 'false');
+        $("#appendlistofSelcted").hide();
+        }
+    });
+   
+    // Toggle dropdown manually
+    document.getElementById('makeDropdown').addEventListener('click', function (event) {
+        var dropdownMenu = document.querySelector('.dropdown-menuFilter');
+        if (dropdownMenu.classList.contains('show')) {
+            $(dropdownMenu).removeClass('show');
+            $(this).attr('aria-expanded', 'false');
+        } else {
+            $(dropdownMenu).addClass('show');
+            $(this).attr('aria-expanded', 'true');
+        }
+    });
+
+    document.getElementById('provinceDropdown').addEventListener('click', function (event) {
+        var dropdownMenu = document.querySelector('.dropdown-menuProvince');
+        if (dropdownMenu.classList.contains('show')) {
+            $(dropdownMenu).removeClass('show');
+            $(this).attr('aria-expanded', 'false');
+        } else {
+            $(dropdownMenu).addClass('show');
+            $(this).attr('aria-expanded', 'true');
+        }
+    });
+    
+
+
+
+    document.getElementById('keyword').addEventListener('input', function() {
+    var keyword = this.value.toLowerCase();
+    var resultsContainer = document.getElementById('search-results');
+    resultsContainer.innerHTML = ''; // Clear previous results
+        
+    var carBrands=@json($carBrands);
+    var carModels=@json($Carmodels);
+    var carVariants=@json($Carvariants);
+
+    // Filter car brands
+    var filteredBrands = carBrands.filter(function(brand) {
+        return brand.name.toLowerCase().includes(keyword);
+    });
+
+    // Filter car models
+    var filteredModels = carModels.filter(function(model) {
+        return model.name.toLowerCase().includes(keyword);
+    });
+
+    // Filter variants
+    var filteredVariants = carVariants.filter(function(variant) {
+        return variant.name.toLowerCase().includes(keyword);
+    });
+
+    // Display filtered brands
+    filteredBrands.forEach(function(brand) {
+
+        var brandItem = document.createElement('div');
+        brandItem.className = 'dropdown-item';
+        brandItem.innerHTML = `
+            <div class="form-check d-flex justify-content-between align-items-center">
+                <div>
+                    <input onchange='getSelectedCheckFilterOnSearch(${brand.id}, "brand","${brand.name}")' class="form-check-input make-checkbox" type="checkbox" name="make[]" id="brand-${brand.id}" value="${brand.id}">
+                    <label class="form-check-label" for="make-${brand.name}">
+                        ${brand.name} (${brand.vehicle_count})
+                    </label>
+                </div>
+            </div>
+        `;
+        resultsContainer.appendChild(brandItem);
+    });
+
+    // Display filtered models
+    filteredModels.forEach(function(model) {
+        var modelItem = document.createElement('div');
+        modelItem.className = 'dropdown-item';
+        modelItem.innerHTML = `
+            <div class="form-check d-flex justify-content-between align-items-center">
+                <div>
+                    <input onchange='getSelectedCheckFilterOnSearch(${model.id}, "model","${model.name}")' class="form-check-input" type="checkbox" name="model[]" id="model-${model.id}" value="${model.id}">
+                    <label class="form-check-label" for="model-${model.name}">
+                        ${model.name} (${model.vehicle_count})
+                    </label>
+                </div>
+            </div>
+        `;
+        resultsContainer.appendChild(modelItem);
+    });
+
+    // Display filtered variants
+    filteredVariants.forEach(function(variant) {
+        var variantItem = document.createElement('div');
+        variantItem.className = 'dropdown-item';
+        variantItem.innerHTML = `
+            <div class="form-check d-flex justify-content-between align-items-center">
+                <div>
+                    <input onchange='getSelectedCheckFilterOnSearch(${variant.id}, "variant","${variant.name}")' class="form-check-input" type="checkbox" name="variant[]" id="variant-${variant.id}" value="${variant.id}">
+                    <label class="form-check-label" for="variant-${variant.name}">
+                        ${variant.name} (${variant.vehicle_count})
+                    </label>
+                </div>
+            </div>
+        `;
+        resultsContainer.appendChild(variantItem);
+    });
+
+    // Show the results container
+    resultsContainer.classList.add('show');
+    $("#appendlistofSelcted").show();
+    
+    
+});
+
+var selectedFilters=[];
+function getSelectedCheckFilterOnSearch(id, typesearch, value,filter=""){
+        var getInputToCheckIfChecked=document.getElementById(typesearch + "-" + id);
+        if(getInputToCheckIfChecked.checked){
+            // Add id to selectedFilters array
+            if(selectedFilters.indexOf(id) === -1){ // Check if id is not already in the array
+                var obj={}
+                obj["key"]=typesearch
+                obj["id"]=id
+                selectedFilters.push(obj);
+
+                //use this function to clear the button text and set aas per what is selected on the filters
+                    $('#makeDropdown').css({
+                    'font-size': '11px',
+                    'overflow': 'hidden'
+                    });
+                if(filter=="filter"){
+                   var filterdata= $(`#makeDropdown`).text();
+                   if(filterdata.includes("Select a Car")){
+                        $(`#makeDropdown`).text(''); 
+                    $(`#makeDropdown`).text(", "+ value);
+                   }else{
+                    var filterdata= $(`#makeDropdown`).text(); 
+                    $(`#makeDropdown`).text(filterdata + ", " + value);
+                   }
+
+                }else{
+                    $("#appendlistofSelcted").append( "<li id='"+typesearch+ id +"'>"+ value + "</li>");
+                    $("#appendlistofSelcted").show()
+                }
+             
+            }else{
+                
+            }
+        
+        }else{
+            // Remove id from selectedFilters array
+            var selectedid=typesearch + id
+            
+            var index = -1
+           for (let i = 0; i < selectedFilters.length; i++) {
+                if (selectedFilters[i].key === typesearch && selectedFilters[i].id === id) {
+                    index = i;
+                    break;
+                }
+                }
+            if(index!== -1){
+                selectedFilters.splice(index, 1);
+                if(filter=="filter"){
+                    var filterdata= $(`#makeDropdown`).text();
+                    var filterdata= filterdata.replace(", " + value, "");
+                    $(`#makeDropdown`).val(filterdata);
+                    if(filterdata.includes(", ")){
+                        $(`#makeDropdown`).text(filterdata.replace(",,", ""));
+                    }else{
+                        $(`#makeDropdown`).text("Select a Car (s)");
+                    }
+                }else{
+                    $("#"+selectedid).remove();
+                }
+
+               
+            }
+        }
+        getFormDataAndSubmit()
+    }
+
+    function resetFormAdvanced(){
+        // Reset selected filters array
+        selectedFilters=[];
+        // Reset dropdown text
+        $('#makeDropdown').text('Select a Car (s)');
+        // Reset checkboxes
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(function(checkbox) {
+            checkbox.checked = false;
+        });
+        // Reset search input
+        $('#keyword').val('');
+        // Reset search results
+        var resultsContainer = document.getElementById('search-results');
+        resultsContainer.innerHTML = '';
+        document.getElementById('searchForm').reset();
+        $("#appendlistofSelcted").hide();
+        $("#appendlistofSelcted").empty();
+        
+    }
+function getSelectedCheckFilterOnSearchProvince(){
+    
+}
+
+
 </script>
 @endsection
 <?php

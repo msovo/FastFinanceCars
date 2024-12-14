@@ -8,7 +8,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
 
-
     <style>
         .dropdown:hover .dropdown-menu {
             display: block;
@@ -391,10 +390,15 @@
 }
 
     </style>
+
 </head>
 <body>
 
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Load Bootstrap and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.js"></script>
 <style>
     /* Wrapper for the entire navigation bar */
     .navbar-wrapper {
@@ -563,12 +567,12 @@
                         Buy a Car
                     </a>
                     <div class="dropdown-menu" aria-labelledby="buyCarDropdown">
-                        <form id="searchForm" action="{{ route('cars.search') }}" method="GET">
+                        <form id="searchFormN" action="{{ route('cars.search') }}" method="GET">
                             <input type="text" class="hide" style="display:none" id="conditions" name="conditions" value="New" />
                             <button type="submit" class="dropdown-item">New Cars</button>
                         </form>
 
-                        <form id="searchForm" action="{{ route('cars.search') }}" method="GET">
+                        <form id="searchFormN" action="{{ route('cars.search') }}" method="GET">
                             <input type="text" class="hide" style="display:none" id="conditions" name="conditions" value="Used" />
                             <button type="submit" class="dropdown-item">Used Cars</button>
                         </form>
@@ -1020,7 +1024,7 @@ function registerGuest(name, email) {
 
         $(document).ready(function() {
             // Search form submission
-            $('#searchForm').on('submit', function(event) {
+            $('#searchFormN').on('submit', function(event) {
                 event.preventDefault();
                 window.location.href = $(this).attr('action') + '?' + $(this).serialize();
             });
@@ -1032,7 +1036,7 @@ function registerGuest(name, email) {
     });
 
     // Ensure collapse elements are initialized properly
-    $('.collapse').collapse();
+    //$('.collapse').collapse();
 
             // Thumbnail image click
             $('.thumbnail').on('click', function() {
@@ -1072,11 +1076,9 @@ function registerGuest(name, email) {
 
   
 @yield('scripts')
-    
+
+
 
 </body>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </html>

@@ -382,9 +382,10 @@
         border-radius: 5px;
         text-transform: uppercase;
     }
+
+    
 </style>
 
-</style>
 
 <div class="CustomcontainerHome">
 <div id="carCarousel" class="carousel slide" data-ride="carousel">
@@ -415,6 +416,7 @@
 
     </a>
 </div>
+<div class="filter-container">
 <div class="advanced-search" >
     <form id="searchForm" action="{{ route('cars.search') }}" method="GET">
         <div class="form-group">
@@ -425,16 +427,43 @@
     <ul id='appendlistofSelcted' style="height:50vh;overflow-y:scroll; position:absolute; top:59px;right:0; width:35%;height:240px;z-index:9999;color:grey;display:none;"></ul>
 
         </div>
-    
+                        <?php
+                $provinces = [
+                    "Eastern Cape",
+                    "Free State",
+                    "Gauteng",
+                    "KwaZulu-Natal",
+                    "Limpopo",
+                    "Mpumalanga",
+                    "Northern Cape",
+                    "North West",
+                    "Western Cape"
+                ];
+                ?>
         <div class="form-row mt-0">
             <div class="form-group col-12 col-md-6"> 
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="provinceDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <div class="dropdownP">
+                    <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="provinceDropdown" aria-haspopup="true" aria-expanded="false">
                         Select Province(s)
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="provinceDropdown">
+                    <div class="dropdown-menu dropdown-menuProvince" aria-labelledby="provinceDropdown" style="height:50vh;overflow-y:scroll;">
                         <div class="province-checkboxes">
-                            <!-- Province checkboxes here -->
+                       
+        <?php foreach ($provinces as $province): ?>
+            <div class="dropdown-item">
+                <div class="form-check d-flex justify-content-between align-items-center">
+                    <div>
+                        <input onchange='getSelectedCheckFilterOnSearchProvince("<?php echo $province; ?>", "province", "<?php echo $province; ?>", "filter")' class="form-check-input province-checkbox" type="checkbox" name="province[]" id="province-<?php echo str_replace(' ', '-', $province); ?>" value="<?php echo $province; ?>">
+                        <label id="province<?php echo str_replace(' ', '', $province); ?>" class="form-check-label" for="province-<?php echo str_replace(' ', '-', $province); ?>">
+                            <?php echo $province; ?>
+                        </label>
+                    </div>
+                    <button type="button" onclick="getModelID('<?php echo $province; ?>')" class="btn-sm expand-models-btn collapsed" data-province="<?php echo $province; ?>" data-toggle="collapse" data-target="#models-<?php echo str_replace(' ', '-', $province); ?>">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        <?php endforeach; ?>
                         </div>
                     </div>
                 </div>
@@ -446,9 +475,7 @@
             @foreach ($carBrands as $make)
                 <div class="dropdown-item">
                     <div class="form-check d-flex justify-content-between align-items-center">
-                        <div>
-               
-
+                        <div>           
                             <input onchange='getSelectedCheckFilterOnSearch({{$make->id }}, "brand","{{$make->name}}","filter")' class="form-check-input make-checkbox" type="checkbox" name="car_brand_id[]" id="brand-{{ $make->id }}" value="{{ $make->id }}">
                             <label id="brand{{ $make->id }}" class="form-check-label" for="brand-{{ $make->name }}">
                                 {{ $make->name }} ( {{ $make->vehicle_count }})
@@ -545,7 +572,7 @@
         </div>
     </form>
 </div>
-
+</div>
     <div class="car-listing">
     <div class="engagement-customer">
             <h2>Your Engagement</h2>
@@ -756,7 +783,7 @@
         <div class="row row-cols-4 g-3">
             @foreach ($carBrands as $brand)
                 <div class="col">
-                    <button type="button" class="btn btn-outline-dark w-100" onclick="submitForm('{{ $brand->name }}')">
+                    <button type="button" class="btn btn-outline-dark w-100" onclick="submitForm('{{ $brand->id }}')">
                         {{ $brand->name }}
                     </button>
                 </div>
@@ -884,8 +911,8 @@ function submitForm(brand) {
             // Add a hidden input to the form with the 'make' value
             const input = document.createElement('input');
             input.type = 'hidden';
-            input.name = 'brand';
-            input.value = brand;
+            input.name = 'car_brand';
+            input.value = parseInt(brand);
             input.id = 'brand'
 
             form.appendChild(input);
@@ -964,23 +991,17 @@ function getVariantID(id){
                     variantsHtml += '</div>';
                     variantsContainer.html(variantsHtml);
                 }
-        
-        
 }
+
 
 $(document).ready(function() {
 
         populateSelect("minPrice", 5000, 1500000, 25000);
         populateSelect("maxPrice", 5000, 1500000, 25000);
-        populateSelect("minMileage", 0, 500000, 5000);
-        populateSelect("maxMileage", 0, 500000, 5000);
+       /// populateSelect("minMileage", 0, 500000, 5000);
+       // populateSelect("maxMileage", 0, 500000, 5000);
     // Handle Make checkbox changes (to show/hide models)
-  
 
-
-    
-
-    
 });
 
 function getCookie(name) {
@@ -1162,7 +1183,9 @@ function populateSelect(elementId, min, max, step) {
     document.querySelector('.dropdown-menuFilter').addEventListener('click', function (event) {
         event.stopPropagation();
     });
-
+    document.querySelector('.dropdown-menuProvince').addEventListener('click', function (event) {
+        event.stopPropagation();
+    });
     // Close dropdown when clicking outside the dropdown
     document.addEventListener('click', function (event) {
         var dropdown = document.getElementById('makeDropdown');
@@ -1173,6 +1196,17 @@ function populateSelect(elementId, min, max, step) {
             $(dropdown).attr('aria-expanded', 'false');
         }
     });
+    document.addEventListener('click', function (event) {
+        var dropdown = document.getElementById('provinceDropdown');
+        var dropdownMenu = document.querySelector('.dropdown-menuProvince');
+
+        if (!dropdown.contains(event.target) && !dropdownMenu.contains(event.target)) {
+            $(dropdownMenu).removeClass('show');
+            $(dropdown).attr('aria-expanded', 'false');
+        }
+    });
+
+    
     document.addEventListener('click', function (event) {
         var dropdown = document.getElementById('search-results');
        // var dropdownMenu = document.querySelector('.dropdown-menu');
@@ -1196,6 +1230,16 @@ function populateSelect(elementId, min, max, step) {
         }
     });
 
+    document.getElementById('provinceDropdown').addEventListener('click', function (event) {
+        var dropdownMenu = document.querySelector('.dropdown-menuProvince');
+        if (dropdownMenu.classList.contains('show')) {
+            $(dropdownMenu).removeClass('show');
+            $(this).attr('aria-expanded', 'false');
+        } else {
+            $(dropdownMenu).addClass('show');
+            $(this).attr('aria-expanded', 'true');
+        }
+    });
     
 
 
@@ -1370,7 +1414,9 @@ function getSelectedCheckFilterOnSearch(id, typesearch, value,filter=""){
         $("#appendlistofSelcted").empty();
         
     }
-
+function getSelectedCheckFilterOnSearchProvince(){
+    
+}
 
 
 </script>

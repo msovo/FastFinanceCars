@@ -12,6 +12,7 @@ use App\Models\CarModel;
 use App\Models\Variant;
 use App\Models\Dealer;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Log;
 
 use App\Models\newscategory;
 
@@ -387,6 +388,8 @@ public function list(Request $request)
     $makes = Vehicle::distinct()->pluck('make');
     $models = Vehicle::distinct()->pluck('model'); 
     $variants = Vehicle::distinct()->pluck('variant'); 
+    $bodytype=$request->input('body_typefooter');
+
     $categoryTypes = Category::whereNotIn('category_type', ['Make', 'Model', 'Variant'])->get();
     $bodytype=$request->input('body_typefooter');
     $cars = Vehicle::query();
@@ -551,6 +554,9 @@ $makeCounts = $makeCounts->pluck('count');
 
 public function search(Request $request)
 {
+
+    try {
+
     $query = Vehicle::whereHas('listing', function ($query) {
         $query->where('listing_status', 'active');
     });
@@ -571,31 +577,85 @@ public function search(Request $request)
     }
 
     // Price filter
-    if ($request->filled('price_min')) {
-        $query->where('price', '>=', $request->price_min);
+    if ($request->filled('minPrice')) {
+        $query->where('price', '>=', $request->minPrice);
     }
-    if ($request->filled('price_max')) {
-        $query->where('price', '<=', $request->price_max);
+    if ($request->filled('maxPrice')) {
+        $query->where('price', '<=', $request->maxPrice);
     }
 
+        // Filter by selected models
+        if ($request->filled('car_brand')) {
+            $query->where('car_brand_id','=', $request->car_brand);
+        }
+
     // Mileage filter
-    if ($request->filled('mileage_max')) {
-        $query->where('mileage', '<=', $request->mileage_max);
+    if ($request->filled('minMileage')) {
+        $query->where('mileage', '<=', $request->minMileage);
     }
+   // Mileage filter
+   if ($request->filled('maxMileage')) {
+    $query->where('mileage', '>=', $request->maxMileage);
+    }
+
+  // year filter
+        if ($request->filled('minYear')) {
+            $query->where('year', '>=', $request->minYear);
+        }
+        if ($request->filled('maxYear')) {
+            $query->where('year', '<=', $request->maxYear);
+        }
+
+        if ($request->filled('body_typefooter')) {
+            $query->where('body_type', '=', $request->body_typefooter);
+        }
+
+        if ($request->filled('conditions')) {
+            $query->where('car_condition', '=', $request->conditions);
+        }
+
 
     // Province filter
     if ($request->filled('province')) {
-        $query->whereHas('listing.dealership.province', function ($locationQuery) use ($request) {
+        $query->with('listings.dealer', function ($locationQuery) use ($request) {
             $locationQuery->whereIn('province', $request->province);
         });
     }
 
+    
+  // Sorting
+  switch ($request->input('sortBy')) {
+    case 'price_asc':
+        $query->orderBy('price', 'asc');
+        break;
+    case 'price_desc':
+        $query->orderBy('price', 'desc');
+        break;
+    case 'year_desc':
+        $query->orderBy('year', 'desc');
+        break;
+    case 'mileage_asc':
+        $query->orderBy('mileage', 'asc');
+        break;
+    case 'mileage_desc':
+        $query->orderBy('mileage', 'desc');
+        break;
+    default:
+        $query->orderBy('listed_at', 'desc');
+        break;
+}
+
     // Debugging: Check the query
     $query->with('images');
     // Paginate results
-    $cars = $query->get();
+    $cars = $query->paginate(2);
 
-   // $carBrands = CarBrand::all();
+    // $carBrands = CarBrand::all();
+    // Return results to the Blade view
+    if ($request->ajax()) {
+        return view('partials._car_list', compact('cars'))->render();
+    }
+
 
    $carBrands = CarBrand::withCount(['vehicles as vehicle_count' => function ($query) {
     $query->whereColumn('vehicles.car_brand_id', 'car_brands.id');}])->get();
@@ -613,13 +673,12 @@ public function search(Request $request)
    // dd($Carbrands);
 
 
-    // Return results to the Blade view
-    return view('cars.index', compact('cars',
-    'carBrands',
-    'Carmodels',
-    'Carvariants'));
+   return view('cars.index', compact('cars', 'carBrands', 'Carmodels', 'Carvariants'));
+} catch (\Exception $e) {
+    Log::error('Search error: ' . $e->getMessage());
+    return response()->json(['error' => 'Internal Server Error'], 500);
 }
-
+}
 
 private function monthlyPaymentToPrice($monthlyPayment) {
     $interestRate = 0.15; 
