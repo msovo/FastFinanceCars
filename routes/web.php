@@ -23,7 +23,11 @@ use App\Http\Controllers\PublicNewsController;
 use App\Http\Controllers\DealerController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\ChatMessageController;
-
+use App\Http\Controllers\FeedController;
+use App\Http\Controllers\StoryController;
+use App\Http\Controllers\CarMediaCommentController;
+use App\Http\Controllers\LikeController;
+use App\Http\Controllers\ReplyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -326,3 +330,13 @@ Route::post('/registerguest', [ChatMessageController::class, 'register'])->name(
 Route::get('dealerships.index', [CarController::class, 'showDealerships'])->name('dealerships.index');
 Route::get('/dealerships.show/{id}', [CarController::class, 'showDealership'])->name('dealerships.show');
 Route::get('dealerships.search', [CarController::class, 'searchDealer'])->name('dealerships.search');
+
+Route::resource('feeds', FeedController::class)->only(['index']);
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('feeds', FeedController::class)->only(['store']);
+    Route::resource('stories', StoryController::class)->only(['index', 'store']);
+    Route::post('feeds/{feed}/comments', [CarMediaCommentController::class, 'store'])->name('comments.store');
+    Route::post('feeds/{feed}/likes', [LikeController::class, 'store'])->name('likes.store');
+    Route::post('comments/{comment}/replies', [ReplyController::class, 'store'])->name('replies.store');
+});

@@ -315,6 +315,24 @@
     font-size: 0.85rem;
     color: #777;
 }
+.results-info {
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+    color: #444; /* Dark grey for professional look */
+    background-color: #f8f9fa; /* Light background for subtle contrast */
+    border: 1px solid #ddd; /* Soft border for better structure */
+    border-radius: 4px; /* Rounded corners */
+    padding: 3px 4px; /* Comfortable spacing */
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    width: 100%;
+    text-align: center;
+}
+
+.results-range strong {
+    color: #000; /* Highlight key numbers in bold black */
+    font-weight: 600; /* Emphasize important numbers */
+}
 
 </style>
 
@@ -419,7 +437,7 @@
 
         <div class="form-row">
             <div class="form-group col-md-6">
-                <select class="form-control" id="minYear" name="minYear">
+                <select onchange=" getFormDataAndSubmit()" class="form-control" id="minYear" name="minYear">
                     <option value="">Select Min Year</option>
                     @for ($year = date('Y'); $year >= 1990; $year--)
                         <option value="{{ $year }}">{{ $year }}</option>
@@ -427,7 +445,7 @@
                 </select>
             </div>
             <div class="form-group col-md-6">
-                <select class="form-control" id="maxYear" name="maxYear">
+                <select  onchange=" getFormDataAndSubmit()" class="form-control" id="maxYear" name="maxYear">
                     <option value="">Select Max Year</option>
                     @for ($year = date('Y'); $year >= 1990; $year--)
                         <option value="{{ $year }}">{{ $year }}</option>
@@ -438,25 +456,21 @@
 
         <div class="form-row">
             <div class="form-group col-md-6">
-                <select class="form-control" id="minPrice" name="minPrice">
+                <select  onchange="getFormDataAndSubmit()"  class="form-control" id="minPrice" name="minPrice">
                     <option value="">Select Min Price</option>
                     <!-- Add price options here -->
                 </select>
             </div>
             <div class="form-group col-md-6">
-                <select class="form-control" id="maxPrice" name="maxPrice">
+                <select  onchange="getFormDataAndSubmit()" class="form-control" id="maxPrice" name="maxPrice">
                     <option value="">Select Max Price</option>
                     <!-- Add price options here -->
                 </select>
             </div>
         </div>
 
-
-        <a href="#" id="toggleMoreFilters">More Filters</a>
-
-
 <div class="row">
-        <button type="button" onclick="getFormDataAndSubmit()" id="submitformbtn" class="btn btn-primary col">Search Cars</button>
+        <button type="button" d="toggleMoreFilters" class="btn btn-primary col">More Filters</button>
         <button type="button" onclick="resetFormAdvanced()" class="btn btn-secondary col" id="resetFilters">Reset Filters</button>
         </div>
     </form>
@@ -479,12 +493,24 @@
                 <div class="row" >
                     <!-- Pagination Summary -->              
 
-                    <div class="col">
+                    <div class="col" id="rebindpages">
+
                         <div class="col-12">
                             <div class="pagination-links d-flex justify-content-center">
-                                {{ $cars->links('pagination::bootstrap-5') }}
+                         
+                            @include('partials._pagination', ['cars' => $cars])
                             </div>
                         </div>
+                        <div class="col-12">
+                       <div id="showingresults">
+                            <div class="results-info">
+                            <span class="results-range">
+                            @include('partials._car_count_showing', ['cars' => $cars])
+                            </span>
+                            </div>
+                            </div>
+                    </div>
+
                     </div>
 
 
@@ -496,7 +522,7 @@
                         <option value="mileage_desc" {{ request('sortBy') == 'mileage_desc' ? 'selected' : '' }}>Sort by Mileage (High to Low)</option>
                         <option value="year_asc" {{ request('sortBy') == 'year_asc' ? 'selected' : '' }}>Sort by Year (Low to High)</option>
                         <option value="year_desc" {{ request('sortBy') == 'year_desc' ? 'selected' : '' }}>Sort by Year (High to Low)</option>
-                        <option value="year_desc" {{ request('sortBy') == 'year_desc' ? 'selected' : '' }}>Newest First</option>
+                        <option value="sort" {{ request('sortBy') == 'sort' ? 'selected' : '' }}>Newest First</option>
 
                     </select>
                 </div>
@@ -589,7 +615,14 @@
 <div class="row mt-4">
     <div class="col-12">
         <div class="pagination-links d-flex justify-content-center">
-            {{ $cars->links('pagination::bootstrap-5') }}
+        <div id="results-count">
+        <div class="results-info">
+                            <span class="results-range">
+                            @include('partials._car_count_showing', ['cars' => $cars])
+                            </span>
+                            </div>
+</div>
+        @include('partials._pagination', ['cars' => $cars])
         </div>
     </div>
 </div>
@@ -627,8 +660,11 @@ function updateSearchResults() {
             type: 'GET',
             data: urlParams.toString(),
             success: function(response) {  
-                $('.car-listing').html(response);     
-                rebindPaginationLinks();                                                           
+                $('.car-listing').html(response.html);     
+                $('.pagination').html(response.pagination); 
+                $("#showingresults").html(response.resultsCount)
+                 rebindPaginationLinks(); 
+                                                                      
             }
         });
     }
@@ -663,7 +699,7 @@ $(document).ready(function() {
         
     });
 
-    rebindPaginationLinks()
+  
 });
 
 
@@ -678,18 +714,63 @@ function getFormDataAndSubmit(){
             updateSearchResults();           
  };
 
+ function  submitFormbasedOnKeywords(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Clear previous dynamic inputs
+      //  $(".dynamic-input").remove();
+
+        // Iterate through selectedFilters and create inputs
+        for (let i = 0; i < selectedFilters.length; i++) {
+            let obj = selectedFilters[i];
+            let inputName;
+            switch (obj.key) {
+                case 'brand':
+                    inputName = 'car_brand_id[]';
+                    break;
+                case 'model':
+                    inputName = 'car_model_id[]';
+                    break;
+                case 'variant':
+                    inputName = 'car_variant_id[]';
+                    break;
+                default:
+                    continue; // Skip if key is not recognized
+            }
+
+            // Create and append the input element
+            let input = $('<input>')
+                .attr('type', 'hidden')
+                .attr('name', inputName)
+                .attr('value', obj.id)
+                .addClass('dynamic-input'); // Add a class for easy removal
+
+            $(this).append(input);
+        }
+        getFormDataAndSubmit()
+    };
 
  function rebindPaginationLinks() {
-            console.log('Rebinding pagination links');
-            $('.pagination a').off('click').on('click', function(event) {
-                event.preventDefault();
-                alert('Pagination link clicked');
-                urlParams.set('page', $(this).attr('href').split('page=')[1]);
-                updateSearchResults();
-            });
+    // Rebind the pagination links
+    $('.pagination-links a').each(function() {
+        $(this).off('click').on('click', function(e) {
+            e.preventDefault();
+            var page = $(this).attr('href').split('page=')[1];
+            urlParams.set('page', page);
+            updateSearchResults();
+        });
+    });
+
+    // Preserve the current active page
+    var currentPage = urlParams.get('page') || 1;
+    $('.pagination-links a').each(function() {
+        if ($(this).text() == currentPage) {
+            $(this).parent().addClass('active');
+        } else {
+            $(this).parent().removeClass('active');
+        }
+    });
 }
-
-
 
 
 </script>
@@ -1050,12 +1131,20 @@ function getSelectedCheckFilterOnSearch(id, typesearch, value,filter=""){
                
             }
         }
-        getFormDataAndSubmit()
+        if(filter=="filter"){
+            getFormDataAndSubmit()
+
+        }else{
+            submitFormbasedOnKeywords()
+            getFormDataAndSubmit()
+        }
     }
 
     function resetFormAdvanced(){
         // Reset selected filters array
         selectedFilters=[];
+        $(".dynamic-input").remove();
+
         // Reset dropdown text
         $('#makeDropdown').text('Select a Car (s)');
         // Reset checkboxes
@@ -1073,6 +1162,43 @@ function getSelectedCheckFilterOnSearch(id, typesearch, value,filter=""){
         $("#appendlistofSelcted").empty();
         
     }
+
+ function  submitFormbasedOnKeywords() {
+        //event.preventDefault(); // Prevent the default form submission
+
+        // Clear previous dynamic inputs
+        $(".dynamic-input").remove();
+
+        // Iterate through selectedFilters and create inputs
+        for (let i = 0; i < selectedFilters.length; i++) {
+            let obj = selectedFilters[i];
+            let inputName;
+            switch (obj.key) {
+                case 'brand':
+                    inputName = 'car_brand_id[]';
+                    break;
+                case 'model':
+                    inputName = 'car_model_id[]';
+                    break;
+                case 'variant':
+                    inputName = 'car_variant_id[]';
+                    break;
+                default:
+                    continue; // Skip if key is not recognized
+            }
+
+            // Create and append the input element
+            let input = $('<input>')
+                .attr('type', 'hidden')
+                .attr('name', inputName)
+                .attr('value', obj.id)
+                .addClass('dynamic-input'); // Add a class for easy removal
+
+            $("#searchForm").append(input);
+        }
+        
+    };
+
 function getSelectedCheckFilterOnSearchProvince(){
     
 }

@@ -88,6 +88,7 @@ function calculateMonthlyPayment(price) {
 
     return monthlyPayment.toFixed(2);
 }
+
 </script>
 
 

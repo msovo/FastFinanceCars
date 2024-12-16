@@ -602,7 +602,7 @@
 
                 <!-- CSubscriptions -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Car Subscriptions</a>
+                <a href="{{ route('feeds.index') }}" class="nav-link">Car Media</a>
                 </li>
 
                 <!-- News & Reviews Dropdown -->

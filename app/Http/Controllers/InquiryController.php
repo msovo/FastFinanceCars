@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use App\Models\Inquiry;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Models\User;
 
 class InquiryController extends Controller
 {
@@ -32,7 +34,7 @@ class InquiryController extends Controller
     
         try {
             // Create a new inquiry
-            Inquiry::create([
+           $inquiry= Inquiry::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
@@ -41,9 +43,14 @@ class InquiryController extends Controller
                 'user_id' => Auth::check() ? $request->user_id : null, // Set user_id if logged in
             ]);
     
+            $dealer = User::find($inquiry->user_id);
+            $dealerEmail = $dealer->email;
+            $dealername=$request->dealername;
+            $dealercontact=$request->dealercontact;
+
             // Log success message
             Log::info('Inquiry created successfully for listing_id: ' . $request->listing_id);
-    
+            $this->sendConfirmationEmails($inquiry,$dealerEmail,$dealername,$dealercontact);
             // Redirect back with a success message
             return redirect()->back()->with('success', 'Your inquiry has been submitted successfully.');
         } catch (\Exception $e) {
@@ -54,6 +61,27 @@ class InquiryController extends Controller
             return redirect()->back()->with('error', 'There was an error submitting your inquiry. Please try again.');
         }
     }
+
+
+    protected function sendConfirmationEmails($inquiry, $dealerEmail,$dealername,$dealercontact)
+    {
+        // Customer email
+        $customerEmail = $inquiry->email;
+    
+        // Send email to customer
+        Mail::send('emails.customer_confirmation', ['inquiry' => $inquiry,'contact'=>$dealercontact,'name'=>$dealername], function ($message) use ($customerEmail) {
+            $message->to($customerEmail)
+                    ->subject('Your Inquiry Confirmation');
+        });
+    
+        // Send email to dealer
+        Mail::send('emails.dealer_notification', ['inquiry' => $inquiry,'contact'=>$dealercontact,'name'=>$dealername], function ($message) use ($dealerEmail) {
+            $message->to($dealerEmail)
+                    ->subject('New Customer Inquiry');
+        });
+    }
+
+
     public function approve(Request $request, $id)
 {
     $lead = Inquiry::findOrFail($id);

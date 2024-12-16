@@ -458,7 +458,7 @@
             <span class="text-danger">R{{ number_format(calculateMonthlyPayment($car->price), 2) }} p/m</span>
         </h5>
         <div id="imageSlider" class="carousel slide" data-ride="carousel">
-            <div class="carousel-inner">
+            <div class="carousel-inner" style="max-height:700px;overflow:hidden;">
                 @foreach($car->images as $image)
                     <div class="carousel-item {{ $loop->first ? 'active' : '' }}">
                         <img src="{{ asset('storage/' . $image->image_url) }}" class="d-block w-100" alt="...">
@@ -529,6 +529,10 @@
                 <input type="text" class="form-control" id="phone" name="phone" value="{{ Auth::user()->phone }}" readonly>
             </div>
             <input type="hidden" name="user_id" value="{{ Auth::user()->user_id }}">
+            <input type="hidden" name="dealername" value="{{$listing->dealer->dealership_name }}">
+            <input type="hidden" name="dealercontact" value="{{ $listing->dealer->contact }}">
+
+            
         @endguest
         <div class="form-group">
             <label for="message">Message</label>
@@ -663,7 +667,7 @@
                 <h4 class="text-primary">Finance Calculator</h4>
                 <div class="form-group">
                     <label for="price">Car Price</label>
-                    <input oninput="calculatePayment()" type="number" class="form-control" id="price" name="price" value="100000" required>
+                    <input oninput="calculatePayment()" type="number" class="form-control" id="price" name="price" value={{$car->price}} required>
                 </div>
                 <div class="form-group">
                     <label for="deposit">Deposit Amount</label>

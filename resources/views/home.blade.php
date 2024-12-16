@@ -516,7 +516,7 @@
 
         <div class="form-row">
             <div class="form-group col-md-6">
-                <select class="form-control" id="minYear" name="minYear">
+                <select onchange="getFormDataAndSubmit()" class="form-control" id="minYear" name="minYear">
                     <option value="">Select Min Year</option>
                     @for ($year = date('Y'); $year >= 1990; $year--)
                         <option value="{{ $year }}">{{ $year }}</option>
@@ -524,7 +524,7 @@
                 </select>
             </div>
             <div class="form-group col-md-6">
-                <select class="form-control" id="maxYear" name="maxYear">
+                <select onchange="getFormDataAndSubmit()" class="form-control" id="maxYear" name="maxYear">
                     <option value="">Select Max Year</option>
                     @for ($year = date('Y'); $year >= 1990; $year--)
                         <option value="{{ $year }}">{{ $year }}</option>
@@ -535,13 +535,13 @@
 
         <div class="form-row">
             <div class="form-group col-md-6">
-                <select class="form-control" id="minPrice" name="minPrice">
+                <select onchange="getFormDataAndSubmit()" class="form-control" id="minPrice" name="minPrice">
                     <option value="">Select Min Price</option>
                     <!-- Add price options here -->
                 </select>
             </div>
             <div class="form-group col-md-6">
-                <select class="form-control" id="maxPrice" name="maxPrice">
+                <select onchange="getFormDataAndSubmit()" class="form-control" id="maxPrice" name="maxPrice">
                     <option value="">Select Max Price</option>
                     <!-- Add price options here -->
                 </select>
@@ -1414,6 +1414,47 @@ function getSelectedCheckFilterOnSearch(id, typesearch, value,filter=""){
         $("#appendlistofSelcted").empty();
         
     }
+
+    $("#searchForm").submit(function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Clear previous dynamic inputs
+        $(".dynamic-input").remove();
+
+        // Iterate through selectedFilters and create inputs
+        for (let i = 0; i < selectedFilters.length; i++) {
+            let obj = selectedFilters[i];
+            let inputName;
+            switch (obj.key) {
+                case 'brand':
+                    inputName = 'car_brand_id[]';
+                    break;
+                case 'model':
+                    inputName = 'car_model_id[]';
+                    break;
+                case 'variant':
+                    inputName = 'car_variant_id[]';
+                    break;
+                default:
+                    continue; // Skip if key is not recognized
+            }
+
+            // Create and append the input element
+            let input = $('<input>')
+                .attr('type', 'hidden')
+                .attr('name', inputName)
+                .attr('value', obj.id)
+                .addClass('dynamic-input'); // Add a class for easy removal
+
+            $(this).append(input);
+        }
+        
+
+        // Submit the form
+        this.submit();o
+    });
+
+
 function getSelectedCheckFilterOnSearchProvince(){
     
 }
