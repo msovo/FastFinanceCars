@@ -36,6 +36,22 @@ h1 {
 .story-thumb img:hover {
     transform: scale(1.1);
 }
+small.text-truncate {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.modal-body {
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+}
+.swiper-slide img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
+}
 
 /* Feed Card Styling */
 .feed {
@@ -121,6 +137,7 @@ button:hover {
         max-height: 100px;
         border-radius: 5px;
     }
+    
     .feed-preview-item .remove-btn {
         position: absolute;
         top: 5px;
@@ -136,6 +153,203 @@ button:hover {
         justify-content: center;
         cursor: pointer;
     }
+
+    .story-thumb {
+    width: 60px;
+    height: 60px;
+    position: relative;
+}
+.progress-ring svg {
+    fill: none;
+    stroke:#aa0101; /* Progress line color */
+    stroke-width: 2;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    top: -1px!important;
+    left: -1px!important;
+
+}
+.story-viewer {
+    position: relative;
+    height: 80vh;
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+}
+
+.story-preview {
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.story-active {
+    flex: 1;
+    text-align: center;
+}
+
+.story-actions {
+    margin-top: 20px;
+}
+
+.modal .modal-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-content {
+    width: 80%;
+}
+/* General Styles */
+body {
+    color: black;
+    background-color: white;
+}
+
+.modal-content {
+    background-color: white;
+    color: black;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 0;
+    margin: 0;
+}
+
+.modal-header .btn-close {
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.modal-header .btn-close:hover {
+    background-color: #333;
+}
+
+.story-thumb {
+    width: 60px;
+    height: 60px;
+    position: relative;
+}
+
+.story-viewer {
+    position: relative;
+    height: 80vh;
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+}
+
+.story-preview {
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.story-active {
+    flex: 1;
+    text-align: center;
+}
+
+.story-actions {
+    margin-top: 10px;
+    padding: 0;
+}
+
+/* Progress Bar Styles */
+.progress-bars {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 10px;
+    left: 0;
+    right: 0;
+    padding: 0 10px;
+    gap: 5px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 4px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-bar .progress {
+    height: 100%;
+    background-color: green;
+    width: 0;
+    transition: width 0.1s linear;
+}
+
+/* Story Content Styles */
+.story-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    padding: 0;
+    margin: 0;
+}
+
+.story-content img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+}
+
+.story-caption,
+.story-timestamp {
+    color: black;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+/* Modal Footer Styles */
+.modal-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    margin: 0;
+}
+
+.story-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.story-actions .btn {
+    padding: 5px 10px;
+    font-size: 14px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.story-actions .btn:hover {
+    background-color: #0056b3;
+}
+
+.reaction-options .btn {
+    margin: 0 5px;
+    font-size: 14px;
+}
+
 </style>
 
 <div class="container mt-4">
@@ -156,21 +370,77 @@ button:hover {
         @endauth
 
         <!-- Existing Stories -->
-        @forelse($stories as $story)
-            <div class="story text-center me-3">
-                <div class="story-thumb border rounded-circle overflow-hidden">
-                    <img src="{{ $story->media_path ? Storage::url($story->media_path) : asset('images/default_story.jpg') }}" 
-                         alt="Story" class="img-fluid">
-                </div>
-                <small>{{ $story->user->username ?? 'Unknown User' }}</small>
+        @php
+    $groupedStories = $stories->groupBy('user.user_id');
+@endphp
+
+@forelse($groupedStories as $userStories)
+    @php
+        $story = $userStories->first();
+        $segmentSize = 360 / count($userStories);
+    @endphp
+    <div class="story text-center me-3">
+        <div class="story-thumb position-relative border rounded-circle overflow-hidden" 
+             data-user-stories="{{ count($userStories) }}" data-user-Id="{{ $story->user->user_id }}">
+            <div class="progress-ring">
+                <!-- Dynamic Segmented Lines -->
+                <svg width="60" height="60" class="position-absolute" style="top: 0; left: 0;">
+                    <circle cx="30" cy="30" r="29" stroke-dasharray="{{ 100 / count($userStories) }}" stroke-dashoffset="0"></circle>
+                </svg>
             </div>
-        @empty
-            <p class="text-muted">No stories available.</p>
-        @endforelse
+            <img src="{{ $story->media_path ? Storage::url($story->media_path) : asset('images/default_story.jpg') }}" 
+                 alt="Story" class="img-fluid">
+        </div>
+        <small class="text-truncate" style="max-width: 60px;">{{ $story->user->username ?? 'Unknown User' }}</small>
+    </div>
+@empty
+    <p class="text-muted">No stories available.</p>
+@endforelse
     </div>
 </div>
 
+<!-- Story Modal -->
 
+<div id="modalStoryPlaceholder"></div>
+
+
+
+<!-- Modal for Comments -->
+<div id="commentsModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Comments</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="commentsContent">
+                <!-- Dynamically loaded comments -->
+            </div>
+            <div class="modal-footer">
+                <input type="text" id="commentInput" placeholder="Write a comment..." class="form-control">
+                <button class="btn btn-primary" id="submitComment">Post</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Messaging -->
+<div id="messageModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Send a Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <textarea id="messageInput" placeholder="Type your message..." class="form-control"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="sendMessage">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
 
     <div class="modal fade" id="storyUploadModal" tabindex="-1" aria-labelledby="storyUploadModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -389,17 +659,281 @@ document.getElementById('feed-form').addEventListener('submit', function(e) {
 </script>
 
 <script>
-    // Wait for the DOM to fully load
-    document.addEventListener('DOMContentLoaded', function () {
-        // Select the button and modal
-        const uploadStoryBtn = document.getElementById('uploadStoryBtn');
-        const storyUploadModal = new bootstrap.Modal(document.getElementById('storyUploadModal'));
 
-        // Add click event listener to the button
-        uploadStoryBtn.addEventListener('click', function () {
-            storyUploadModal.show(); // Programmatically show the modal
+function closeModalStory(){
+    $('#storyModal').hide();
+    $('.modal-backdrop').hide();
+    
+}
+document.addEventListener("DOMContentLoaded", () => {
+    const users = @json($stories); // Backend data with nested stories
+    const thumbs = document.querySelectorAll(".story-thumb");
+    const modalPlaceholder = document.getElementById("modalStoryPlaceholder");
+    let currentTimer = null;
+    const storageBasePath = "{{ asset('storage/') }}";
+    // Clear Timer Function
+    const clearExistingTimer = () => {
+        if (currentTimer) {
+            clearTimeout(currentTimer);
+            currentTimer = null;
+        }
+    };
+
+    // Create and Render Modal Function
+    const renderModal = (userStories, username) => {
+        clearExistingTimer();
+
+        const modalHTML = `
+            <div class="modal fade" id="storyModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">${username}'s Stories</h5>
+                            <button type="button" class="btn-close" onclick="closeModalStory()" data-bs-dismiss="modal" aria-label="Close">X</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="swiper" id="storySwiper">
+                                <div class="swiper-wrapper">
+                                    ${userStories.map(story => `
+                                        <div class="swiper-slide">
+                                            <div class="story-content">
+                                                <img src ='${storageBasePath}/${story.media_path}' alt="Story Image" class="img-fluid">
+                                                <div class="story-caption">${story.caption || ""}</div>
+                                                <div class="story-timestamp">${humanizeTimestamp(story.created_at)}</div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="progress-bars">
+                                ${userStories.map(() => `<div class="progress-bar"><div class="progress"></div></div>`).join('')}
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                              <div class="story-actions d-flex justify-content-between align-items-center mt-3">
+                                        <div class="reactions">
+                                            <button class="btn btn-outline-primary reaction-btn">React</button>
+                                            <div class="reaction-options d-none">
+                                                <button class="btn btn-outline-primary reaction" data-reaction="love">❤️</button>
+                                                <button class="btn btn-outline-success reaction" data-reaction="like">👍</button>
+                                                <button class="btn btn-outline-warning reaction" data-reaction="sad">😢</button>
+                                                <button class="btn btn-outline-info reaction" data-reaction="laugh">😂</button>
+                                            </div>
+                                        </div>
+                                      <button class="btn btn-light comment-btn">Comment</button>
+                                  <button class="btn btn-light dm-btn">DM</button>
+                           </div>
+                    </div>
+                </div>
+            </div>`;
+
+        modalPlaceholder.innerHTML = modalHTML;
+        initializeSwiper(userStories.length);
+
+        const modalElement = document.getElementById("storyModal");
+        const modalInstance = new bootstrap.Modal(modalElement, { backdrop: "static" });
+        modalInstance.show();
+
+        modalElement.addEventListener("hidden.bs.modal", () => {
+            clearExistingTimer();
+            modalPlaceholder.innerHTML = ""; // Clear modal content
+        });
+
+        setupReactions();
+    };
+
+    // Initialize Swiper with Logic
+    const initializeSwiper = (storyCount) => {
+        const swiper = new Swiper("#storySwiper", {
+            loop: false,
+            allowTouchMove: true,
+        });
+
+        const progressBars = document.querySelectorAll(".progress-bar .progress");
+        let currentStoryIndex = 0;
+
+        const updateProgressBar = () => {
+            progressBars.forEach((bar, index) => {
+                bar.style.width = index === currentStoryIndex ? "0%" : "100%";
+            });
+            const activeBar = progressBars[currentStoryIndex];
+            let progress = 0;
+
+            clearExistingTimer();
+            currentTimer = setInterval(() => {
+                progress += 2;
+                if (progress > 100) {
+                    clearInterval(currentTimer);
+                    currentStoryIndex++;
+
+                    if (currentStoryIndex < storyCount) {
+                        swiper.slideTo(currentStoryIndex);
+                        updateProgressBar();
+                    } else {
+                        swiper.slideTo(0);
+                        const modalElement = document.getElementById("storyModal");
+                        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                        modalInstance.hide();
+                    }
+                } else {
+                    activeBar.style.width = `${progress}%`;
+                }
+            }, 100);
+        };
+
+        swiper.on("slideChange", () => {
+            currentStoryIndex = swiper.activeIndex;
+            updateProgressBar();
+        });
+
+        updateProgressBar(); // Start for the first story
+    };
+
+    // Setup Reaction Buttons
+    const setupReactions = () => {
+        const reactionButtons = document.querySelectorAll(".reaction");
+        reactionButtons.forEach(button => {
+            button.addEventListener("click", () => {
+                const reactionType = button.dataset.reaction;
+                console.log(`Reacted with: ${reactionType}`);
+            });
+        });
+
+        document.querySelector(".comment-btn").addEventListener("click", () => {
+            console.log("Comment button clicked.");
+        });
+
+        document.querySelector(".dm-btn").addEventListener("click", () => {
+            console.log("DM button clicked.");
+        });
+    };
+
+    // Convert Timestamp to Human Readable Format
+    const humanizeTimestamp = (timestamp) => {
+        const date = new Date(timestamp);
+        return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    };
+
+    // Click Event for Thumbnails
+    thumbs.forEach(thumb => {
+        thumb.addEventListener("click", () => {
+            const userId = thumb.dataset.userId;
+            const groupedUsers = users.reduce((acc, row) => {
+                const { user, ...story } = row;
+                const existingUser = acc.find(u => u.user_id === user.user_id);
+
+                if (existingUser) {
+                    existingUser.stories.push(story);
+                } else {
+                    user.stories = [story];
+                    acc.push(user);
+                }
+
+                return acc;
+                }, []);
+
+                const user = groupedUsers.find(user => user.user_id == userId);
+
+            if (user && user.stories.length > 0) {
+                renderModal(user.stories, user.username);
+            } else {
+                alert("No stories available for this user.");
+            }
         });
     });
+});
+
+
+$(document).ready(function () {
+    // Open modal with correct message type and IDs
+    $('.send-message-btn').click(function () {
+        const messageType = $(this).data('type');
+        const feedId = $(this).data('feed-id') || '';
+        const storyId = $(this).data('story-id') || '';
+
+        // Set values in the modal
+        $('#messageType').val(messageType);
+        $('#feedId').val(feedId);
+        $('#storyId').val(storyId);
+
+        // Open the modal
+        $('#sendMessageModal').modal('show');
+    });
+
+    // Handle form submission via Ajax
+    $('#sendMessageForm').submit(function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: '{{ route("messages.store") }}',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function (response) {
+                alert(response.message);
+                $('#sendMessageModal').modal('hide');
+                $('#sendMessageForm')[0].reset(); // Clear the form
+            },
+            error: function (xhr) {
+                alert('Error: ' + xhr.responseJSON.message);
+            }
+        });
+    });
+});
+document.addEventListener("DOMContentLoaded", function () {
+    // Initialize Swiper
+    const swiper = new Swiper(".swiper", {
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+        loop: true,
+    });
+
+    // Handle Reactions
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("reaction")) {
+            const reactionType = event.target.dataset.reaction;
+            const storyId = swiper.slides[swiper.activeIndex].dataset.storyId; // Assuming story ID is stored in slide
+
+            // Send Reaction to Backend
+            fetch('/api/reactions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ story_id: storyId, reaction: reactionType }),
+            })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error('Error:', error));
+        }
+    });
+    const activeSlide = swiper.slides[swiper.activeIndex];
+
+    // Handle Comments
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("open-comments")) {
+            const storyId = swiper.slides[swiper.activeIndex].dataset.storyId;
+
+            // Show Comment Modal or Load Comments via Ajax
+            alert("Comments for Story ID: " + storyId);
+        }
+    });
+
+    // Handle Direct Messages
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("dm-user")) {
+            const storyId = swiper.slides[swiper.activeIndex].dataset.storyId;
+
+            // Open DM Modal or Redirect
+            alert("Message for Story ID: " + storyId);
+        }
+    });
+});
+// Pause timer when interacting with the active story
+
+
+            $("#uploadStoryBtn").on("click", function(){
+                $("#storyUploadModal").modal("show");
+            })
 </script>
 
 @endsection

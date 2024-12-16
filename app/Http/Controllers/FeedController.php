@@ -13,16 +13,14 @@ class FeedController extends Controller
 {
     public function index()
     {
-        $feeds = car_media_feed::with(['user', 'comments', 'likes'])->get();
-        $stories =car_media_story::with(['user', 'comments', 'likes'])->get();
-      
+        $feeds = car_media_feed::with(relations: ['user', 'comments', 'likes'])->orderBy('id', 'desc')->get();
+        $stories =car_media_story::with(['user', 'comments', 'likes'])->orderBy('id', 'desc')->get();
         return view('feeds.index', compact('feeds','stories'));
     }
 
     public function store(Request $request)
     {
         Log::info('Store method called.');
-    
         $request->validate([
             'media.*' => 'required|file|max:10240',
             'caption' => 'nullable|string|max:255',

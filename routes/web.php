@@ -28,6 +28,7 @@ use App\Http\Controllers\StoryController;
 use App\Http\Controllers\CarMediaCommentController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ReplyController;
+use App\Http\Controllers\MessageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -336,7 +337,11 @@ Route::resource('feeds', FeedController::class)->only(['index']);
 Route::middleware(['auth'])->group(function () {
     Route::resource('feeds', FeedController::class)->only(['store']);
     Route::resource('stories', StoryController::class)->only(['index', 'store']);
-    Route::post('feeds/{feed}/comments', [CarMediaCommentController::class, 'store'])->name('comments.store');
+    Route::post('feeds/{feed}/comments', [CarMediaCommentController::class, 'store'])->name('Ccomments.store');
     Route::post('feeds/{feed}/likes', [LikeController::class, 'store'])->name('likes.store');
     Route::post('comments/{comment}/replies', [ReplyController::class, 'store'])->name('replies.store');
+    Route::post('messages', [MessageController::class, 'store'])->name('messages.store');
+    Route::get('messages', [MessageController::class, 'index'])->name('messages.index');
+
+
 });

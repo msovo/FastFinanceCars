@@ -63,12 +63,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function feeds()
     {
-        return $this->hasMany(car_media_feeds::class);
+        return $this->hasMany(car_media_feed::class);
     }
 
     public function stories()
     {
-        return $this->hasMany(car_media_stories::class);
+        return $this->hasMany(car_media_story::class,'user_id','user_id',);
     }
 
     public function car_comments()
