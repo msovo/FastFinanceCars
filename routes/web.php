@@ -345,3 +345,5 @@ Route::middleware(['auth'])->group(function () {
 
 
 });
+
+Route::get('/feeds/{feed}/comments', [CarMediaCommentController::class, 'getLatestComments'])->name('feeds.comments.latest');

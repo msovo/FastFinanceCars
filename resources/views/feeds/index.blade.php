@@ -355,49 +355,9 @@ body {
 <div class="container mt-4">
     <h1 class="text-center mb-4">Car Media</h1>
 
-    <!-- Stories Section -->
-    <div class="stories-section mb-4">
-    <div class="d-flex overflow-auto align-items-center">
-        @auth
-            <!-- Upload Story -->
-            <div class="story-upload text-center me-3">
-            <button id="uploadStoryBtn" class="btn btn-outline-primary rounded-circle d-flex justify-content-center align-items-center"
-                style="width: 60px; height: 60px;">
-            <i class="bi bi-camera"></i>
-        </button>
-        <small>Upload Story</small>
-            </div>
-        @endauth
-
-        <!-- Existing Stories -->
-        @php
-    $groupedStories = $stories->groupBy('user.user_id');
-@endphp
-
-@forelse($groupedStories as $userStories)
-    @php
-        $story = $userStories->first();
-        $segmentSize = 360 / count($userStories);
-    @endphp
-    <div class="story text-center me-3">
-        <div class="story-thumb position-relative border rounded-circle overflow-hidden" 
-             data-user-stories="{{ count($userStories) }}" data-user-Id="{{ $story->user->user_id }}">
-            <div class="progress-ring">
-                <!-- Dynamic Segmented Lines -->
-                <svg width="60" height="60" class="position-absolute" style="top: 0; left: 0;">
-                    <circle cx="30" cy="30" r="29" stroke-dasharray="{{ 100 / count($userStories) }}" stroke-dashoffset="0"></circle>
-                </svg>
-            </div>
-            <img src="{{ $story->media_path ? Storage::url($story->media_path) : asset('images/default_story.jpg') }}" 
-                 alt="Story" class="img-fluid">
-        </div>
-        <small class="text-truncate" style="max-width: 60px;">{{ $story->user->username ?? 'Unknown User' }}</small>
+    <div id="stories-container">
+    @include('partials._stories', ['stories' => $stories])
     </div>
-@empty
-    <p class="text-muted">No stories available.</p>
-@endforelse
-    </div>
-</div>
 
 <!-- Story Modal -->
 
@@ -486,8 +446,9 @@ body {
 
     <!-- Feed Upload Section -->
     @auth
+
     <div class="feed-upload mb-4">
-    <form id="feed-form" action="{{ route('feeds.store') }}" method="POST" enctype="multipart/form-data">
+    <form id="feed-form" enctype="multipart/form-data">
         @csrf
         <div class="card">
             <div class="card-header">
@@ -509,18 +470,24 @@ body {
                     <p class="fw-bold">Preview:</p>
                     <div id="feed-preview-container" class="d-flex gap-2 overflow-auto"></div>
                 </div>
+                <style>
+
+            </style>
+                <div class="progress mb-3" style="display: none;">
+                    <div id="upload-progress" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
             </div>
+            <input type="hidden" name="ajax" value="ajax"/>
             <div class="card-footer text-center">
                 <button type="submit" class="btn btn-primary w-50">Post Feed</button>
             </div>
         </div>
     </form>
 </div>
-
     @endauth
 
     <div id="feeds-container">
-    @include('partials._feeds', ['feeds' => $feeds])
+    @include('partials._feeds',  ['feeds' => $feeds])
 </div>
     <!-- Feeds Section -->
   
@@ -567,18 +534,23 @@ body {
         }
     }
 
-
    
     let selectedFiles = [];
+    const MAX_FILES = 8;
 
-function previewFeedMedia() {
+    function previewFeedMedia() {
     const previewContainer = document.getElementById('feed-preview-container');
     const previewSection = document.getElementById('feed-preview');
     const files = document.getElementById('feed-media').files;
 
     // Add new files to the selectedFiles array
     for (let i = 0; i < files.length; i++) {
-        selectedFiles.push(files[i]);
+        if (selectedFiles.length < MAX_FILES) {
+            selectedFiles.push(files[i]);
+        } else {
+            alert('You can only upload up to ' + MAX_FILES + ' files.');
+            break;
+        }
     }
 
     previewContainer.innerHTML = '';
@@ -619,38 +591,67 @@ function previewFeedMedia() {
     });
 }
 
+
+
 function removeMedia(index) {
     selectedFiles.splice(index, 1);
 
     const dataTransfer = new DataTransfer();
     selectedFiles.forEach(file => dataTransfer.items.add(file));
     document.getElementById('feed-media').files = dataTransfer.files;
-
+    selectedFiles=[];
     previewFeedMedia();
 }
 
-document.getElementById('feed-form').addEventListener('submit', function(e) {
-    e.preventDefault();
+$('#feed-form').on('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
 
-    const formData = new FormData();
-    selectedFiles.forEach(file => formData.append('media[]', file));
-    formData.append('caption', document.getElementById('feed-caption').value);
-    formData.append('_token', '{{ csrf_token() }}');
+        var formData = new FormData(this);
+        var progressBar = $('#upload-progress');
+        var progressContainer = $('.progress');
 
-    fetch('{{ route('feeds.store') }}', {
-        method: 'POST',
-        body: formData,
-    })
-    .then(response => response.text())
-    .then(html => {
-        document.getElementById('feeds-container').innerHTML = html;
-        selectedFiles = [];
-        document.getElementById('feed-form').reset();
-        document.getElementById('feed-preview').style.display = 'none';
-    })
-    .catch(error => console.error('Error:', error));
-});
-
+        $.ajax({
+            url: '{{ route('feeds.store') }}',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener('progress', function(evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = (evt.loaded / evt.total) * 100;
+                        console.log('Progress:', percentComplete); // Debugging line
+                        progressBar.css('width', percentComplete + '%');
+                        progressBar.attr('aria-valuenow', percentComplete);
+                    } else {
+                        console.log('Unable to compute progress information since the total size is unknown.');
+                    }
+                }, false);
+                return xhr;
+            },
+            beforeSend: function() {
+                progressContainer.show();
+                progressBar.css('width', '0%');
+                progressBar.attr('aria-valuenow', '0');
+            },
+            success: function(response) {
+                // Handle the response data
+                $('#feeds-container').html(response);
+                $('#feed-form')[0].reset();
+                $('#feed-preview').hide();
+                progressContainer.hide();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                // Optionally, you can show an error message
+                progressContainer.hide();
+            }
+        });
+    });
 
     function toggleComments(id) {
         const comments = document.getElementById('comments-' + id);
@@ -682,7 +683,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Create and Render Modal Function
     const renderModal = (userStories, username) => {
         clearExistingTimer();
-
         const modalHTML = `
             <div class="modal fade" id="storyModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
@@ -754,7 +754,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const updateProgressBar = () => {
             progressBars.forEach((bar, index) => {
-                bar.style.width = index === currentStoryIndex ? "0%" : "100%";
+                bar.style.width = index === currentStoryIndex ? "0%" : "0%";
             });
             const activeBar = progressBars[currentStoryIndex];
             let progress = 0;
@@ -844,6 +844,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+
 $(document).ready(function () {
     // Open modal with correct message type and IDs
     $('.send-message-btn').click(function () {
@@ -879,6 +880,8 @@ $(document).ready(function () {
         });
     });
 });
+
+
 document.addEventListener("DOMContentLoaded", function () {
     // Initialize Swiper
     const swiper = new Swiper(".swiper", {
@@ -935,7 +938,92 @@ document.addEventListener("DOMContentLoaded", function () {
                 $("#storyUploadModal").modal("show");
             })
 </script>
+<script>
+    $('#imageModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var src = button.data('src');
+        var modal = $(this);
+        modal.find('#modalImage').attr('src', src);
+    });
 
+
+</script>
+<script>
+$(document).ready(function () {
+    // Toggle comments section
+    $(".toggle-comments").on("click", function () {
+        const feedId = $(this).data("feed-id");
+        $(`#comments-${feedId}`).collapse('toggle');
+    });
+
+    // Submit a comment
+    $(document).on("click", ".btn-submit-comment", function () {
+        const form = $(this).closest("form");
+        const feedId = form.data("feed-id");
+        const comment = form.find("input[name='comment']").val();
+
+        if (!comment.trim()) return;
+
+        $.ajax({
+            url: "/comments",
+            method: "POST",
+            data: {
+                _token: $("meta[name='csrf-token']").attr("content"),
+                feed_id: feedId,
+                comment: comment
+            },
+            success: function (response) {
+                const commentHtml = `
+                    <div class="comment d-flex mb-2">
+                        <img src="${response.user.profile_image}" 
+                             alt="User" class="rounded-circle me-2" width="30" height="30">
+                        <div>
+                            <strong>${response.user.username}</strong>
+                            <p class="mb-1">${response.comment}</p>
+                            <small class="text-muted">${response.time}</small>
+                        </div>
+                    </div>`;
+                $(`#comments-${feedId} .comments-list`).append(commentHtml);
+                form.find("input[name='comment']").val("");
+            }
+        });
+    });
+
+    // Fetch new comments every 5 seconds
+    setInterval(function () {
+        $(".comments-container").each(function () {
+            const container = $(this);
+            if (!container.hasClass("show")) return;
+
+            const feedId = container.attr("id").split("-")[1];
+            const lastComment = container.find(".comment:last");
+            const lastFetched = lastComment.data("timestamp") || new Date().toISOString();
+
+            $.ajax({
+                url: `/feeds/${feedId}/comments`,
+                method: "GET",
+                data: { last_fetched: lastFetched },
+                success: function (comments) {
+                    comments.forEach(comment => {
+                        const commentHtml = `
+                            <div class="comment d-flex mb-2">
+                                <img src="${comment.user.profile_image}" 
+                                     alt="User" class="rounded-circle me-2" width="30" height="30">
+                                <div>
+                                    <strong>${comment.user.username}</strong>
+                                    <p class="mb-1">${comment.comment}</p>
+                                    <small class="text-muted">${comment.created_at}</small>
+                                </div>
+                            </div>`;
+                        container.find(".comments-list").append(commentHtml);
+                    });
+                }
+            });
+        });
+    }, 5000);
+});
+
+</script>
 @endsection
 
 

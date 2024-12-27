@@ -5,15 +5,18 @@ use Illuminate\Support\Facades\Log;
 
 use App\Models\car_media_feed;
 use App\Models\car_media_story;
+use App\Models\FeedImage;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
+use App\Models\car_media_comment;
+use Carbon\Carbon;
 class FeedController extends Controller
 {
     public function index()
     {
-        $feeds = car_media_feed::with(relations: ['user', 'comments', 'likes'])->orderBy('id', 'desc')->get();
+        $feeds = car_media_feed::with(relations: ['user', 'comments', 'likes','images'])->orderBy('id', 'desc')->get();
         $stories =car_media_story::with(['user', 'comments', 'likes'])->orderBy('id', 'desc')->get();
         return view('feeds.index', compact('feeds','stories'));
     }
@@ -26,43 +29,34 @@ class FeedController extends Controller
             'caption' => 'nullable|string|max:255',
         ]);
     
-
-        
-        Log::info('Validation passed.');
+        $feed = car_media_feed::create([
+            'user_id' => auth()->id(),
+            'caption' => $request->caption,
+        ]);
     
         $mediaPaths = [];
         foreach ($request->file('media') as $file) {
             // Convert to WebP
-            Log::info('Processing file: ' . $file->getClientOriginalName());
-    
             $image = Image::make($file)->encode('webp', 90);
             $path = 'media/' . uniqid() . '.webp';
             Storage::disk('public')->put($path, $image);
     
-            Log::info('File converted and stored at: ' . $path);
-    
             $mediaPaths[] = [
-                'user_id' => auth()->id(),
+                'car_media_feed_id' => $feed->id,
                 'media_path' => $path,
                 'media_type' => 'image/webp',
-                'caption' => $request->caption,
             ];
         }
     
-        Log::info('All files processed.');
-    
-        car_media_feed::insert($mediaPaths);
-    
-        Log::info('Media paths inserted into database.');
+        FeedImage::insert($mediaPaths);
     
         if ($request->ajax()) {
-            Log::info('AJAX request detected.');
-            $feeds = car_media_feed::orderBy('id', 'desc')->get();
-            Log::info('Feeds retrieved from database.');
+            $feeds = car_media_feed::with(relations: 'images')->orderBy('id', 'desc')->get();
             return view('partials._feeds', compact('feeds'));
         }
     
-        Log::info('Non-AJAX request, redirecting to feeds index.');
         return redirect()->route('feeds.index');
     }
+
+  
 }

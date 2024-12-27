@@ -15,7 +15,7 @@ class car_media_comment extends Model
 
     public function feed()
     {
-        return $this->belongsTo(car_media_feed::class);
+        return $this->belongsTo(car_media_feed::class,'car_media_feed_id');
     }
 
     public function story()
