@@ -342,8 +342,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('comments/{comment}/replies', [ReplyController::class, 'store'])->name('replies.store');
     Route::post('messages', [MessageController::class, 'store'])->name('messages.store');
     Route::get('messages', [MessageController::class, 'index'])->name('messages.index');
-
+    Route::post('/like', [LikeController::class, 'store'])->name('like.store');
+    Route::get('/like/{feedId}', [LikeController::class, 'getReactions'])->name('like.getReactions');
 
 });
 
 Route::get('/feeds/{feed}/comments', [CarMediaCommentController::class, 'getLatestComments'])->name('feeds.comments.latest');
+Route::get('/feeds/{feed}/comment-count', [CarMediaCommentController::class, 'getCommentCount'])->name('feeds.comment.count');
+Route::get('/feeds/{feed}/comments', [CarMediaCommentController::class, 'getNewComments'])->name('feeds.comments.new');

@@ -38,20 +38,30 @@ class CarMediaCommentController extends Controller
             ],
             'comment' => $request->comment,
             'feed_id' => $request->feed_id,
-            'time' => $comment->created_at->toDateTimeString(),
+            'time' =>  $comment->created_at->diffForHumans(),
         ]);  
       }   
 
-      public function getLatestComments($feedId, Request $request)
+
+
+      public function getCommentCount($feedId)
       {
-          $lastFetched = $request->input('last_fetched') ? Carbon::parse($request->input('last_fetched')) : now()->subMinute();
-      
+          $count = car_media_comment::where('car_media_feed_id', $feedId)->count();
+          return response()->json(['count' => $count]);
+      }
+      public function getNewComments($feedId, Request $request)
+      {
+          $lastFetchedId = $request->input('last_fetched_id');
+          
           $newComments = car_media_comment::where('car_media_feed_id', $feedId)
-              ->where('created_at', '>', $lastFetched)
+              ->where('id', '>', $lastFetchedId)
               ->with('user')
               ->get();
-      
+        
+          foreach ($newComments as $comment) {
+              $comment->time = $comment->created_at->diffForHumans();
+          }
           return response()->json($newComments);
-      }
+      }      
       
 }

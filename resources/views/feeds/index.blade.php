@@ -354,6 +354,12 @@ body {
 
 <div class="container mt-4">
     <h1 class="text-center mb-4">Car Media</h1>
+    @auth
+    <button class="btn btn-primary" id="uploadStoryBtn">Share Your Story</button>
+    @else
+    <p class="text-center">Please <a href="{{ route('login') }}">login</a> to share your stories.</p>
+
+    @endauth
 
     <div id="stories-container">
     @include('partials._stories', ['stories' => $stories])
@@ -653,10 +659,7 @@ $('#feed-form').on('submit', function(event) {
         });
     });
 
-    function toggleComments(id) {
-        const comments = document.getElementById('comments-' + id);
-        comments.style.display = comments.style.display === 'none' ? 'block' : 'none';
-    }
+
 </script>
 
 <script>
@@ -949,79 +952,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </script>
 <script>
-$(document).ready(function () {
-    // Toggle comments section
-    $(".toggle-comments").on("click", function () {
-        const feedId = $(this).data("feed-id");
-        $(`#comments-${feedId}`).collapse('toggle');
-    });
 
-    // Submit a comment
-    $(document).on("click", ".btn-submit-comment", function () {
-        const form = $(this).closest("form");
-        const feedId = form.data("feed-id");
-        const comment = form.find("input[name='comment']").val();
 
-        if (!comment.trim()) return;
 
-        $.ajax({
-            url: "/comments",
-            method: "POST",
-            data: {
-                _token: $("meta[name='csrf-token']").attr("content"),
-                feed_id: feedId,
-                comment: comment
-            },
-            success: function (response) {
-                const commentHtml = `
-                    <div class="comment d-flex mb-2">
-                        <img src="${response.user.profile_image}" 
-                             alt="User" class="rounded-circle me-2" width="30" height="30">
-                        <div>
-                            <strong>${response.user.username}</strong>
-                            <p class="mb-1">${response.comment}</p>
-                            <small class="text-muted">${response.time}</small>
-                        </div>
-                    </div>`;
-                $(`#comments-${feedId} .comments-list`).append(commentHtml);
-                form.find("input[name='comment']").val("");
-            }
-        });
-    });
 
-    // Fetch new comments every 5 seconds
-    setInterval(function () {
-        $(".comments-container").each(function () {
-            const container = $(this);
-            if (!container.hasClass("show")) return;
 
-            const feedId = container.attr("id").split("-")[1];
-            const lastComment = container.find(".comment:last");
-            const lastFetched = lastComment.data("timestamp") || new Date().toISOString();
-
-            $.ajax({
-                url: `/feeds/${feedId}/comments`,
-                method: "GET",
-                data: { last_fetched: lastFetched },
-                success: function (comments) {
-                    comments.forEach(comment => {
-                        const commentHtml = `
-                            <div class="comment d-flex mb-2">
-                                <img src="${comment.user.profile_image}" 
-                                     alt="User" class="rounded-circle me-2" width="30" height="30">
-                                <div>
-                                    <strong>${comment.user.username}</strong>
-                                    <p class="mb-1">${comment.comment}</p>
-                                    <small class="text-muted">${comment.created_at}</small>
-                                </div>
-                            </div>`;
-                        container.find(".comments-list").append(commentHtml);
-                    });
-                }
-            });
-        });
-    }, 5000);
-});
 
 </script>
 @endsection

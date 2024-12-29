@@ -1,48 +1,84 @@
-<!-- resources/views/profile.blade.php -->
+
 @extends('layouts.index')
 
 @section('content')
 <style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .profile-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .profile-card img {
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        margin: 20px auto;
+    }
+    .profile-card .card-header {
+        background-color: #343a40;
+        color: #fff;
+        text-align: center;
+        font-size: 18px;
+        border-radius: 15px 15px 0 0;
+    }
+    .profile-card .btn {
+        margin: 5px;
+    }
+    .modal-header {
+        background-color: #343a40;
+        color: #fff;
+    }
+    .modal-footer .btn {
+        margin: 0 5px;
+    }
+
     .modal-backdrop{
         z-index: 0;
     }
 </style>
+
 <div class="container mt-5">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">Profile Overview</div>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card profile-card">
+                <div class="card-header">
+                    <strong>Profile Overview</strong>
+                </div>
                 <div class="card-body text-center">
                     @if ($user->profile_image)
-                        <img src="{{ asset('storage/' . $user->profile_image) }}" class="img-thumbnail" alt="Profile Image" width="150">
+                        <img src="{{ asset('storage/' . $user->profile_image) }}" class="img-thumbnail" alt="Profile Image">
                     @else
-                        <img src="https://via.placeholder.com/150" class="img-thumbnail" alt="Profile Image">
+                        <img src="https://via.placeholder.com/120" class="img-thumbnail" alt="Profile Image">
                     @endif
-                    <h5>{{ $user->username }}</h5>
-                    <p>{{ $user->email }}</p>
-                    <p>{{ $user->phone }}</p>
-                    <p>{{ $user->address }}, {{ $user->city }}, {{ $user->country }}</p>
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">Edit Profile</button>
-                    <button class="btn btn-warning" data-toggle="modal" data-target="#changePasswordModal">Change Password</button>
-                    <button class="btn btn-danger" data-toggle="modal" data-target="#deleteProfileModal">Delete Profile</button>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">Engagement Overview</div>
-                <div class="card-body">
-                    <p>Cars Viewed: {{ $engagementMetrics['cars_viewed'] }}</p>
-                    <p>Cars Listed: {{ $engagementMetrics['cars_listed'] }}</p>
-                    <p>News Read: {{ $engagementMetrics['news_read'] }}</p>
-                    <p>Days Signed In: {{ $engagementMetrics['days_signed_in'] }}</p>
-                    <p>Subscriptions: {{ $engagementMetrics['subscriptions'] }}</p>
-                    <!-- Add more metrics as needed -->
+                    <h5 class="mt-3">{{ $user->username }}</h5>
+                    <p class="text-muted">{{ $user->email }}</p>
+                    <p class="text-muted">{{ $user->phone }}</p>
+                    <p class="text-muted">
+                        {{ $user->address }}<br>
+                        {{ $user->city }}, {{ $user->country }}
+                    </p>
+                    <div>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProfileModal">
+                            <i class="fas fa-trash"></i> Delete Profile
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+
+
 
 <!-- Edit Profile Modal -->
 <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
@@ -146,4 +182,7 @@
         </div>
     </div>
 </div>
+
+
+
 @endsection
