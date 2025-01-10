@@ -123,7 +123,9 @@
         .btnmenuvisible {
             z-index: 99999;
         }
-        
+  .modal-backdrop{
+    z-index:    0;
+  }  
         
     </style>
 </head>

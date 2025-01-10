@@ -131,7 +131,7 @@
 }
 .advanced-search {
     position: absolute;
-    top: 13vh;
+    top: 18vh;
     left: 10.5%; 
     background-color: #c0392b;
     padding: 20px;
@@ -139,6 +139,7 @@
     width: 35%; 
     z-index: 99;
     border-radius: 10px; 
+    font-size: 14px !important;
 }
 
 @media (max-width: 768px) { 
@@ -380,7 +381,7 @@
         color: white;
         padding: 8px 16px;
         border-radius: 5px;
-        text-transform: uppercase;
+        font-size: 15px;
     }
 
     
@@ -549,7 +550,7 @@
         </div>
 
 
-        <a href="#" id="toggleMoreFilters">More Filters</a>
+            <!--  <a href="#" id="toggleMoreFilters">More Filters</a>-->
 
         <div class="more-filters">
             <button class="close-btn" id="closeFilters">×</button>

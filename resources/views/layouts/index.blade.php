@@ -633,13 +633,14 @@
                 </li>
 
                 <!-- Tools & Services Dropdown -->
-                <li class="nav-item dropdown">
+                <l class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="toolsServicesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Tools & Services
                     </a>
                     <div class="dropdown-menu" aria-labelledby="toolsServicesDropdown">
                     <a class="dropdown-item"  href="{{ route('financeCalculator') }}">Car Finance Calculator</a>
                     <a class="dropdown-item"  href="{{ route('finance') }}">Car Finance</a>
+                    <a class="dropdown-item" href="{{ route(name: 'affordability') }}">Calculate Affordability</a>
 
                     <a class="dropdown-item" href="#">Insurance Quotes</a>
                     </div>

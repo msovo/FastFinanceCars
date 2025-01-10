@@ -692,7 +692,6 @@
                     <input onchange="calculatePayment()"  type="range" class="form-control-range" id="balloonPayment" name="balloonPayment" min="0" max="50" value="0" oninput="updateBalloonPaymentValue(this.value)">
                     <span id="balloonPaymentValue">0%</span>
                 </div>
-                <button type="button" class="btn btn-primary" onclick="calculatePayment()">Calculate</button>
             </form>
         </div>
 
@@ -750,7 +749,7 @@
         <div class="card-body">
             @foreach($dealershipCars as $dcar)
                 <div class="card mb-3 border-0 shadow-sm" 
-                     onclick="location.href='{{ route('cars.show', $dcar) }}';" 
+                     onclick="location.href='{{ route('cars.show', $dcar->vehicle_id) }}';" 
                      style="cursor: pointer; transition: transform 0.2s;">
                     <img src="{{ asset('storage/' . $dcar->vehicle->images->first()->image_url) }}" 
                          class="card-img-top rounded-top" 

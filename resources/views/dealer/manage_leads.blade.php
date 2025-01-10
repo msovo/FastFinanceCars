@@ -124,7 +124,8 @@
                     <p id="customerMessage"></p>
                     <p><strong>Dealer Message:</strong></p>
                     <p id="dealerMessage"></p>
-                    <a href="#" id="viewCarButton" class="btn btn-primary mt-2">View Details</a>
+                    <p><strong>Customer Name:</strong></p>
+                    <p id="dealerMessage"></p>
                 </div>
             </div>
         </div>

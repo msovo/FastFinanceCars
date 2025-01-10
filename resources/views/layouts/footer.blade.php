@@ -39,7 +39,7 @@
                 <h5>Services</h5>
                 <ul class="list-unstyled">
                     <li><a class="dropdown-item"  href="{{ route('financeCalculator') }}">Car Finance Calculator</a></li>
-                    <li><a class="dropdown-item" href="{{ route('affordability') }}">Calculate Affordability</a></li>
+                    <li><a class="dropdown-item" href="{{ route(name: 'affordability') }}">Calculate Affordability</a></li>
                 </ul>
             </div>
         </div>

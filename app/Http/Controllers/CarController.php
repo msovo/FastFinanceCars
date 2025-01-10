@@ -614,12 +614,15 @@ public function search(Request $request)
                 $subQuery->orWhere('car_condition', '=', $request->conditions);
             }
 
+          
+            Log::error($request);
             // Province filter
             if ($request->filled('province')) {
                 $subQuery->orWhereHas('listing.dealer', function ($locationQuery) use ($request) {
                     $locationQuery->whereIn('province', $request->province);
                 });
             }
+            
         });
 
         // Sorting
@@ -706,7 +709,7 @@ private function monthlyPaymentToPrice($monthlyPayment) {
 
 public function getMakes()
 {
-    $makes = Car_brand::all();
+    $makes = CarBrand::all();
     return view('financecalculator', compact('makes'));
 }
 

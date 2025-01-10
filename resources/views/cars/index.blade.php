@@ -226,6 +226,7 @@
     color: white;
     z-index: 99;
     border-radius: 10px; 
+    width:30%;
 }
 
 @media (max-width: 768px) { 
@@ -334,6 +335,15 @@
     font-weight: 600; /* Emphasize important numbers */
 }
 
+
+#provinceDropdown{
+
+    overflow: hidden;
+}
+#MakeDropdown{
+
+overflow: hidden;
+}
 </style>
 
 
@@ -391,7 +401,7 @@
             </div>
             <div class="form-group col-12 col"> 
     <div class="dropdownr">
-        <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="makeDropdown"  aria-haspopup="true" aria-expanded="false">Select a Car(s) </button>
+        <button class="btn btn-secondary dropdown-toggle w-100 MakeSearchFilter" type="button" id="makeDropdown"  aria-haspopup="true" aria-expanded="false">Select a Car(s) </button>
         <div class="dropdown-menu dropdown-menuFilter"  aria-labelledby="makeDropdown" style="height:50vh;overflow-y:scroll;">
             @foreach ($carBrands as $make)
                 <div class="dropdown-item">
@@ -796,10 +806,16 @@ function getFormDataAndSubmit(){
         document.getElementById('searchForm').reset();
     
     // Reset dropdowns and other custom elements if necessary
-        document.querySelectorAll('.dropdown-toggle').forEach(function(dropdown) {
-        dropdown.innerHTML = dropdown.getAttribute('aria-labelledby') === 'provinceDropdown' ? 'Select Province(s)' : 'Select a Car(s)';
+        document.querySelectorAll('#makeDropdown').forEach(function(dropdown) {
+        dropdown.innerHTML ='Select a Car(s)';
+    });
+
+    document.querySelectorAll('#provinceDropdown').forEach(function(dropdown) {
+        dropdown.innerHTML ='Select a Province(s)';
     });
     
+
+
     // Collapse any expanded model sections
     document.querySelectorAll('.collapse').forEach(function(collapse) {
         collapse.classList.remove('show');
@@ -1080,7 +1096,7 @@ function getSelectedCheckFilterOnSearch(id, typesearch, value,filter=""){
 
                 //use this function to clear the button text and set aas per what is selected on the filters
                     $('#makeDropdown').css({
-                    'font-size': '11px',
+                    'font-size': '15px',
                     'overflow': 'hidden'
                     });
                 if(filter=="filter"){
@@ -1122,7 +1138,7 @@ function getSelectedCheckFilterOnSearch(id, typesearch, value,filter=""){
                     if(filterdata.includes(", ")){
                         $(`#makeDropdown`).text(filterdata.replace(",,", ""));
                     }else{
-                        $(`#makeDropdown`).text("Select a Car (s)");
+                        $(`.MakeSearchFilter`).text("Select a Car (s)");
                     }
                 }else{
                     $("#"+selectedid).remove();
@@ -1198,9 +1214,137 @@ function getSelectedCheckFilterOnSearch(id, typesearch, value,filter=""){
         }
         
     };
+getSelectedCheckFilterOnSearchProvince
+function getSelectedCheckFilterOnSearchProvince(id, typesearch, value,filter=""){
+    var id=id.replace(' ','-');
+    var getInputToCheckIfChecked=document.getElementById(typesearch + "-" + id);
 
-function getSelectedCheckFilterOnSearchProvince(){
+if(getInputToCheckIfChecked.checked){
+    // Add id to selectedFilters array
+    if(selectedFilters.indexOf(id) === -1){ // Check if id is not already in the array
+        var obj={}
+        obj["key"]=typesearch
+        obj["id"]=id
+        selectedFilters.push(obj);
+
+        //use this function to clear the button text and set aas per what is selected on the filters
+            $('#provinceDropdown').css({
+            'font-size': '15px',
+            'overflow': 'hidden'
+            });
+        if(filter=="filter"){
+           var filterdata= $(`#provinceDropdown`).text();
+           if(filterdata.includes("Select a Province(s)")){
+                $(`#provinceDropdown`).text(''); 
+                $(`#provinceDropdown`).text(", "+ value);
+           }else{
+            var filterdata= $(`#provinceDropdown`).text(); 
+            $(`#provinceDropdown`).text(filterdata + ", " + value);
+           }
+
+        }else{
+            $("#appendlistofSelcted").append( "<li id='"+typesearch+ id +"'>"+ value + "</li>");
+            $("#appendlistofSelcted").show()
+        }
+     
+    }else{
+        
+    }
+
+}else{
+    // Remove id from selectedFilters array
+    var selectedid=typesearch + id
     
+    var index = -1
+   for (let i = 0; i < selectedFilters.length; i++) {
+        if (selectedFilters[i].key === typesearch && selectedFilters[i].id === id) {
+            index = i;
+            break;
+        }
+        }
+    if(index!== -1){
+        selectedFilters.splice(index, 1);
+        if(filter=="filter"){
+            var filterdata= $(`#provinceDropdown`).text();
+            var filterdata= filterdata.replace(", " + value, "");
+            $(`#provinceDropdown`).val(filterdata);
+            if(filterdata.includes(", ")){
+                $(`#provinceDropdown`).text(filterdata.replace(",,", ""));
+            }else{
+                $(`#provinceDropdown`).text("Select a Province(s)");
+            }
+        }else{
+            $("#"+selectedid).remove();
+        }
+
+       
+    }
+}
+if(filter=="filter"){
+    getFormDataAndSubmit()
+
+}else{
+    submitFormbasedOnKeywords()
+    getFormDataAndSubmit()
+}
+}
+
+function resetFormAdvanced(){
+// Reset selected filters array
+selectedFilters=[];
+$(".dynamic-input").remove();
+
+// Reset dropdown text
+$('#makeDropdown').text('Select a Car (s)');
+// Reset checkboxes
+var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+checkboxes.forEach(function(checkbox) {
+    checkbox.checked = false;
+});
+// Reset search input
+$('#keyword').val('');
+// Reset search results
+var resultsContainer = document.getElementById('search-results');
+resultsContainer.innerHTML = '';
+document.getElementById('searchForm').reset();
+$("#appendlistofSelcted").hide();
+$("#appendlistofSelcted").empty();
+
+}
+
+function  submitFormbasedOnKeywords() {
+//event.preventDefault(); // Prevent the default form submission
+
+// Clear previous dynamic inputs
+$(".dynamic-input").remove();
+
+// Iterate through selectedFilters and create inputs
+for (let i = 0; i < selectedFilters.length; i++) {
+    let obj = selectedFilters[i];
+    let inputName;
+    switch (obj.key) {
+        case 'brand':
+            inputName = 'car_brand_id[]';
+            break;
+        case 'model':
+            inputName = 'car_model_id[]';
+            break;
+        case 'variant':
+            inputName = 'car_variant_id[]';
+            break;
+        default:
+            continue; // Skip if key is not recognized
+    }
+
+    // Create and append the input element
+    let input = $('<input>')
+        .attr('type', 'hidden')
+        .attr('name', inputName)
+        .attr('value', obj.id)
+        .addClass('dynamic-input'); // Add a class for easy removal
+
+    $("#searchForm").append(input);
+}
 }
 
 
