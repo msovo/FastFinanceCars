@@ -14,8 +14,6 @@ class Vehicle extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'make',
-        'model',
         'year',
         'price',
         'mileage',
@@ -27,7 +25,9 @@ class Vehicle extends Model
         'description',
         'listed_at',
         'car_condition',
-        'variant'
+        'car_brand_id',
+        'car_model_id',
+        'variant_id'
     ];
 
     public function category()
@@ -78,5 +78,16 @@ class Vehicle extends Model
         return $this->belongsTo(CarModel::class);
     }
 
+    public function car_brand() {
+        return $this->belongsTo(CarBrand::class);
+    }
+
+    public function variant() {
+        return $this->belongsTo(Variant::class);
+    }
+    
+    public function car_model() {
+        return $this->belongsTo(CarModel::class);
+    }
 
 }

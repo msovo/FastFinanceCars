@@ -113,7 +113,7 @@
                         <a href="{{ route('admin.users.index') }}" class="list-group-item list-group-item-action">View All Users</a>
                         <a href="{{ route('admin.users.create') }}" class="list-group-item list-group-item-action">Add New User</a>
                     </div>
-                    <a href="#listingsManagement" class="list-group-item list-group-item-action" data-toggle="collapse">Listings Management</a>
+                    <a href="{{ route('admin.chats.index') }}"  class="list-group-item list-group-item-action" >Chats Management</a>
                     <div class="collapse" id="listingsManagement">
                         <a href="{{ route('admin.listings.index') }}" class="list-group-item list-group-item-action">View All Listings</a>
                         <a href="{{ route('admin.listings.create') }}" class="list-group-item list-group-item-action">Add New Listing</a>
@@ -321,7 +321,7 @@ $(document).ready(function() {
     });
 });
     </script>
-
+@yield('scripts')
 
 
 </body>

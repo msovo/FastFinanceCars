@@ -8,7 +8,7 @@ class ChatMessage extends Model
 {
     use HasFactory;
  
-    protected $fillable = ['user_id', 'message', 'is_admin','guest_id','guest_alias'];
+    protected $fillable = ['user_id', 'message', 'is_admin','guest_id','guest_alias','seen','admin_id'];
 
     public function user()
     {

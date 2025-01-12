@@ -29,6 +29,8 @@ use App\Http\Controllers\CarMediaCommentController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\AdminChatController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -350,3 +352,15 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/feeds/{feed}/comments', [CarMediaCommentController::class, 'getLatestComments'])->name('feeds.comments.latest');
 Route::get('/feeds/{feed}/comment-count', [CarMediaCommentController::class, 'getCommentCount'])->name('feeds.comment.count');
 Route::get('/feeds/{feed}/comments', [CarMediaCommentController::class, 'getNewComments'])->name('feeds.comments.new');
+
+
+Route::prefix('admin')->group(function () {
+    Route::get('chat-messages/{id}/messages', [AdminChatController::class, 'getMessages'])->name('admin.chat-messages.messages');
+    Route::post('chat-messages/{id}/send-message', [AdminChatController::class, 'sendMessage'])->name('admin.chat-messages.send');
+});
+
+Route::prefix('admin')->group(function () {
+    Route::get('chats', [AdminChatController::class, 'index'])->name('admin.chats.index');
+    Route::get('chats/{id}', [AdminChatController::class, 'show'])->name('admin.chats.show');
+});
+

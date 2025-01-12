@@ -50,7 +50,7 @@
     }
     .ribbon {
         position: absolute;
-        top: 23px;
+        top: -28px;
         right: -5px;
         z-index: 1;
         overflow: hidden;
@@ -344,6 +344,45 @@
 
 overflow: hidden;
 }
+
+
+.verified-badge {
+    display: inline-block;
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 5px 10px; /* Some padding */
+    border-radius: 5px; /* Rounded corners */
+    font-weight: bold; /* Bold text */
+    font-size: 14px; /* Font size */
+}
+
+.warning-sign {
+    display: inline-block;
+    background-color: #FF9800; /* Orange background */
+    color: white; /* White text */
+    padding: 5px 10px; /* Some padding */
+    border-radius: 5px; /* Rounded corners */
+    font-weight: bold; /* Bold text */
+    font-size: 14px; /* Font size */
+}
+
+.dealer-info {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between items */
+}
+
+.dealer-logo {
+    width: 50px; /* Adjust size as needed */
+    height: 50px; /* Adjust size as needed */
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover; /* Ensures the image covers the area */
+}
+
+.dealer-name {
+    font-size: 16px; /* Adjust font size as needed */
+    font-weight: bold; /* Bold text */
+}
 </style>
 
 
@@ -481,7 +520,7 @@ overflow: hidden;
 
 <div class="row">
         <button type="button" d="toggleMoreFilters" class="btn btn-primary col">More Filters</button>
-        <button type="button" onclick="resetFormAdvanced()" class="btn btn-secondary col" id="resetFilters">Reset Filters</button>
+     <button type="button" onclick="resetFormAdvanced()" class="btn btn-secondary col" id="resetFilters">Reset Filters</button>
         </div>
     </form>
 </div>
@@ -494,7 +533,7 @@ overflow: hidden;
 
 
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-4">
           
         </div>
 
@@ -575,12 +614,18 @@ overflow: hidden;
                         @endif
                     </div>
                     <div class="col">
-                        <div class="card-body car-details">
+                        <div class="card-body car-details p-4">
                             <h5>
                                 <i class="fas fa-calendar-alt"></i> {{ $car->year }} 
-                                {{ $car->make }} {{ $car->model }}
+                                {{ $car->car_brand->name }} {{ $car->car_model->name }} {{ $car->variant->name }}
                             </h5>
                             <h6 class="price">R{{ number_format($car->price, 2) }}</h6>
+                            <p class="card-text text-danger">
+                                R{{ number_format(calculateMonthlyPayment($car->price), 2) }} p/m 
+                                <span class="badge" style="background-color: {{ $car->car_condition == 'Used' ? 'red' : 'blue' }};color:white;">
+                                    {{ ucfirst($car->car_condition) }}
+                                </span>
+                            </p>
                             <div class="specs">
                                 <div>
                                     <i class="fas fa-cogs"></i>    <!-- Transmission -->
@@ -595,13 +640,28 @@ overflow: hidden;
                                     <i class="fas fa-gas-pump"></i>   <!-- Fuel Type -->
                                     <span>{{ $car->fuel_type }}</span>
                                 </div>
+
                             </div>
-                            <p class="card-text text-danger">
-                                R{{ number_format(calculateMonthlyPayment($car->price), 2) }} p/m 
-                                <span class="badge" style="background-color: {{ $car->car_condition == 'Used' ? 'red' : 'blue' }};color:white;">
-                                    {{ ucfirst($car->car_condition) }}
-                                </span>
-                            </p>
+                            <br />
+                            <div class="mt-2 mb-2">
+                                    <span>{{ $car->listing->dealer->province }}</span>
+                                    <span>{{ $car->listing->dealer->city_town }}</span>
+                                    <span>{{ $car->listing->dealer->address }}</span>
+                                    <div class="dealer-info">
+                                    <img src="{{ asset('storage/' . $car->listing->dealer->logo) }}" alt="{{ $car->listing->dealer->dealername }} Logo" class="dealer-logo">
+                                    <span class="dealer-name">{{ $car->listing->dealer->dealername }}</span>
+                                  <?php  if ($car->listing->dealer->verified == 1) {
+                                                echo '<span class="verified-badge">✔️ Verified</span>';
+                                            } else {
+                                                echo '<span class="warning-sign">⚠️ Not Verified</span>';
+                                            }
+                                        ?>
+                                    </div>
+                                    <br/>
+                                    <span>{{ $car->listing->dealer->dealership_name }}</span><br/>
+
+                                    </div>
+
                             @if($car->listing && $car->listing->listing_status == 'active')
                                 @if($car->listing->featured)
                                     <div class="ribbon"><span>Featured</span></div>
@@ -927,6 +987,8 @@ $(document).ready(function() {
 
         populateSelect("minPrice", 5000, 1500000, 25000);
         populateSelect("maxPrice", 5000, 1500000, 25000);
+     
+       
        /// populateSelect("minMileage", 0, 500000, 5000);
        // populateSelect("maxMileage", 0, 500000, 5000);
     // Handle Make checkbox changes (to show/hide models)

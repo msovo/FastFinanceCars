@@ -6,6 +6,7 @@
     <table class="table table-striped" id="listings-table">
         <thead>
             <tr>
+                <th>Image</th>
                 <th>Make</th>
                 <th>Model</th>
                 <th>Year</th>
@@ -17,8 +18,14 @@
         <tbody>
             @foreach($listings as $listing)
                 <tr>
-                    <td>{{ $listing->vehicle->make ?? 'N/A' }}</td>
-                    <td>{{ $listing->vehicle->model ?? 'N/A' }}</td>
+                    <td>
+                        @if ($listing->vehicle->images->isNotEmpty())
+                            <img src="{{ asset(path: 'storage/' . $listing->vehicle->images[0]->image_url) }}" alt="Vehicle Image" style="max-width: 100px; max-height: 100px;">
+                        @else
+                            No Image
+                        @endif                    
+                    <td>{{ $listing->vehicle->car_brand->name ?? 'N/A' }}</td>
+                    <td>{{ $listing->vehicle->car_model->name ?? 'N/A' }}</td>
                     <td>{{ $listing->vehicle->year ?? 'N/A' }}</td>
                     <td>{{ $listing->vehicle->price ?? 'N/A' }}</td>
                     <td>
@@ -118,7 +125,9 @@
             @endforeach
         </tbody>
     </table>
+    @endsection
 
+@section('scripts')
     <script>
         $(document).ready(function() {
             $('#listings-table').DataTable();

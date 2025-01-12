@@ -3,6 +3,15 @@
 @section('title', 'Add Cars')
 
 @section('content')
+<style>
+    .hide{
+        display: none;
+    }
+
+    .show{
+        display: block;
+    }
+</style>
     <h1>Add Car</h1>
     <div class="card-body">
         <div id="confirmationMessage" class="alert alert-success" style="display:none;"></div>
@@ -12,22 +21,33 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="make">Make</label>
-                        <select class="form-control" id="make" name="make" required>
+                        <label for="car_brand_id">Make</label>
+                        <select class="form-control" id="car_brand_id" onchange="updateSelectInfoForModelToMatchMake()" name="car_brand_id" required>
                             <option value="">Select Make</option>
-                            @foreach ($categories->where('category_type', 'Make') as $category)
-                                <option value="{{ $category->category_name }}">{{ $category->category_name }}</option>
+                            @foreach ($Makes as $make)
+                                <option value="{{ $make->id }}">{{ $make->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="model">Variant</label>
-                        <input type="text" class="form-control" id="variant" name="variant" required>
+                        <label for="car_model_id">Model</label>
+                        <select class="form-control" id="car_model_id" onchange="updateSelectInfoForVariantToMatchModels()" name="car_model_id" >
+                            <option value="">Select Model Of The Car</option>
+                        </select>
+                        <button type="button" class="btn btn-primary" onclick="expandModelManual()">Cant Find What You looking For?</button>
+                        <input type="text" class="form-control hide" id="model" name="model" placeholder="Enter the variant of the make selected" >
                     </div>
+
                     <div class="form-group">
-                        <label for="model">Model</label>
-                        <input type="text" class="form-control" id="model" name="model" required>
+                        <label for="model">Variant</label>
+                        <select class="form-control" id="variant_id"  name="variant_id" >
+                            <option value="">Select a Variant Of The Car Model Selected</option>
+                        </select>
+                        <button type="button" class="btn btn-primary" onclick="expandVariantManual()">Cant Find What You looking For?</button>
+
+                        <input type="text" class="form-control hide" id="variant" name="variant" placeholder="Enter the variant of the model selected manually" >
                     </div>
+                  
                     <div class="form-group">
                         <label for="year">Year</label>
                         <select class="form-control" id="year" name="year" required>
@@ -153,9 +173,70 @@ function toggleCustomEngineSizeInput() {
         customEngineSizeInput.required = false;
     }
 }
-
+/* 
 document.addEventListener('DOMContentLoaded', function() {
     initializeForm();
-});
+}); */
+
+function updateSelectInfoForModelToMatchMake(){
+    const makeId = document.getElementById('car_brand_id').value;
+    const modelSelect = document.getElementById('car_model_id');
+    modelSelect.innerHTML = '<option value="">Select Model Of The Car</option>';
+    var data=@json($Models);
+            data.forEach(model => {
+                if(model.car_brand_id==makeId){
+                const option = document.createElement('option');
+                option.value = model.id;
+                option.textContent = model.name;
+                modelSelect.appendChild(option);
+                }
+            });
+     
+}
+
+function expandVariantManual(){
+
+
+
+   var variantInput= document.getElementById('variant')
+
+   if(variantInput.classList.contains('hide')){
+    variantInput.classList.remove('hide');
+    variantInput.classList.add('show');
+   }else{
+    variantInput.classList.add('hide');
+    variantInput.classList.remove('show');
+   }
+    
+}
+
+function expandModelManual(){
+   var modelInput= document.getElementById('model')
+
+    if(modelInput.classList.contains('hide')){
+     modelInput.classList.remove('hide');
+     modelInput.classList.add('show');
+    }else{
+        modelInput.classList.add('hide');
+        modelInput.classList.remove('show');
+    }
+
+}
+    
+
+function updateSelectInfoForVariantToMatchModels(){
+    const modelId = document.getElementById('car_model_id').value;
+    const variantSelect = document.getElementById('variant_id');
+    variantSelect.innerHTML = '<option value="">Select a Variant Of The Car Model Selected</option>';
+    var data=@json($Variants);
+            data.forEach(variant => {
+                if(variant.car_model_id==modelId){
+                const option = document.createElement('option');
+                option.value = variant.id;
+                option.textContent = variant.name;
+                variantSelect.appendChild(option);
+                }
+            });
+}
     </script>
 @endsection

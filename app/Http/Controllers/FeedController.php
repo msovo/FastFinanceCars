@@ -16,6 +16,8 @@ class FeedController extends Controller
 {
     public function index()
     {
+        $feeds=[];
+        $stories=[];
         $feeds = car_media_feed::with(relations: ['user', 'likes','images'])->orderBy('id', 'desc')->get();
         $stories =car_media_story::with(['user', 'comments', 'likes'])->orderBy('id', 'desc')->get();
         return view('feeds.index', compact('feeds','stories'));

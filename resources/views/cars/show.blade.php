@@ -451,7 +451,7 @@
     <div class="col-md-8">
         <h4>
             <i class="fas fa-calendar-alt"></i> {{ $car->year }} &nbsp; 
-            {{ $car->make }} {{ $car->model }} {{ $car->variant }}
+            {{ $car->car_brand->name }} {{ $car->car_model->name }} {{ $car->variant->name }}
         </h4>
         <h5 class="price">
              R{{ number_format($car->price, 2) }} &nbsp;
@@ -590,7 +590,7 @@
                     <i class="fas fa-palette"></i> {{ $car->color }}
                 </div>
                 <div>
-                    <i class="fas fa-car"></i> {{ ucfirst($car->condition) }}
+                    <i class="fas fa-car"></i> {{ ucfirst($car->car_condition) }}
                 </div>
                 <div>
                     <i class="fas fa-car-side"></i> {{ $car->body_type }}
@@ -632,7 +632,7 @@
                     <i class="fas fa-palette"></i> {{ $car->color }}
                 </div>
                 <div>
-                    <i class="fas fa-car"></i> {{ ucfirst($car->condition) }}
+                    <i class="fas fa-car"></i> {{ ucfirst($car->car_condition) }}
                 </div>
                 <div>
                     <i class="fas fa-car-side"></i> {{ $car->body_type }}
@@ -1094,23 +1094,8 @@ $(document).ready(function() {
    
 });
 
-var car = {
-    vehicle_id: {{ $car->vehicle_id }}, // Assuming you have a car ID
-        mileage: "{{ $car->mileage }}",
-        transmission: "{{ $car->transmission }}",
-        fuel_type: "{{ $car->fuel_type }}",
-        color: "{{ $car->color }}",
-        car_condition: "{{ ucfirst($car->car_condition) }}",
-        body_type: "{{ $car->body_type }}",
-        engine_size: "{{ $car->engine_size }}",
-        description: "{{ $car->description }}",
-        price: parseInt( "{{ $car->price }}"),
-        year: "{{ $car->year}}",
-        make: "{{ $car->make }}",
-        model: "{{ $car->model }}",
-        variant: "{{ $car->variant }}",
-        images: @json($car->images->map(function($image) { return ['url' => asset('storage/' . $image->image_url)]; }))
-    };
+var description= `{{ $car->description }}`
+var car = @json($car);
 
     appendCarToCookie(car);
 

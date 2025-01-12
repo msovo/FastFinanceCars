@@ -94,7 +94,7 @@
                 </div>
                 <div class="form-group">
                     <label for="variant">Variant</label>
-                    <input type="text" class="form-control" id="variant" name="variant" value="{{ $vehicle->variant }}">
+                    <input type="text" class="form-control" id="variant" name="variant" value="{{ $vehicle->variant->name }}">
                 </div>
                 <div class="form-group">
                     <label for="description">Description</label>

@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Variant extends Model
 {
-    protected $fillable = ['model_id', 'name'];
+    protected $fillable = ['car_model_id', 'name'];
 
     public function model()
     {

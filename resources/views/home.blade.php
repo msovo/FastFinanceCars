@@ -641,7 +641,7 @@
                     <div class="card-body">
                         <h5 class="card-title">
                             <i class="fas fa-calendar-alt"></i> {{ $car->year }}   
-                            {{ $car->make }} {{ $car->model }}
+                            {{ $car->car_brand->name }} {{$car->car_model->name}} {{$car->variant->name}}
                         </h5>
                         <p class="card-text">
                             <i class="fas fa-cogs"></i> {{ $car->transmission }}   
@@ -713,7 +713,7 @@
                     <div class="card-body">
                         <h5 class="card-title">
                             <i class="fas fa-calendar-alt"></i> {{ $car->year }}   
-                            {{ $car->make }} {{ $car->model }}
+                            {{ $car->car_brand->name }} {{$car->car_model->name}} {{$car->variant->name}}
                         </h5>
                         <p class="card-text">
                             <i class="fas fa-cogs"></i> {{ $car->transmission }}   
@@ -1058,47 +1058,48 @@ function getCookie(name) {
             // Clear the container and render cars
             $("#recently-viewed-cars-list").html("");
             carsToDisplay.forEach(function (car) {
+                //var url=` asset('storage/' . ${car.image.image_url})`
                 var carHtml = `
-                    <div class="col-md-4 car-card" id="content-engagement">
-                        <div class="card" onclick="location.href='/cars/${car.vehicle_id}';" style="cursor: pointer;">
-                            ${car.images.length > 0 ? `
-                            <div class="main-image-container">
-                                <img src="${car.images[0].url}" class="card-img-top main-image" alt="${car.make} ${car.model}">
-                                <span class="image-count" style="bottom: 20px; left: 0;">
-                                    <i class="fas fa-camera"></i> ${car.images.length}
-                                </span>
-                            </div>` : `
-                            <div class="main-image-container">
-                                <img src="default-image.jpg" class="card-img-top main-image" alt="Default Image">
-                            </div>`}
-                            <div class="row thumbnails">
-                                ${car.images.slice(0, 3).map(image => `
-                                <div class="col-4">
-                                    <img src="${image.url}" class="thumbnail-image" alt="${car.make} ${car.model} thumbnail">
-                                </div>`).join('')}
-                            </div>
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <i class="fas fa-calendar-alt"></i> ${car.year} ${car.make} ${car.model}
-                                </h5>
-                                <p class="card-text">
-                                    <i class="fas fa-cogs"></i> ${car.transmission} 
-                                    <i class="fas fa-road"></i> ${car.mileage} km 
-                                </p>
-                                <p class="card-text-price text-danger">
-                                    R${car.price.toFixed(2)}
-                                </p>
-                                <p class="card-text-p text-danger">
-                                    R${calculateMonthlyPayment(car.price)} p/m 
-                                    <span class="badge" style="background-color: ${car.car_condition === 'used' ? 'red' : 'blue'};color:white;">
-                                        ${car.car_condition}
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                $("#recently-viewed-cars-list").append(carHtml);
+    <div class="col-md-4 car-card" id="content-engagement">
+        <div class="card" onclick="location.href='/cars/${car.vehicle_id}';" style="cursor: pointer;">
+            ${car.images.length > 0 ? `
+            <div class="main-image-container">
+                <img src="/storage/${car.images[0].image_url}" class="card-img-top main-image" alt="${car.car_brand.name} ${car.car_model.name}">
+                <span class="image-count" style="bottom: 20px; left: 0;">
+                    <i class="fas fa-camera"></i> ${car.images.length}
+                </span>
+            </div>` : `
+            <div class="main-image-container">
+                <img src="default-image.jpg" class="card-img-top main-image" alt="Default Image">
+            </div>`}
+            <div class="row thumbnails">
+                ${car.images.slice(0, 3).map(image => `
+                <div class="col-4">
+                    <img src="/storage/${image.image_url}" class="thumbnail-image" alt="${car.car_brand.name} ${car.car_model.name} thumbnail">
+                </div>`).join('')}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-calendar-alt"></i> ${car.year} ${car.car_brand.name} ${car.car_model.name}
+                </h5>
+                <p class="card-text">
+                    <i class="fas fa-cogs"></i> ${car.transmission} 
+                    <i class="fas fa-road"></i> ${car.mileage} km 
+                </p>
+                <p class="card-text-price text-danger">
+                    R${parseFloat(car.price).toFixed(2)}
+                </p>
+                <p class="card-text-p text-danger">
+                    R${calculateMonthlyPayment(car.price)} p/m 
+                    <span class="badge" style="background-color: ${car.car_condition == 'Used' ? 'red' : 'blue'};color:white;">
+                        ${car.car_condition}
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+`;
+$("#recently-viewed-cars-list").append(carHtml);
             });
 
             // Update pagination controls
@@ -1455,6 +1456,9 @@ function getSelectedCheckFilterOnSearch(id, typesearch, value,filter=""){
         this.submit();o
     });
 
+    $(document).ready(function(){
+            var c= @json($latestCars)
+    })
 
 function getSelectedCheckFilterOnSearchProvince(){
     

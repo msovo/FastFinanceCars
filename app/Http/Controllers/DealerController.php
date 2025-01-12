@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CarBrand;
+use App\Models\CarModel;
+use App\Models\Variant;
 use Illuminate\Http\Request;
 use App\Models\Vehicle;
 use App\Models\Listing;
@@ -208,7 +211,92 @@ public function manageSales()
     public function addCars()
     {
         $categories = Category::all(); // Assuming you have a Category model
-        return view('dealer.add_cars', compact('categories'));
+        $Makes=CarBrand::all();
+        $Models = CarModel::all();
+        $Variants=Variant::all();
+
+        return view('dealer.add_cars', compact('categories','Models','Variants','Makes'));
+    }
+    public function storeCar(Request $request)
+    {
+        \Log::info('Attempting to create vehicle');
+    
+        // Validate the request
+        $request->validate([
+            'make' => 'nullable|string|max:50',
+            'model' => 'nullable|string|max:50',
+            'year' => 'required|integer',
+            'price' => 'nullable|numeric',
+            'mileage' => 'nullable|integer',
+            'fuel_type' => 'required|string',
+            'transmission' => 'required|string',
+            'body_type' => 'required|string',
+            'car_condition' => 'nullable|string',
+            'variant' => 'nullable|string',
+            'color' => 'required|string|max:30',
+            'custom_color' => 'required_if:color,Other|nullable|string|max:30',
+            'engine_size' => 'required|string',
+            'custom_engine_size' => 'required_if:engine_size,Other|nullable|string',
+            'description' => 'nullable|string',
+            'car_model_id' => 'nullable|integer',
+            'car_brand_id' => 'required|integer',
+            'variant_id' => 'nullable|integer',
+        ]);
+    
+        try {
+            $data = $request->all();
+    
+            // Handle "Other" selections for color
+            if ($request->color === 'Other') {
+                $data['color'] = $request->custom_color;
+            }
+    
+            // Handle "Other" selections for engine size
+            if ($request->engine_size === 'Other') {
+                $data['engine_size'] = $request->custom_engine_size;
+            }
+    
+            // Handle manual input for model and variant
+            if (!empty($request->model)) {
+                // Store the model if model_id is not provided
+                if (empty($request->model_id)) {
+                    $carModel = CarModel::create(['car_brand_id' => $data['car_brand_id'], 'name' => $request->model]);
+                    $data['car_model_id'] = $carModel->id;
+                } else {
+                    $data['car_model_id'] = $request->model_id;
+                }
+            }
+       // Store the variant with the associated model ID if variant is provided
+       \Log::info('Attempting to create variant for variant ' . $request->variant);
+
+       if (!empty($request->variant)) {
+
+           $variant = Variant::create([
+               'name' => $request->variant,
+               'car_model_id' => $data['car_model_id'],
+           ]);
+           $data['variant_id'] = $variant->id;
+       }
+
+            \Log::info('Attempting to create vehicle with data:', $data);
+            $vehicle = Vehicle::create($data);
+            \Log::info('Vehicle created successfully with ID: ' . $vehicle->vehicle_id);
+    
+            // Update listing_status in listings table
+            Listing::create([
+                'user_id' => auth()->id(), // Assuming the user is authenticated
+                'vehicle_id' => $vehicle->vehicle_id, // Corrected property name
+                'listing_status' => 'active',
+                'featured' => 0,
+                'sponsored' => 0,
+            ]);
+    
+            return redirect()->route('dealer.vehicles.view', $vehicle->vehicle_id)
+                ->with('success', 'Vehicle created successfully. Please add images to your vehicle listing.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to create vehicle: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['error' => 'Failed to create vehicle.']);
+        }
     }
     public function unlistVehicle(Request $request, $id)
     {
@@ -226,63 +314,7 @@ public function manageSales()
     
         return redirect()->back()->with('success', 'Vehicle listed successfully!');
     }
-    public function storeCar(Request $request)
-    {
-        \Log::info('Attempting to create vehicle');
-    
-        // Validate the request
-        $request->validate([
-            'make' => 'required|string|max:50',
-            'model' => 'required|string|max:50',
-            'year' => 'required|integer',
-            'price' => 'nullable|numeric',
-            'mileage' => 'nullable|integer',
-            'fuel_type' => 'required|string',
-            'transmission' => 'required|string',
-            'body_type' => 'required|string',
-            'car_condition' => 'nullable|string',
-            'variant' => 'nullable|string',
-            'color' => 'required|string|max:30',
-            'custom_color' => 'required_if:color,Other|nullable|string|max:30',
-            'engine_size' => 'required|string',
-            'custom_engine_size' => 'required_if:engine_size,Other|nullable|string',
-            'description' => 'nullable|string',
-        ]);
-    
-        try {
-            $data = $request->all();
-    
-            // Handle "Other" selections for color
-            if ($request->color === 'Other') {
-                $data['color'] = $request->custom_color;
-            }
-    
-            // Handle "Other" selections for engine size
-            if ($request->engine_size === 'Other') {
-                $data['engine_size'] = $request->custom_engine_size;
-            }
-    
-            \Log::info('Attempting to create vehicle with data:', $data);
-            $vehicle = Vehicle::create($data);
-            \Log::info('Vehicle created successfully with ID: ' . $vehicle->vehicle_id);
-    
-            // Update listing_status in listings table
-            Listing::create([
-                'user_id' => auth()->id(), // Assuming the user is authenticated
-                'vehicle_id' => $vehicle->vehicle_id, // Corrected property name
-                'listing_status' => 'active',
-                'featured' => 0,
-                'sponsored' => 0,
-            ]);
-    
-            return redirect()->route('dealer.vehicles.view', $vehicle->vehicle_id) 
-            ->with('success', 'Vehicle created successfully. Please add images to your vehicle listing.');
-        } catch (\Exception $e) {
-            \Log::error('Failed to create vehicle: ' . $e->getMessage());
-            return redirect()->back()->withErrors(['error' => 'Failed to create vehicle.']);
-        }
-    }
-    
+  
 
   
     public function manageListings()

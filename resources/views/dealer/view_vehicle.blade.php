@@ -95,11 +95,11 @@
             <tbody>
                 <tr>
                     <th>Make:</th>
-                    <td>{{ $vehicle->make }}</td>
+                    <td>{{ $vehicle->car_brand->name }}</td>
                 </tr>
                 <tr>
                     <th>Model:</th>
-                    <td>{{ $vehicle->model }}</td>
+                    <td>{{ $vehicle->car_model->name }}</td>
                 </tr>
                 <tr>
                     <th>Year:</th>
@@ -139,7 +139,7 @@
                 </tr>
                 <tr>
                     <th>Variant:</th>
-                    <td>{{ $vehicle->variant }}</td>
+                    <td>{{ $vehicle->variant->name }}</td>
                 </tr>
                 <tr>
                     <th>Description:</th>

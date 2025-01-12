@@ -74,20 +74,20 @@ public function index()
                     ->groupBy('category_type'); 
 
                              
-    $featuredCars = Vehicle::whereHas('listing', function ($query) {
-        $query->where('listing_status', 'active')->where('featured', true);
-    })->get()
-    ->take(3);
-
-    $sponsoredCars = Vehicle::whereHas('listing', function ($query) {
-        $query->where('listing_status', 'active')->where('sponsored', true);
-    })->get()
-    ->take(3);;
-
-    $latestCars = Vehicle::whereHas('listing', function ($query) { 
-        $query->where('listing_status', 'active');
-    })->orderBy('listed_at', 'desc')->take(3)->get();
-
+                    $featuredCars = Vehicle::with(['car_brand', 'variant', 'car_model'])
+                    ->whereHas('listing', function ($query) {
+                        $query->where('listing_status', 'active')->where('featured', true);
+                    })->take(3)->get();
+                
+                $sponsoredCars = Vehicle::with(['car_brand', 'variant', 'car_model'])
+                    ->whereHas('listing', function ($query) {
+                        $query->where('listing_status', 'active')->where('sponsored', true);
+                    })->take(3)->get();
+                
+                $latestCars = Vehicle::with(['car_brand', 'variant', 'car_model'])
+                    ->whereHas('listing', function ($query) {
+                        $query->where('listing_status', 'active');
+                    })->orderBy('listed_at', 'desc')->take(3)->get();
     $newsCategories = NewsCategory::all();
     $news = [];
 
@@ -342,28 +342,26 @@ public function list(Request $request)
     }
 
     public function getCarsBasedOnAffordability(Request $request)
-{
-    $netIncome = $request->input('netIncome');
-    $remainingIncome = $request->input('remainingIncome');
-    $creditScore = $request->input('creditScore');
-    $viewAll = $request->input('viewAll', false);
-
-    $maxAffordablePayment = $remainingIncome * 0.25;
-
-    $affordableCars = Vehicle::whereHas('listing', function ($query) use ($maxAffordablePayment) {
-        $query->whereRaw('price / 72 <= ?', [$maxAffordablePayment]);
-    })->with('images')->get();
-
-    $riskyCars = Vehicle::whereHas('listing', function ($query) use ($maxAffordablePayment) {
-        $query->whereRaw('price / 72 > ?', [$maxAffordablePayment])
-              ->whereRaw('price / 72 <= ?', [$maxAffordablePayment * 2]);
-    })->with('images')->get();
-
-    return response()->json([
-        'affordableCars' => $affordableCars,
-        'riskyCars' => $riskyCars,
-    ]);
-}
+    {
+        $netIncome = $request->input('netIncome');
+        $remainingIncome = $request->input('remainingIncome');
+        $creditScore = $request->input('creditScore');
+        $viewAll = $request->input('viewAll', false);
+        $page = $request->input('page', 1);
+        $perPage = 3;
+    
+        $maxAffordablePayment = $remainingIncome * 0.25;
+    
+        $affordableCars = Vehicle::whereHas('listing', function ($query) use ($maxAffordablePayment) {
+            $query->whereRaw('price / 72 <= ?', [$maxAffordablePayment]);
+        })->with('images', 'car_brand', 'variant', 'car_model', 'listing.dealer')
+          ->paginate($perPage, ['*'], 'affordablePage', $page);
+    
+    
+        return response()->json([
+            'affordableCars' => $affordableCars
+        ]);
+    }
 
 // CarsController.php
 
@@ -651,11 +649,11 @@ public function search(Request $request)
         }
 
         // Include relationships and images
-        $query->with('images');
+        $query->with('images','listing.dealer');
 
         // Get results with pagination
         $cars = $query->distinct()->paginate(2); // `distinct` ensures no duplicates
-
+        
         if ($request->ajax()) {
             $html = view('partials._car_list', compact('cars'))->render();
             $pagination = view('partials._pagination', compact('cars'))->render();

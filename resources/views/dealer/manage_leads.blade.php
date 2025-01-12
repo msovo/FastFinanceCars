@@ -99,7 +99,7 @@
                     <td>{{ $lead->created_at }}</td>
 
                     <td>
-                        <button class="btn btn-info view-message-btn" data-id="{{ $lead->id }}" data-vehicle="{{ $lead->listing->vehicle->make }} {{ $lead->listing->vehicle->model }}" data-customer-message="{{ $lead->message }}" data-dealer-message="{{ $lead->dealer_message }}" data-vehicle-id="{{ $lead->listing->vehicle->vehicle_id }}">View Message</button>
+                        <button class="btn btn-info view-message-btn" data-id="{{ $lead->id }}" data-vehicle="{{ $lead->listing->vehicle->make }} {{ $lead->listing->vehicle->model }}" data-customer-message="{{ $lead->message }}" data-dealer-message="{{ $lead->dealer_message }}" data-vehicle-id="{{ $lead->listing->vehicle->vehicle_id}}" data-contact="{{$lead->phone}}" data-customername="{{$lead->name}}">View Message</button>
                         <button class="btn btn-success approve-btn" data-id="{{ $lead->id }}">Confirm</button>
                         <button class="btn btn-danger decline-btn" data-id="{{ $lead->id }}">Decline</button>
                     </td>
@@ -118,14 +118,23 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <class="modal-body">
                     <p><strong>Vehicle:</strong> <span id="vehicleDetails"></span></p>
                     <p><strong>Customer Message:</strong></p>
                     <p id="customerMessage"></p>
                     <p><strong>Dealer Message:</strong></p>
                     <p id="dealerMessage"></p>
                     <p><strong>Customer Name:</strong></p>
-                    <p id="dealerMessage"></p>
+                    <p id="customer_name"></p>
+                    <p><strong>contact:</strong></p>
+                    <p id="contacts"></p>
+                
+                 <div class="row"><a id="viewCarButton" class="btn btn-secondary col">View Car</a> 
+                 <a id="whatsappButton" class="btn btn-secondary col" href="#" onclick="openWhatsApp(document.getElementById('contacts').innerText)">
+                    <i class="fab fa-whatsapp"></i> Contact via WhatsApp
+                </a>
+
+                </div>   
                 </div>
             </div>
         </div>
@@ -240,17 +249,23 @@ switch (selectedStatus) {
         table.search('').columns().search('').draw(); 
     });
 
-
-
     $('.view-message-btn').on('click', function() {
+    
         var vehicle = $(this).data('vehicle');
         var customerMessage = $(this).data('customer-message');
         var dealerMessage = $(this).data('dealer-message');
-        var listingId = $(this).data('listing-id');
+        var listingId = $(this).data('vehicle-id');
+        var customer_name = $(this).data('customername');
+        var contacts = $(this).data('contact');
+
         $('#vehicleDetails').text(vehicle);
         $('#customerMessage').text(customerMessage);
         $('#dealerMessage').text(dealerMessage);
-        $('#viewCarButton').attr('href', '{{ url('cars/show') }}/' + listingId);
+        $('#contacts').text(contacts);
+        $('#customer_name').text(customer_name);
+
+        
+        $('#viewCarButton').attr('href', '{{ url('cars') }}/' + listingId);
         $('#viewMessageModal').modal('show');
     });
 
@@ -306,6 +321,11 @@ switch (selectedStatus) {
         });
     });
 });
+
+function openWhatsApp(contact) {
+            var whatsappUrl = "https://wa.me/" + contact;
+            window.open(whatsappUrl, "_blank");
+        }
 
 </script>
 @endsection

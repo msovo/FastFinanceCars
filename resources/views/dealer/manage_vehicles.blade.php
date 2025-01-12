@@ -38,8 +38,8 @@
                             No Image
                         @endif
                     </td>
-                    <td>{{ $vehicle->make }}</td>
-                    <td>{{ $vehicle->model }}</td>
+                    <td>{{ $vehicle->car_brand->name }}</td>
+                    <td>{{ $vehicle->car_model->name }}</td>
                     <td>{{ $vehicle->year }}</td>
                     <td>
                         <a href="{{ route('dealer.vehicles.view', $vehicle->vehicle_id) }}" class="btn btn-sm btn-primary mr-2">View</a>

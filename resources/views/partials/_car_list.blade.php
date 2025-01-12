@@ -34,9 +34,15 @@
                             <div class="card-body car-details">
                                 <h5>
                                     <i class="fas fa-calendar-alt"></i> {{ $car->year }} 
-                                    {{ $car->make }} {{ $car->model }}
+                                    {{ $car->car_brand->name }} {{ $car->car_model->name }} {{$car->variant->name }}
                                 </h5>
                                 <h6 class="price">R{{ number_format($car->price, 2) }}</h6>
+                                <p class="card-text text-danger">
+                                    R{{ number_format(calculateMonthlyPayment($car->price), 2) }} p/m 
+                                    <span class="badge" style="background-color: {{ $car->car_condition == 'Used' ? 'red' : 'blue' }};color:white;">
+                                        {{ ucfirst($car->car_condition) }}
+                                    </span>
+                                </p>
                                 <div class="specs">
                                     <div>
                                         <i class="fas fa-cogs"></i>    <!-- Transmission -->
@@ -51,12 +57,26 @@
                                         <span>{{ $car->fuel_type }}</span>
                                     </div>
                                 </div>
-                                <p class="card-text text-danger">
-                                    R{{ number_format(calculateMonthlyPayment($car->price), 2) }} p/m 
-                                    <span class="badge" style="background-color: {{ $car->car_condition == 'Used' ? 'red' : 'blue' }};color:white;">
-                                        {{ ucfirst($car->car_condition) }}
-                                    </span>
-                                </p>
+                                <br />
+                            <div class="mt-2 mb-2">
+                                    <span>{{ $car->listing->dealer->province }}</span>
+                                    <span>{{ $car->listing->dealer->city_town }}</span>
+                                    <span>{{ $car->listing->dealer->address }}</span>
+                                    <div class="dealer-info">
+                                    <img src="{{ asset('storage/' . $car->listing->dealer->logo) }}" alt="{{ $car->listing->dealer->dealername }} Logo" class="dealer-logo">
+                                    <span class="dealer-name">{{ $car->listing->dealer->dealername }}</span>
+                                  <?php  if ($car->listing->dealer->verified == 1) {
+                                                echo '<span class="verified-badge">✔️ Verified</span>';
+                                            } else {
+                                                echo '<span class="warning-sign">⚠️ Not Verified</span>';
+                                            }
+                                        ?>
+                                    </div>
+                                    <br/>
+                                    <span>{{ $car->listing->dealer->dealership_name }}</span><br/>
+
+                                    </div>
+                         
                                 @if($car->listing && $car->listing->listing_status == 'active')
                                     @if($car->listing->featured)
                                         <div class="ribbon"><span>Featured</span></div>
