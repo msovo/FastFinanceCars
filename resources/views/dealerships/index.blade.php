@@ -74,7 +74,7 @@
             </div>
             <div id="dealershipList">
                 @foreach($dealerships as $dealership)
-                    <div class="card dealership-card mb-3" onclick="location.href='{{ route('dealerships.show', $dealership->user_id) }}'">
+                    <div class="card dealership-card mb-3" onclick="location.href='{{ route('dealerships.show', $dealership->dealer_id) }}'">
                     <div class="me-3">
                                 @if($dealership->verified)
                                     <span class="badge badge-success"><i class="fas fa-check-circle"></i> Verified</span>

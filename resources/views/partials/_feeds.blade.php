@@ -73,7 +73,7 @@
                     @endif
                 </div>
                 <div id="reactionHtmlLoader-{{$feed->id}}">
-    <div class="reactions" style="display: flex; justify-content: space-between; position:absolute; bottom:0; width:100%;">
+    <div class="reactions" style="display: flex; justify-content: space-between; position:relative; top:0; width:100%;">
         @foreach(['love' => '❤️', 'like' => '👍', 'sad' => '😢', 'angry' => '😡', 'cool' => '😎', 'support' => '🙌', 'confused' => '😕', 'laugh' => '😂', 'celebrate' => '🎉', 'thankful' => '🙏', 'curious' => '🤔', 'interested' => '😍'] as $reaction => $emoji)
             <button class="btn btn-outline-primary reaction" data-reaction="{{ $reaction }}" data-feed-id="{{ $feed->id }}">{{ $emoji }} <span class="reaction-count" id="count-{{ $reaction }}-{{ $feed->id }}">0</span></button>
         @endforeach

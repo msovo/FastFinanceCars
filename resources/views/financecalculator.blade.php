@@ -24,32 +24,31 @@
                 <h4 class="text-primary">Finance Calculator</h4>
                 <div class="form-group">
                     <label for="price">Car Price</label>
-                    <input type="number" class="form-control" id="price" name="price" value="100000" required>
+                    <input oninput="calculatePayment()" type="number" class="form-control" id="price" name="price" value="100000" required>
                 </div>
                 <div class="form-group">
                     <label for="deposit">Deposit Amount</label>
-                    <input type="number" class="form-control" id="deposit" name="deposit" value="0" required>
+                    <input oninput="calculatePayment()" type="number" class="form-control" id="deposit" name="deposit" value="0" required>
                 </div>
                 <div class="form-group">
                     <label for="tradeInValue">Trade-In Value</label>
-                    <input type="number" class="form-control" id="tradeInValue" name="tradeInValue" value="0">
+                    <input oninput="calculatePayment()" type="number" class="form-control" id="tradeInValue" name="tradeInValue" value="0">
                 </div>
                 <div class="form-group">
                     <label for="interestRate">Interest Rate (%)</label>
-                    <input type="range" class="form-control-range" id="interestRate" name="interestRate" min="9" max="20" value="13.75" oninput="updateInterestRateValue(this.value)">
+                    <input onchange="calculatePayment()" type="range" class="form-control-range" id="interestRate" name="interestRate" min="9" max="20" value="13.75" oninput="updateInterestRateValue(this.value)">
                     <span id="interestRateValue">15%</span>
                 </div>
                 <div class="form-group">
                     <label for="loanTerm">Loan Term (months)</label>
-                    <input type="range" class="form-control-range" id="loanTerm" name="loanTerm" min="45" max="90" value="72" step="3" oninput="updateLoanTermValue(this.value)">
+                    <input onchange="calculatePayment()" type="range" class="form-control-range" id="loanTerm" name="loanTerm" min="45" max="90" value="72" step="3" oninput="updateLoanTermValue(this.value)">
                     <span id="loanTermValue">60 months</span>
                 </div>
                 <div class="form-group">
                     <label for="balloonPayment">Balloon Payment (%)</label>
-                    <input type="range" class="form-control-range" id="balloonPayment" name="balloonPayment" min="0" max="50" value="0" oninput="updateBalloonPaymentValue(this.value)">
+                    <input onchange="calculatePayment()" type="range" class="form-control-range" id="balloonPayment" name="balloonPayment" min="0" max="50" value="0" oninput="updateBalloonPaymentValue(this.value)">
                     <span id="balloonPaymentValue">0%</span>
                 </div>
-                <button type="button" class="btn btn-primary" onclick="calculatePayment()">Calculate</button>
             </form>
         </div>
 

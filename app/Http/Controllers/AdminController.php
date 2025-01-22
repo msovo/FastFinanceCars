@@ -9,6 +9,7 @@ use App\Models\Listing;
 use App\Models\Transaction;
 use App\Models\Review;
 use App\Models\Inquiry;
+use App\Models\Dealer;
 
 use App\Models\Category;
 use App\Http\Controllers\Admin\CategoryController;
@@ -45,8 +46,16 @@ class AdminController extends Controller
         $totalListings = Listing::count();
         $totalEnquiries = Inquiry::count();
         $totalReviews = Review::count();
+        $totalDealerships= Dealer::count();
+        $totals = [
+            'totalUsers' => $totalUsers,
+            'totalListings' => $totalListings,
+            'totalEnquiries' => $totalEnquiries,
+            'totalReviews' => $totalReviews,
+            'totalDealerships' => $totalDealerships,
+        ];
 
-        return view('admin.dashboard', compact('totalUsers', 'totalListings', 'totalEnquiries', 'totalReviews'));
+        return view('admin.dashboard', compact('totalUsers', 'totalListings', 'totalEnquiries', 'totalReviews','totalDealerships','totals'));
     }
     public function logout()
     {
@@ -56,6 +65,22 @@ class AdminController extends Controller
 
     public function loadContent($parameter)
     {
+        $totalUsers = User::count();
+        $totalListings = Listing::count();
+        $totalEnquiries = Inquiry::count();
+        $totalReviews = Review::count();
+        $totalDealerships = Dealer::count();
+    
+        $totals = [
+            'totalUsers' => $totalUsers,
+            'totalListings' => $totalListings,
+            'totalEnquiries' => $totalEnquiries,
+            'totalReviews' => $totalReviews,
+            'totalDealerships' => $totalDealerships,
+        ];
+    
+        view()->share('totals', $totals);
+    
         switch ($parameter) {
             case 'user':
                 return view('admin.users.create');
@@ -78,14 +103,13 @@ class AdminController extends Controller
             case 'analytics':
                 return view('admin.reports.analytics');
             case 'categories':
-                return app(CategoryController::class)->index(); // Call the index method of CategoryController
+                return app(CategoryController::class)->index();
             case 'vehicles':
-                    return app(VehicleController::class)->index(); // Call the index method of CategoryController                
+                return app(VehicleController::class)->index();
             default:
                 return response()->json(['error' => 'Invalid parameter'], 400);
         }
     }
-
     public function loadVehicleForm()
     {
         // Fetch the categories

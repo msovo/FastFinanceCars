@@ -390,7 +390,173 @@
     color: green;
     font-weight: bold;
 }
+/* Mobile-First Responsive Design */
+@media (max-width: 768px) {
+    /* Navbar Adjustments */
+    .navbar-wrapper {
+        padding: 5px 0;
+    }
 
+    .navbar {
+        padding: 10px;
+        flex-direction: column;
+    }
+
+    .navbar-brand {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+    .navbar-nav {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .nav-item {
+        margin-bottom: 10px;
+        width: 100%;
+    }
+
+    .nav-link {
+        text-align: center;
+        padding: 10px;
+    }
+
+    /* Dropdown Menus */
+    .dropdown-menu {
+        position: static;
+        display: none;
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+        text-align: center;
+    }
+
+    .dropdown-item {
+        color: #333;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .dropdown-toggle::after {
+        margin-left: 5px;
+    }
+
+    /* Mobile Menu Offcanvas */
+    .offcanvas-menu {
+        width: 100%;
+        background-color: white;
+        z-index: 1050;
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    .close-button {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 30px;
+        cursor: pointer;
+    }
+
+    /* Chat Button and Box */
+    #chat-button {
+        bottom: 15px;
+        left: 15px;
+        width: 50px;
+        height: 50px;
+        font-size: 16px;
+    }
+
+    #chat-box {
+        width: 90%;
+        height: 70%;
+        bottom: 10%;
+        left: 5%;
+        right: 5%;
+    }
+
+    #messages {
+        height: 60%;
+    }
+
+    /* Form and Input Adjustments */
+    .form-control {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .btn {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    /* Typography */
+    body {
+        font-size: 14px;
+    }
+
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.6rem; }
+    h3 { font-size: 1.4rem; }
+    h4 { font-size: 1.2rem; }
+    h5 { font-size: 1rem; }
+
+    /* Container Adjustments */
+    .container, .container-fluid {
+        padding: 0 10px;
+    }
+
+    /* Profile and Authentication */
+    .navbar-nav .nav-link img.rounded-circle {
+        width: 25px;
+        height: 25px;
+    }
+
+    /* Guest Info and Chat */
+    .guest-info input {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    .guest-info button {
+        width: 100%;
+    }
+
+    /* Responsive Images */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+/* Ultra Small Devices */
+@media (max-width: 480px) {
+    .navbar-brand {
+        font-size: 1.3rem;
+    }
+
+    #chat-box {
+        width: 95%;
+        left: 2.5%;
+        right: 2.5%;
+    }
+
+    .message {
+        max-width: 90%;
+    }
+}
+
+/* Landscape Orientation */
+@media (max-width: 768px) and (orientation: landscape) {
+    #chat-box {
+        height: 80%;
+    }
+
+    #messages {
+        height: 70%;
+    }
+}
     </style>
 
 </head>

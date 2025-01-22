@@ -383,6 +383,302 @@ overflow: hidden;
     font-size: 16px; /* Adjust font size as needed */
     font-weight: bold; /* Bold text */
 }
+
+
+/* Mobile-First Responsive Design */
+@media (max-width: 768px) {
+    /* Global Adjustments */
+    body {
+        font-size: 14px;
+        background-color: #f4f4f4;
+    }
+
+    /* Advanced Search Container */
+    .advanced-search {
+        position: relative;
+        width: 100%;
+        left: 0;
+        transform: none;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: white;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .advanced-search .form-row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .advanced-search .form-group {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .advanced-search .btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    /* Car Listing */
+    .car-listing {
+        margin-top: 10px;
+    }
+
+    .car-card {
+        margin-bottom: 15px;
+    }
+
+    .card {
+        flex-direction: column;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .card .row.no-gutters {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Image Container */
+    .main-image-container {
+        height: 250px;
+        width: 100%;
+    }
+
+    .main-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .thumbnails {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        padding: 0 10px;
+    }
+
+    .thumbnails img {
+        width: 30%;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+
+    /* Car Details */
+    .car-details {
+        padding: 15px !important;
+    }
+
+    .car-details h5 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .car-details .price {
+        font-size: 18px;
+    }
+
+    .specs {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+
+    .specs div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 12px;
+    }
+
+    .specs i {
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+
+    /* Dealer Info */
+    .dealer-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .dealer-logo {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 10px;
+    }
+
+    .verified-badge,
+    .warning-sign {
+        margin-top: 5px;
+    }
+
+    /* Pagination */
+    .pagination-links {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .pagination {
+        margin-bottom: 15px;
+    }
+
+    .results-info {
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    /* Sort Dropdown */
+    #sortBy {
+        width: 100% !important;
+        margin-bottom: 15px;
+    }
+
+    /* Ribbon */
+    .ribbon {
+        display: none; /* Hide ribbon on mobile for cleaner look */
+    }
+
+    /* Love Icon */
+    .love-icon {
+        top: 15px;
+        right: 15px;
+        font-size: 20px;
+    }
+
+    /* Ads Section */
+    .ads {
+        display: none; /* Hide ads on mobile */
+    }
+
+    /* Dropdown Menus */
+    .dropdown-menu {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+}
+
+/* Ultra Small Devices */
+@media (max-width: 480px) {
+    .main-image-container {
+        height: 200px;
+    }
+
+    .thumbnails img {
+        height: 60px;
+    }
+
+    .car-details h5 {
+        font-size: 14px;
+    }
+
+    .specs div {
+        font-size: 11px;
+    }
+
+    .specs i {
+        font-size: 14px;
+    }
+}
+
+/* Landscape Orientation */
+@media (max-width: 768px) and (orientation: landscape) {
+    .main-image-container {
+        height: 300px;
+    }
+
+    .car-details {
+        padding: 10px !important;
+    }
+}
+
+/* Accessibility and Performance Enhancements */
+* {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Smooth Transitions */
+.card,
+.main-image-container img,
+.thumbnails img {
+    transition: all 0.3s ease;
+}
+
+
+/* Advanced Search and Pagination Spacing */
+.filter-container {
+    margin-bottom: 30px; /* Adds space between advanced search and pagination */
+}
+
+@media (max-width: 768px) {
+    .filter-container {
+        margin-bottom: 20px; /* Slightly reduced margin for mobile */
+    }
+
+    /* Additional mobile-specific adjustments */
+    #rebindpages {
+        margin-top: 15px; /* Extra space on top of pagination for mobile */
+    }
+}
+
+/* Pagination Container Styling */
+#rebindpages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Space between pagination elements */
+    margin-top: 20px; /* Space above pagination */
+}
+
+.pagination-links {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.results-info {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+/* Sort Dropdown Styling */
+.sort-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .sort-container {
+        justify-content: center;
+    }
+
+    #sortBy {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+}
 </style>
 
 
@@ -542,28 +838,20 @@ overflow: hidden;
                 <div class="row" >
                     <!-- Pagination Summary -->              
 
-                    <div class="col" id="rebindpages">
+                    <div id="rebindpages">
+                <div class="results-info">
+                    <span class="results-range">
+                        @include('partials._car_count_showing', ['cars' => $cars])
+                    </span>
+                </div>
 
-                        <div class="col-12">
-                            <div class="pagination-links d-flex justify-content-center">
-                         
-                            @include('partials._pagination', ['cars' => $cars])
-                            </div>
-                        </div>
-                        <div class="col-12">
-                       <div id="showingresults">
-                            <div class="results-info">
-                            <span class="results-range">
-                            @include('partials._car_count_showing', ['cars' => $cars])
-                            </span>
-                            </div>
-                            </div>
-                    </div>
-
-                    </div>
+                <div class="pagination-links">
+                    @include('partials._pagination', ['cars' => $cars])
+                </div>
+            </div>
 
 
-                    <div class="col text-right">
+                    <div class="col text-right" style="padding-top:70px;">
                     <select class="form-control d-inline w-auto" id="sortBy">
                         <option value="price_asc" {{ request('sortBy') == 'price_asc' ? 'selected' : '' }}>Sort by Price (Low to High)</option>
                         <option value="price_desc" {{ request('sortBy') == 'price_desc' ? 'selected' : '' }}>Sort by Price (High to Low)</option>

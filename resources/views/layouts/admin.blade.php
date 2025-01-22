@@ -85,26 +85,8 @@
             </ul>
         </div>
     </nav>
+    @include('admin.partials.dashboard-overview')
 
-    <div class="container-fluid full-width-container mt-5">
-        <div class="dashboard-overview">
-            <div class="overview-item bg-primary">
-                <span class="overview-label">Total Users:</span>
-                <span>{{ $totalUsers ?? 'N/A' }}</span>
-            </div>
-            <div class="overview-item bg-success">
-                <span class="overview-label">Total Listings:</span>
-                <span>{{ $totalListings ?? 'N/A' }}</span>
-            </div>
-            <div class="overview-item bg-warning">
-                <span class="overview-label">Total Enquiries:</span>
-                <span>{{ $totalEnquiries ?? 'N/A' }}</span>
-            </div>
-            <div class="overview-item bg-danger">
-                <span class="overview-label">Total Reviews:</span>
-                <span>{{ $totalReviews ?? 'N/A' }}</span>
-            </div>
-        </div>
         <div class="row">
             <div class="col-md-3">
                 <div class="list-group">
@@ -224,6 +206,7 @@ function toggleCustomEngineSizeInput() {
         customEngineSizeInput.required = false;
     }
 }
+//the btn below are more like a static due to how i have started the project i was not aware of laravel so i was ensuring that all works
 $(document).ready(function() {
     $('#btnEditInfo').on('click', function() {
         $('#imageSlider').hide();

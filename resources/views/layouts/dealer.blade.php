@@ -148,11 +148,15 @@
                             <a class="nav-link" href="{{ route('dealer.dashboard') }}">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('dealer.manage.sales') }}">Manage Sales</a>
+                            <a class="nav-link" href="{{ route('dealer.manage.dealership') }}">Manage Dealership</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('dealer.manage.leads') }}">Manage Leads</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('dealer.manage.sales') }}">Manage Sales</a>
+                        </li>
+                   
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('dealer.add.cars') }}">Add Cars</a>
                         </li>
@@ -162,12 +166,8 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('dealer.manage.listings') }}">Manage Listings</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('dealer.news.management') }}">News Management</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('dealer.manage.dealership') }}">Manage Dealership</a>
-                        </li>
+             
+                    
                     </ul>
                 </div>
             </nav>

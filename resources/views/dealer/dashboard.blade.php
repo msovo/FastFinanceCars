@@ -128,13 +128,13 @@
     <table id="listingsTable" class="table">
       <thead>
         <tr>
-          <th>Make</th>
+    
           @foreach ($categoryTypes as $type)
           <th colspan="{{ count($categoryData[$makes[0]][$type] ?? []) }}">{{ $type }}</th>
           @endforeach
         </tr>
         <tr>
-          <th></th>
+   
           @foreach ($categoryTypes as $type)
           @if(isset($categoryData[$makes[0]][$type]))
             @foreach ($categoryData[$makes[0]][$type] as $category)

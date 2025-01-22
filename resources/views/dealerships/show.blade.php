@@ -15,8 +15,32 @@
 
 .car-image-container {
     position: relative;
+    max-height: 150px;
+    overflow: hidden;
+}
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px; /* Add spacing around the logo */
+    background-color: #f9f9f9; /* Light background for contrast */
+    border-radius: 10px; /* Rounded edges for the container */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
+.dealership-logo {
+    max-width: 100%; /* Ensure responsiveness */
+    max-height: 150px; /* Limit the height for consistency */
+    width: auto; /* Maintain aspect ratio */
+    object-fit: contain; /* Ensure the logo is fully visible */
+    border-radius: 5px; /* Optional: Slight rounding for the logo */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth hover effect */
+}
+
+.dealership-logo:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
 .car-image-container .image-count {
     position: absolute;
     bottom: 8px;
@@ -46,44 +70,52 @@
         <!-- Dealership Info -->
         <div class="col-md-4">
             <div class="card dealership-card shadow-sm">
-                <div class="card-body text-center">
-                    <h5 class="card-title"><i class="fas fa-store"></i> Auto Dealer</h5>
-                    <p><i class="fas fa-map-marker-alt"></i> 11011 Nesser Street, Midrand, 1243</p>
-                    <p><i class="fas fa-phone-alt"></i> Contact: 06047598745</p>
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-store"></i> {{$dealership->dealership_name}}</h5>
+                    <p><i class="fas fa-map-marker-alt"></i> {{$dealership->province}}</p>
+                    <p><i class="fas fa-map-marker-alt"></i> {{$dealership->city_town}}</p>
+
+                    <p><i class="fas fa-map-marker-alt"></i> {{$dealership->address}}</p>
+                    <p><i class="fas fa-phone-alt"></i> Contact: {{$dealership->contact}}</p>
                     <hr>
-                    <p><i class="fas fa-car"></i> Total Cars: <strong>2</strong></p>
+         <!--            <p><i class="fas fa-car"></i> Total Cars: <strong>2</strong></p>
                     <p><i class="fas fa-tags"></i> Car Makes: <strong>2</strong></p>
-                    <p><i class="fas fa-th-list"></i> Car Models: <strong>2</strong></p>
-                    <p><i class="fas fa-calendar-alt"></i> Registered: <strong>4 weeks ago</strong></p>
+                    <p><i class="fas fa-th-list"></i> Car Models: <strong>2</strong></p> -->
+                    <p><i class="fas fa-calendar-alt"></i> Registered: <strong> {{$dealership->created_at->diffInDays() }} days ago</strong></p>
                 </div>
             </div>
         </div>
-
+        <div class="col-md-8 text-center logo-container">
+    <img src="{{ asset('storage/' . $dealership->logo) }}" class="dealership-logo" alt="Dealership Logo" />
+</div>
         <!-- Dealership Cars -->
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="row">
                 @foreach($dealership->listings  as $car)
-                <div class="col-md-6 mb-4">
+                <div class="col-md-3 mb-3">
                     <div class="card car-card shadow-sm">
                         <div class="card-header bg-primary text-white text-center">
-                            <h6>{{ $car->year }} {{ $car->make }} {{ $car->model }}</h6>
+                            <h6>{{ $car->vehicle->year }}  {{$car->vehicle->variant->name }} </h6>
                         </div>
                         <div class="card-body">
                             <div class="car-image-container mb-2">
                                 <img src="{{ $car->images->isNotEmpty() ? asset('storage/' . $car->images->first()->image_url) : asset('storage/images/default-car.jpg') }}" 
                                     class="img-fluid" 
-                                    alt="{{ $car->make }} {{ $car->model }}">
+                                    alt="{{ $car->vehicle->make }} {{ $car->vehicle->model }}">
                                 @if($car->images->isNotEmpty())
                                 <span class="badge badge-dark image-count">
                                     <i class="fas fa-camera"></i> {{ $car->images->count() }}
                                 </span>
                                 @endif
                             </div>
-                            <h6 class="text-success">R{{ number_format($car->price, 2) }}</h6>
-                            <p><i class="fas fa-cogs text-primary"></i> Transmission: {{ $car->transmission }}</p>
-                            <p><i class="fas fa-tachometer-alt text-warning"></i> Mileage: {{ $car->mileage }} km</p>
-                            <p><i class="fas fa-gas-pump text-danger"></i> Fuel: {{ $car->fuel_type }}</p>
-                            <a href="{{ route('cars.show', $car->vehicle_id) }}" class="btn btn-outline-primary btn-block">
+
+                            <h6 class="text-success">R{{ number_format($car->vehicle->price, 2) }}</h6>
+                            <p>{{ $car->vehicle->car_brand->name }}</p>
+                            <p>    {{ $car->vehicle->car_model->name }}</p>
+                            <p><i class="fas fa-cogs text-primary"></i> Transmission: {{ $car->vehicle->transmission }}</p>
+                            <p><i class="fas fa-tachometer-alt text-warning"></i> Mileage: {{ $car->vehicle->mileage }} km</p>
+                            <p><i class="fas fa-gas-pump text-danger"></i> Fuel: {{ $car->vehicle->fuel_type }}</p>
+                            <a href="{{ route('cars.show', $car->vehicle->vehicle_id) }}" class="btn btn-outline-primary btn-block">
                                 View Details
                             </a>
                         </div>

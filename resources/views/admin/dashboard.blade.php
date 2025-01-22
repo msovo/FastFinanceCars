@@ -10,7 +10,7 @@
         <div class="card text-white bg-primary mb-3">
             <div class="card-header">Total Users</div>
             <div class="card-body">
-                <h5 class="card-title">{{ $totalUsers }}</h5>
+                <h5 class="card-title">{{ $totals['totalUsers']  }}</h5>
             </div>
         </div>
     </div>
@@ -18,7 +18,7 @@
         <div class="card text-white bg-success mb-3">
             <div class="card-header">Total Listings</div>
             <div class="card-body">
-                <h5 class="card-title">{{ $totalListings }}</h5>
+                <h5 class="card-title">{{ $totals['totalListings'] }}</h5>
             </div>
         </div>
     </div>
@@ -26,7 +26,7 @@
         <div class="card text-white bg-warning mb-3">
             <div class="card-header">Total Enquiries</div>
             <div class="card-body">
-                <h5 class="card-title">{{ $totalEnquiries }}</h5>
+                <h5 class="card-title">{{ $totals['totalEnquiries']}}</h5>
             </div>
         </div>
     </div>
@@ -34,7 +34,7 @@
         <div class="card text-white bg-danger mb-3">
             <div class="card-header">Total Reviews</div>
             <div class="card-body">
-                <h5 class="card-title">{{ $totalReviews }}</h5>
+                <h5 class="card-title">{{  $totals['totalReviews'] }}</h5>
             </div>
         </div>
     </div>

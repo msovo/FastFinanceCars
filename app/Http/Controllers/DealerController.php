@@ -23,9 +23,6 @@ use App\Models\Dealer;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 
-
-
-
 class DealerController extends Controller
 {
 
@@ -64,7 +61,10 @@ class DealerController extends Controller
         $leadStatusCounts = $leadStatuses->pluck('count');
     
         // 3. Analysis table for listings per category
-        $categoryTypes = Category::distinct('category_type')->where('category_type', '!=', 'Make')->pluck('category_type');
+        $categoryTypes = Category::distinct('category_type')
+        ->where('category_type', '!=', value: 'Make') 
+        ->where('category_type', '!=', 'Engine Size')
+        ->pluck('category_type');
         $categoryData = [];
         $modelsData = [];
         $makes = Listing::join('vehicles', 'listings.vehicle_id', '=', 'vehicles.vehicle_id')

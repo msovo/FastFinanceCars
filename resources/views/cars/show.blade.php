@@ -404,6 +404,232 @@
     font-size: 0.7rem;
     color: black;
 }
+/* Global Enhancements */
+:root {
+    --primary-color: #ff4500;
+    --secondary-color: #007bff;
+    --text-dark: #333;
+    --text-light: #666;
+    --background-light: #f8f9fa;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--background-light);
+}
+
+/* Card Styling */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Image Container */
+.main-image-container {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+}
+
+.main-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.card:hover .main-image-container img {
+    transform: scale(1.1);
+}
+
+.image-count {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+/* Thumbnails */
+.thumbnails {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.thumbnails img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: opacity 0.3s;
+}
+
+.thumbnails img:hover {
+    opacity: 0.7;
+}
+
+/* Finance Calculator */
+#financeCalculator {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+#financeCalculator .form-group {
+    margin-bottom: 20px;
+}
+
+#financeCalculator label {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* Payment Summary */
+.payment-summary {
+    background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+}
+
+/* Chart Styling */
+#paymentGraph {
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 20px;
+    }
+
+    .main-image-container {
+        height: 200px;
+    }
+
+    .thumbnails img {
+        height: 60px;
+    }
+
+    #financeCalculator,
+    .payment-summary {
+        padding: 15px;
+    }
+
+    .recently-viewed-scroll {
+        overflow-x: auto;
+        display: flex;
+        gap: 15px;
+        padding-bottom: 15px;
+    }
+
+    .recently-viewed-scroll > * {
+        flex: 0 0 auto;
+        width: 250px;
+    }
+}
+
+/* Social Share Buttons */
+.social-share {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.social-share a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    color: white;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.social-share a:hover {
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.social-share .whatsapp { background-color: #25D366; }
+.social-share .facebook { background-color: #3b5998; }
+.social-share .x { background-color: #000; }
+.social-share .instagram { 
+    background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.pagination .page-item {
+    margin: 0 5px;
+}
+
+.pagination .page-link {
+    color: var(--primary-color);
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Dealer Section */
+.dealer-section {
+    background-color: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* News Section */
+.news-section .card {
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.news-section .card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+
+    /* Responsive Chart */
+    @media (max-width: 768px) {
+        .chart-container {
+            height: 300px; /* Adjusted for mobile */
+            padding: 10px;
+        }
+    }
 
 </style>
 <div class="container mt-5">

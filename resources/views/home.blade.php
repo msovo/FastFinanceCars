@@ -120,6 +120,7 @@
     height: 200px;
     object-fit: cover;
     border-radius: 5px;
+    width: 100%;
 }
     .carousel-inner {
     height: 59vh;
@@ -384,7 +385,506 @@
         font-size: 15px;
     }
 
-    
+    /* Mobile-First Responsive Design */
+@media (max-width: 768px) {
+    /* Global Adjustments */
+    body {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    /* Carousel Adjustments */
+    .carCarousel,
+    .carousel-inner {
+        height: 40vh !important;
+    }
+
+    /* Advanced Search Container */
+    .advanced-search {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 0;
+        background-color: #f8f9fa;
+    }
+
+    .advanced-search .form-row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .advanced-search .form-group {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .advanced-search .btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    /* Car Listing Adjustments */
+    .car-listing {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+
+    .car-card {
+        margin-bottom: 20px;
+    }
+
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    /* Engagement Section */
+    .nav-engagement {
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .nav-engagement button {
+        flex: 1;
+        margin: 0 5px;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    /* Sections */
+    .sponsored-cars,
+    .latest-cars,
+    .services,
+    .news-reviews {
+        padding: 15px;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 15px;
+        font-size: 18px;
+    }
+
+    /* News and Articles */
+    .news-reviews .card {
+        margin-bottom: 15px;
+    }
+
+    .news-reviews .card-img-top img {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    /* Car Brands Section */
+    .row-cols-4 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    /* Typography */
+    h1 { font-size: 22px; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 18px; }
+    h4 { font-size: 16px; }
+    h5 { font-size: 14px; }
+
+    /* Dropdown Menus */
+    .dropdown-menu {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    /* Thumbnails */
+    .thumbnails {
+        display: flex;
+        margin-top: 10px;
+    }
+
+    .thumbnail-image {
+        height: 80px;
+        object-fit: cover;
+    }
+
+    /* Responsive Images */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    /* Engagement Sections */
+    .engagement-section {
+        margin-bottom: 20px;
+    }
+
+    .no-engagement {
+        text-align: center;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .warning-icon {
+        font-size: 40px;
+        color: #dc3545;
+        margin-bottom: 15px;
+    }
+
+    #carBrandsContainer{
+        display: none;
+    }
+}
+
+/* Ultra Small Devices */
+@media (max-width: 480px) {
+    .row-cols-4 {
+        grid-template-columns: 1fr;
+    }
+
+    .advanced-search .form-group {
+        width: 100%;
+    }
+
+    .nav-engagement button {
+        font-size: 12px;
+        padding: 8px;
+    }
+}
+
+/* Landscape Orientation */
+@media (max-width: 768px) and (orientation: landscape) {
+    .carCarousel,
+    .carousel-inner {
+        height: 50vh !important;
+    }
+
+    .advanced-search {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+}
+
+
+/* Responsive Design for 725px to 1300px */
+@media (min-width: 725px) and (max-width: 1300px) {
+    .advanced-search {
+        width: 90%;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .advanced-search .form-row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .advanced-search .form-group {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding: 0 10px;
+    }
+
+    .car-listing, .make-analysis {
+        width: 80% !important;
+        margin-left: 10% !important;
+    }
+}
+
+/* Mobile and Small Devices Specific Styling */
+@media (max-width: 768px) {
+    /* Advanced Search Improvements */
+    .advanced-search {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        transform: none;
+        padding: 15px;
+        margin-bottom: 20px;
+        background-color: #f8f9fa;
+        border: none;
+        box-shadow: none;
+    }
+
+    .advanced-search .form-row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .advanced-search .form-group {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 10px;
+        padding: 0;
+    }
+
+    /* Button Styling */
+    .btn {
+        display: inline-block;
+        padding: 12px 20px;
+        font-size: 10px;
+        font-weight: 600;
+        text-align: center;
+        text-transform: uppercase;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        
+    }
+
+    .btn-primary {
+        background-color: #ff4500;
+        border-color: #ff4500;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #ff6347;
+        border-color: #ff6347;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+    }
+
+    /* News Section Typography */
+    .news-reviews {
+        margin-top: 20px;
+    }
+
+    .news-reviews .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .news-reviews .card-text {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+    }
+
+    /* Car Brands Section */
+    .row-cols-4 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .row-cols-4 .col .btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    /* Chat Button Positioning */
+    #chat-button {
+        position: fixed;
+        bottom: 0;
+        left: 20px;
+        z-index: 1000;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #ff4500;
+        color: white;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+
+    #chat-box {
+        position: fixed;
+        bottom: 80px;
+        left: 20px;
+        width: calc(100% - 40px);
+        max-width: 350px;
+        z-index: 1050;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+}
+
+/* Tablets and Medium Devices */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .row-cols-4 {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+
+    .advanced-search {
+        width: 90%;
+        margin: 0 auto;
+        padding: 20px;
+    }
+}
+
+/* Prevent Overlay and Ensure Full Visibility */
+body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+.CustomcontainerHome {
+    padding: 0 15px;
+    overflow-x: hidden;
+}
+
+@media (max-width: 1200px) {
+    .car-card {
+        width: calc(33.333% - 15px);
+    }
+}
+
+@media (max-width: 992px) {
+    .car-card {
+        width: calc(50% - 15px);
+    }
+}
+
+@media (max-width: 768px) {
+    #recently-viewed-cars-list {
+        gap: 15px;
+    }
+
+    .car-card {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .main-image-container {
+        height: 200px;
+    }
+
+    .thumbnails {
+        padding: 8px;
+    }
+
+    .thumbnails img {
+        height: 70px;
+    }
+
+    .card-title {
+        font-size: 14px;
+    }
+
+    .card-text {
+        font-size: 12px;
+    }
+
+    .card-text-price {
+        font-size: 16px;
+    }
+
+    .badge {
+        font-size: 10px;
+        padding: 3px 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-image-container {
+        height: 180px;
+    }
+
+    .thumbnails img {
+        height: 60px;
+    }
+
+    .card-body {
+        padding: 10px;
+    }
+}
+
+/* Engagement Section Styling */
+.engagement-customer {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.nav-engagement {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.nav-engagement button {
+    padding: 10px 20px;
+    border: 2px solid #ff4500;
+    background-color: transparent;
+    color: #ff4500;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.nav-engagement button.active,
+.nav-engagement button:hover {
+    background-color: #ff4500;
+    color: white;
+}
+
+/* No Engagement State */
+.no-engagement {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+}
+
+.no-engagement .warning-icon {
+    font-size: 60px;
+    color: #dc3545;
+    margin-bottom: 20px;
+}
+
+.no-engagement p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.no-engagement button {
+    padding: 12px 24px;
+    background-color: #ff4500;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.no-engagement button:hover {
+    background-color: #ff6347;
+}
 </style>
 
 
@@ -586,6 +1086,11 @@
 
         <div id="recently-viewed-cars" class="engagement-section">
             <h2>Recently Viewed Cars</h2>
+            <div class="no-engagement" id="recently_viewed_cars_empty">
+                <i class="fas fa-exclamation-triangle warning-icon"></i>
+                <p>You have no recently viewed cars yet.</p>
+                <button onclick="startSearching()">Start Searching</button>
+            </div>
             <div class="row" id="recently-viewed-cars-list">
                 <!-- Recently viewed cars will be appended here by JavaScript -->
             </div>
@@ -778,7 +1283,7 @@
 
 
 
-<div class="container mt-5">
+<div class="container mt-5" id="carBrandsContainer">
         <h1 class="text-center mb-4">Car Brands</h1>
         
         <div class="row row-cols-4 g-3">
@@ -793,10 +1298,10 @@
     </div>
 
 
-    <div class="make-analysis">
+ <!--    <div class="make-analysis">
         <h2>Make Analysis</h2>
         <canvas id="makeAnalysisChart"></canvas>
-    </div>
+    </div> -->
 </div>
 @endsection
 
@@ -816,7 +1321,7 @@
     });
 
     // Chart.js code for the Make Analysis chart
-    const makeAnalysisCtx = document.getElementById('makeAnalysisChart').getContext('2d');
+/*     const makeAnalysisCtx = document.getElementById('makeAnalysisChart').getContext('2d');
     const makeAnalysisChart = new Chart(makeAnalysisCtx, {
         type: 'bar',
         data: {
@@ -863,7 +1368,7 @@
             }
         }
     });
-
+ */
 // ... (other JavaScript code) ...
 
 // Handle Make checkbox changes (to show/hide models)
@@ -912,7 +1417,7 @@ function submitForm(brand) {
             // Add a hidden input to the form with the 'make' value
             const input = document.createElement('input');
             input.type = 'hidden';
-            input.name = 'car_brand';
+            input.name = 'car_brand_id[]';
             input.value = parseInt(brand);
             input.id = 'brand'
 
@@ -1038,12 +1543,18 @@ function getCookie(name) {
             // Implement your start searching logic here
             alert('Start searching functionality not implemented yet.');
         }
+
+
         showSection('recently-viewed-cars')
+
+
         function listRecentViewedCars() {
-    $("#recently-viewed-cars-list").html(""); // Clear the container
-    var recentlyViewedCars = getCookie("recentlyViewedCars");
+            $("#recently-viewed-cars-list").html(""); // Clear the container
+            var recentlyViewedCars = getCookie("recentlyViewedCars");
 
     if (recentlyViewedCars) {
+        $("#recently_viewed_cars_empty").hide();
+
         recentlyViewedCars = JSON.parse(recentlyViewedCars);
         const carsPerPage = 3; // Number of cars to show per page
         let currentPage = 1;
@@ -1146,13 +1657,7 @@ $("#recently-viewed-cars-list").append(carHtml);
         // Initial render
         renderPage(currentPage);
     } else {
-        $("#recently-viewed-cars-list").html(`
-            <div class="no-engagement">
-                <i class="fas fa-exclamation-triangle warning-icon"></i>
-                <p>You have no recently viewed cars yet.</p>
-                <button onclick="startSearching()">Start Searching</button>
-            </div>
-        `);
+        $("#recently_viewed_cars_empty").show();
     }
 }
 
