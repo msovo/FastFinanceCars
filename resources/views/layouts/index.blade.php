@@ -715,6 +715,408 @@
     max-height: 400px;
 }
 
+
+
+@media screen and (max-width: 991px) {
+    :root {
+        --primary-coral: #FF7F50;
+        --dark-coral: #FF6340;
+        --light-coral: #FFB5A0;
+        --text-dark: #2C3E50;
+        --text-light: #ECF0F1;
+        --background-light: #FFFFFF;
+        --background-dark: #2C3E50;
+        --border-color: #E5E5E5;
+    }
+
+    .offcanvas-menu {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 85%;
+        max-width: 320px;
+        height: 100vh;
+        background: linear-gradient(135deg, var(--background-dark) 0%, #34495E 100%);
+        z-index: 1050;
+        overflow-y: auto;
+        transition: left 0.3s ease-in-out;
+        box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .offcanvas-menu.show {
+        left: 0;
+    }
+
+    .close-button {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        font-size: 28px;
+        cursor: pointer;
+        z-index: 1051;
+        color: var(--text-light);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .close-button:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: rotate(90deg);
+    }
+
+    .offcanvas-menu .container {
+        padding: 25px 20px;
+    }
+
+    .offcanvas-menu .navbar-nav {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .offcanvas-menu .nav-item {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin: 5px 0;
+    }
+
+    .offcanvas-menu .nav-link {
+        padding: 15px 0;
+        color: var(--text-light);
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        transition: all 0.3s ease;
+    }
+
+    .offcanvas-menu .nav-link:hover {
+        color: var(--primary-coral);
+        padding-left: 10px;
+    }
+
+    .offcanvas-menu .dropdown-toggle::after {
+        float: right;
+        margin-top: 8px;
+        color: var(--primary-coral);
+    }
+
+    .offcanvas-menu .dropdown-menu {
+        position: static !important;
+        transform: none !important;
+        padding: 0;
+        margin: 0;
+        border: none;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        margin: 5px 0;
+    }
+
+    .offcanvas-menu .dropdown-item {
+        padding: 12px 25px;
+        color: var(--text-light);
+        font-size: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .offcanvas-menu .dropdown-item:active,
+    .offcanvas-menu .dropdown-item:hover {
+        background-color: var(--primary-coral);
+        color: var(--text-light);
+        border-radius: 4px;
+        margin: 0 5px;
+    }
+
+    .offcanvas-menu .navbar-nav.ml-auto {
+        margin-top: 30px;
+        border-top: 2px solid rgba(255, 255, 255, 0.1);
+        padding-top: 20px;
+    }
+
+    .offcanvas-menu .rounded-circle {
+        margin-right: 10px;
+        border: 2px solid var(--primary-coral);
+    }
+
+    .offcanvas-menu form {
+        margin: 0;
+    }
+
+    .offcanvas-menu .dropdown-item button {
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        padding: 12px 25px;
+        color: var(--text-light);
+        font-size: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .offcanvas-menu .dropdown-item button:hover {
+        color: var(--text-light);
+        background-color: var(--primary-coral);
+    }
+
+    .offcanvas-menu .dropdown-menu {
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .offcanvas-menu .dropdown-menu.show {
+        display: block;
+        opacity: 1;
+    }
+
+    /* User profile section styling */
+    .offcanvas-menu .user-profile {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .offcanvas-menu .user-profile img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 15px;
+    }
+
+    /* Menu overlay */
+    .menu-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 1040;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        backdrop-filter: blur(4px);
+    }
+
+    .menu-overlay.show {
+        display: block;
+        opacity: 1;
+    }
+
+    /* Custom scrollbar */
+    .offcanvas-menu::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .offcanvas-menu::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .offcanvas-menu::-webkit-scrollbar-thumb {
+        background: var(--primary-coral);
+        border-radius: 10px;
+    }
+
+    .offcanvas-menu .dropdown-menu {
+        position: static !important;
+        transform: none !important;
+        padding: 0;
+        margin: 0;
+        border: none;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        margin: 5px 0;
+        /* Remove display: none from here */
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+    }
+
+    /* When dropdown is active */
+    .offcanvas-menu .dropdown-menu.show {
+        max-height: 500px; /* Adjust this value based on your content */
+        transition: max-height 0.3s ease-in;
+    }
+
+    .offcanvas-menu .dropdown-item {
+        padding: 12px 25px;
+        color: var(--text-light);
+        font-size: 15px;
+        transition: all 0.3s ease;
+        opacity: 1; /* Ensure items are visible */
+    }
+
+    /* Style for the dropdown toggle arrow */
+    .offcanvas-menu .dropdown-toggle::after {
+        float: right;
+        margin-top: 8px;
+        transition: transform 0.3s ease;
+    }
+
+    /* Rotate arrow when dropdown is open */
+    .offcanvas-menu .dropdown-toggle[aria-expanded="true"]::after {
+        transform: rotate(180deg);
+    }
+
+    /* Ensure buttons within dropdowns are visible */
+    .offcanvas-menu .dropdown-item button {
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        padding: 12px 25px;
+        color: var(--text-light);
+        font-size: 15px;
+        transition: all 0.3s ease;
+        opacity: 1;
+    }
+
+    
+}
+
+/* Specific adjustments for smaller mobile devices */
+@media screen and (max-width: 768px) {
+    .offcanvas-menu {
+        width: 90%;
+    }
+    
+    .offcanvas-menu .nav-link {
+        font-size: 15px;
+    }
+    
+    .offcanvas-menu .dropdown-item {
+        font-size: 14px;
+    }
+}
+
+/* Hide mobile menu on larger screens */
+@media screen and (min-width: 992px) {
+    .offcanvas-menu, .menu-overlay {
+        display: none;
+    }
+}
+
+
+@media screen and (max-width: 991px) {
+    .containerHeaderMenu {
+        display: flex;
+        justify-content: space-evenly;
+        padding: 15px 20px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        align-content: center;
+        flex-wrap: nowrap;
+        flex-direction: row-reverse;
+    }
+
+    /* Brand/Logo Column */
+    .containerHeaderMenu .name {
+        flex: 1;
+    }
+
+    .containerHeaderMenu .navbar-brand {
+        color: #FF7F50; /* coral color */
+        font-size: 1.5rem;
+        font-weight: 600;
+        font-family: 'Poppins', sans-serif;
+        text-decoration: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Toggle Button Column */
+    .containerHeaderMenu .tooglemenu {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .containerHeaderMenu .navbar-toggler {
+        padding: 0;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        outline: none;
+    }
+
+    /* Custom Hamburger Icon */
+    .containerHeaderMenu .navbar-toggler-icon {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background-color: #FF7F50; /* coral color */
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .containerHeaderMenu .navbar-toggler-icon::before,
+    .containerHeaderMenu .navbar-toggler-icon::after {
+        content: '';
+        position: absolute;
+        width: 24px;
+        height: 2px;
+        background-color: #FF7F50; /* coral color */
+        transition: all 0.3s ease;
+    }
+
+    .containerHeaderMenu .navbar-toggler-icon::before {
+        top: -6px;
+    }
+
+    .containerHeaderMenu .navbar-toggler-icon::after {
+        bottom: -6px;
+    }
+
+    /* Animation for hamburger icon when menu is open */
+    .containerHeaderMenu .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+        background-color: transparent;
+    }
+
+    .containerHeaderMenu .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before {
+        transform: rotate(45deg);
+        top: 0;
+    }
+
+    .containerHeaderMenu .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after {
+        transform: rotate(-45deg);
+        bottom: 0;
+    }
+
+    /* Add some spacing below header for content */
+    body {
+        padding-top: 60px; /* Adjust this value based on your header height */
+    }
+}
+
+/* For very small devices */
+@media screen and (max-width: 375px) {
+    .containerHeaderMenu .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .containerHeaderMenu {
+        padding: 12px 15px;
+    }
+}
+
+/* Optional: Add a transition for smooth scroll when header is fixed */
+@media screen and (max-width: 991px) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
 </style>
 @if(Auth::check())
         <meta name="user-id" content="{{ Auth::id() }}">
@@ -725,12 +1127,19 @@
 <!-- Navbar wrapped in a div -->
 <div class="navbar-wrapper">
     <nav class="navbar navbar-expand-lg navbar-light">
-        <a class="navbar-brand" href="{{ url('/') }}">Fast Finance Cars</a>
+        <div class="containerHeaderMenu row">
+          <div class="name col">
+          <a class="navbar-brand" href="{{ url('/') }}">Fast Finance Cars</a>
 
-        <button class="navbar-toggler" type="button" data-toggle="offcanvas" data-target="#mobileMenu">
+          </div>  
+
+          <div class="tooglemenu col">
+          <button class="navbar-toggler w-100 h-100" type="button" data-toggle="offcanvas" data-target="#mobileMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
+          </div>
 
+        </div>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mr-auto">
                 <!-- Buy a Car Dropdown -->
@@ -854,101 +1263,120 @@
 <div class="offcanvas-menu" id="mobileMenu">
     <span class="close-button" data-toggle="offcanvas" data-target="#mobileMenu">&times;</span>
     <div class="container">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#buyCarCollapse" role="button" aria-expanded="false" aria-controls="buyCarCollapse">
-                    Buy a Car
-                </a>
-                <div class="collapse" id="buyCarCollapse">
-                    <a class="dropdown-item" href="#">New Cars</a>
-                    <a class="dropdown-item" href="#">Used Cars</a>
-                    <a class="dropdown-item" href="#">Certified Pre-Owned</a>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#sellCarCollapse" role="button" aria-expanded="false" aria-controls="sellCarCollapse">
-                    Sell my Car
-                </a>
-                <div class="collapse" id="sellCarCollapse">
-                    <a class="dropdown-item" href="#">Sell Privately</a>
-                    <a class="dropdown-item" href="#">Trade-In</a>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#valueCarCollapse" role="button" aria-expanded="false" aria-controls="valueCarCollapse">
-                    Value my Car
-                </a>
-                <div class="collapse" id="valueCarCollapse">
-                    <a class="dropdown-item" href="#">Car Valuation</a>
-                    <a class="dropdown-item" href="#">Get an Offer</a>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Car Subscriptions</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#newsReviewsCollapse" role="button" aria-expanded="false" aria-controls="newsReviewsCollapse">
-                    News & Reviews
-                </a>
-                <div class="collapse" id="newsReviewsCollapse">
+    <ul class="navbar-nav mr-auto">
+                <!-- Buy a Car Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="buyCarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Buy a Car
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="buyCarDropdown">
+                        <form id="searchFormN" action="{{ route('cars.search') }}" method="GET">
+                            <input type="text" class="hide" style="display:none" id="conditions" name="conditions" value="New" />
+                            <button type="submit" class="dropdown-item">New Cars</button>
+                        </form>
 
-                <form action="{{ route('newssearch') }}" method="GET" class="d-flex align-items-center">
+                        <form id="searchFormN" action="{{ route('cars.search') }}" method="GET">
+                            <input type="text" class="hide" style="display:none" id="conditions" name="conditions" value="Used" />
+                            <button type="submit" class="dropdown-item">Used Cars</button>
+                        </form>
+                    </div>
+                </li>
+
+                <!-- Sell my Car Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="sellCarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Sell my Car
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="sellCarDropdown">
+                        <a class="dropdown-item" href="{{ route('privateSellerGuide') }}">Sell Privately</a>
+                        <a class="dropdown-item" href="{{ route('DealerSellerGuide') }}">As a Dealer</a>
+
+                    </div>
+                </li>
+
+                <!-- Value my Car Dropdown -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('dealerships.index') }}" id="valueCarDropdown">
+                        Dealerships
+
+                    </a>
+                    
+                </li>
+
+                <!-- CSubscriptions -->
+                <li class="nav-item">
+                <a href="{{ route('feeds.index') }}" class="nav-link">Car Media</a>
+                </li>
+
+                <!-- News & Reviews Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="newsReviewsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        News & Reviews
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="newsReviewsDropdown">
+                    <form action="{{ route('newssearch') }}" method="GET" class="d-flex align-items-center">
                 <input type="hidden" name="category" value=2 />
-                <button type="submit" class="dropdown-item"> Car Reviews</button>
+                <button class="dropdown-item"  type="submit" > Car Reviews</button>
                </form>
                <form action="{{ route('newssearch') }}" method="GET" class="d-flex align-items-center">
                 <input type="hidden" name="category" value=3 />
-                <button type="submit" cclass="dropdown-item"> Finances Articles </button>
+                <button class="dropdown-item" type="submit" > Finances Articles </button>
                </form>
                <form action="{{ route('newssearch') }}" method="GET" class="d-flex align-items-center">
                 <input type="hidden" name="category" value=1 />
-                <button type="submit" class="dropdown-item"> Blogs articles</button>
+                <button class="dropdown-item" type="submit"> Blogs articles</button>
                </form>
-                 
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#toolsServicesCollapse" role="button" aria-expanded="false" aria-controls="toolsServicesCollapse">
-                    Tools & Services
-                </a>
-                <div class="collapse" id="toolsServicesCollapse">
-                <a class="dropdown-item"  href="{{ route('financeCalculator') }}">Car Finance Calculator</a>
-                                   <a class="dropdown-item" href="#">Insurance Quotes</a>
-                </div>
-            </li>
-        </ul>
-        <ul class="navbar-nav ml-auto">
-            @guest
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('login') }}">Sign In</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('signup') }}">Sign Up</a>
-            </li>
-            @else
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#accountCollapse" role="button" aria-expanded="false" aria-controls="accountCollapse">
-                    <img src="{{ asset('storage/'. Auth::user()->profile_image) }}" class="rounded-circle" alt="Profile Image" width="30" height="30">
-                    {{ Auth::user()->name }}
-                </a>
-                <div class="collapse" id="accountCollapse">
-                    <a class="dropdown-item" href="{{ route('user.profile') }}">My Profile</a>
-                    <a class="dropdown-item" href="{{ route('dashboard') }}">Dashboard</a>
-                    @if(Auth::user()->user_type == 'dealer')
-                    <a class="dropdown-item" href="{{ route('dealer.dashboard') }}">Manage Dealership</a>
-                    @elseif(Auth::user()->user_type == 'seller')
-                    <a class="dropdown-item" href="{{ route('seller.listings') }}">Manage Your Listings</a>
-                    @endif
-                    <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        Logout
+                    </div>
+                </li>
+
+                <!-- Tools & Services Dropdown -->
+                <l class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="toolsServicesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Tools & Services
                     </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                        @csrf
-                    </form>
-                </div>
-            </li>
-            @endguest
-        </ul>
+                    <div class="dropdown-menu" aria-labelledby="toolsServicesDropdown">
+                    <a class="dropdown-item"  href="{{ route('financeCalculator') }}">Car Finance Calculator</a>
+                    <a class="dropdown-item"  href="{{ route('finance') }}">Car Finance</a>
+                    <a class="dropdown-item" href="{{ route(name: 'affordability') }}">Calculate Affordability</a>
+
+                    <a class="dropdown-item" href="#">Insurance Quotes</a>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- Authentication Links -->
+            <ul class="navbar-nav ml-auto">
+                @guest
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('login') }}">Sign In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('signup') }}">Sign Up</a>
+                </li>
+                @else
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{{ asset('storage/'. Auth::user()->profile_image) }}" class="rounded-circle" alt="Profile Image" width="30" height="30">
+                        {{ Auth::user()->name }}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="accountDropdown">
+                        <a class="dropdown-item" href="{{ route('user.profile') }}">My Profile</a>
+                        <a class="dropdown-item" href="{{ route('dashboard') }}">Dashboard</a>
+                        @if(Auth::user()->user_type == 'dealer')
+                        <a class="dropdown-item" href="{{ route('dealer.dashboard') }}">Manage Dealership</a>
+                        @elseif(Auth::user()->user_type == 'seller')
+                        <a class="dropdown-item" href="{{ route('seller.listings') }}">Manage Your Listings</a>
+                        @endif
+                        <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            Logout
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+                    </div>
+                </li>
+                @endguest
+            </ul>
     </div>
 </div>
 
@@ -1244,7 +1672,56 @@ function registerGuest(name, email) {
         });
 
       
-           
+          
+          
+          document.addEventListener('DOMContentLoaded', function() {
+    // Toggle menu
+    const toggleButtons = document.querySelectorAll('[data-toggle="offcanvas"]');
+    const menu = document.getElementById('mobileMenu');
+
+
+    // Handle dropdowns
+    const dropdownToggles = document.querySelectorAll('.nav-item.dropdown .dropdown-toggle');
+    
+    dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Close all other dropdowns
+            dropdownToggles.forEach(otherToggle => {
+                if (otherToggle !== toggle) {
+                    const otherMenu = otherToggle.nextElementSibling;
+                    otherToggle.setAttribute('aria-expanded', 'false');
+                    if (otherMenu) {
+                        otherMenu.classList.remove('show');
+                    }
+                }
+            });
+
+            // Toggle current dropdown
+            const dropdownMenu = this.nextElementSibling;
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            
+            this.setAttribute('aria-expanded', !isExpanded);
+            dropdownMenu.classList.toggle('show');
+        });
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown')) {
+            dropdownToggles.forEach(toggle => {
+                toggle.setAttribute('aria-expanded', 'false');
+                if (toggle.nextElementSibling) {
+                    toggle.nextElementSibling.classList.remove('show');
+                }
+            });
+        }
+    });
+});
+
+
 </script>
 
   

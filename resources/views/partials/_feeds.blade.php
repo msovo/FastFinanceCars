@@ -1,262 +1,435 @@
 
-<style>
-    .modal-body {
-        background: none !important;
-    }
-    .comment-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .comments-container {
-    border: 1px solid #ddd;
-    padding: 10px;
-    background: #f9f9f9;
-    border-radius: 5px;
-    text-align: right;
-}
-
-.comment {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    
-}
-
-.comment img {
-    border-radius: 50%;
-}
-
-.comments-list {
-    overflow-y: auto;
-    max-height: 250px;
-}
-
-</style>
-
-
-<div class="feeds" style="text-align: center;">
+<div class="feeds-container">
     @forelse($feeds as $feed)
-        <div class="feed card mb-4 shadow-sm ">
-            <div class="card-header d-flex align-items-center">
-                <img src="{{ asset('storage/' . ($feed->user->profile_image ?? 'images/default_avatar.jpg')) }}" alt="User" class="rounded-circle me-2" width="40" height="40">
-                <strong>{{ $feed->user->username ?? 'Unknown User' }}</strong>
-                @if($feed->created_at)
-                    <small class="text-muted ms-auto">{{ $feed->created_at->diffForHumans() }}</small>
-                @else
-                    <small class="text-muted ms-auto">No date available</small>
-                @endif
-            </div>
-            <div class="card-body">
-                <p class="card-text">{{ $feed->caption }}</p>
-                <div class="feed-media mb-3">
-                    @if($feed->images->isNotEmpty())
-                        <div class="row">
-                            <div class="col-12 mb-3">
-                                <img src="{{ asset('storage/' . $feed->images->first()->media_path) }}" alt="Feed Media" class="img-fluid" data-toggle="modal" data-target="#imageModal" data-src="{{ asset('storage/' . $feed->images->first()->media_path) }}">
-                            </div>
-                            @if($feed->images->count() > 1)
-                                <div class="col-12">
-                                    <div class="row">
-                                        @foreach($feed->images->slice(1) as $image)
-                                            <div class="col-4 mb-4">
-                                                <img src="{{ asset('storage/' . $image->media_path) }}" alt="Feed Media" class="img-fluid" data-toggle="modal" data-target="#imageModal" style="max-height:150px;" data-src="{{ asset('storage/' . $image->media_path) }}">
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    @else
-                        <p class="text-muted">No media available.</p>
-                    @endif
+        <article class="feed" data-feed-id="{{ $feed->id }}">
+            <div class="feed-header">
+                <div class="feed-user">
+                    <img src="{{ Storage::url($feed->user->profile_image) }}" 
+                         alt="{{ $feed->user->username }}"
+                         class="feed-user-avatar">
+                    <div class="user-info">
+                        <a href="#" class="feed-username">{{ $feed->user->username }}</a>
+                        <span class="feed-location">{{ $feed->location ?? '' }}</span>
+                    </div>
                 </div>
-                <div id="reactionHtmlLoader-{{$feed->id}}">
-    <div class="reactions" style="display: flex; justify-content: space-between; position:relative; top:0; width:100%;">
-        @foreach(['love' => '❤️', 'like' => '👍', 'sad' => '😢', 'angry' => '😡', 'cool' => '😎', 'support' => '🙌', 'confused' => '😕', 'laugh' => '😂', 'celebrate' => '🎉', 'thankful' => '🙏', 'curious' => '🤔', 'interested' => '😍'] as $reaction => $emoji)
-            <button class="btn btn-outline-primary reaction" data-reaction="{{ $reaction }}" data-feed-id="{{ $feed->id }}">{{ $emoji }} <span class="reaction-count" id="count-{{ $reaction }}-{{ $feed->id }}">0</span></button>
-        @endforeach
-    </div>
-</div>
-            </div>
-
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                @auth
-
-                    <form action="{{ route('likes.store', ['feed' => $feed->id]) }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="feed_id" value="{{ $feed->id }}">                        
-                        <button type="button" id="reportbtn" onclick="reportPost({{$feed->id}})" class="btn btn-outline-primary btn-sm me-2">Report Feed</button>
-                    </form>
-                @endauth
-                <button class="btn btn-outline-secondary btn-sm" onclick="toggleComments({{ $feed->id }})">Comments</button>
-                <button class="btn btn-primary send-message-btn" 
-                    data-type="feed" 
-                    data-feed-id="{{ $feed->id }}" 
-                    data-story-id="">
-                    <i class="fa fa-message">DM based on feed</i>
+                <button class="feed-more-btn">
+                    <i class="fas fa-ellipsis-h"></i>
                 </button>
             </div>
-            <div id="comments-{{ $feed->id }}" class="comments mt-3" style="display: none;">
-            
-                <div id="commentsList-{{ $feed->id }}" class="comment-list" style="max-height: 250px; overflow-y: auto;">
-                   
-                </div>
-                @auth
-                    <form id="commentFormMedia-{{ $feed->id }}" class="mb-2" style="margin-top:20px">
-                        @csrf
-                        <input type="hidden" name="feed_id" value="{{ $feed->id }}">
-                        <input type="text" name="comment" class="form-control" placeholder="Add a comment">
-                        <button type="button" onclick="submitComment({{ $feed->id }})" class="btn btn-primary mt-2">Submit</button>
-                    </form>
-                @endauth
-            </div>
+
+            <div class="media-gallery {{ $feed->images->count() > 1 ? 'has-multiple' : '' }}">
+    @foreach($feed->images as $index => $image)
+        <div class="media-item {{ $index === 0 ? 'active' : '' }}">
+            <img src="{{ asset('storage/' . $image->media_path) }}"
+                 alt="Post image"
+                 loading="lazy">
         </div>
+    @endforeach
+    
+    @if($feed->images->count() > 1)
+        <div class="media-nav">
+            <button class="prev-btn">‹</button>
+            <button class="next-btn">›</button>
+        </div>
+        <div class="media-dots">
+            @foreach($feed->images as $index => $image)
+                <span class="dot {{ $index === 0 ? 'active' : '' }}"></span>
+            @endforeach
+        </div>
+    @endif
+</div>
+
+            <div class="feed-actions">
+                <div class="primary-actions">
+                    <button class="action-btn like-btn" data-feed-id="{{ $feed->id }}">
+                        <i class="far fa-heart"></i>
+                    </button>
+                    <button class="action-btn comment-btn" onclick="toggleComments({{ $feed->id }})">
+                        <i class="far fa-comment"> {{ $feed->comments_count ?? 0 }} </i>
+                   
+                    </button>
+                    <button class="action-btn share-btn">
+                        <i class="far fa-paper-plane"></i>
+                    </button>
+                </div>
+                <button class="action-btn save-btn">
+                    <i class="far fa-bookmark"></i>
+                </button>
+            </div>
+
+            <div class="feed-engagement">
+                <div class="likes-count">
+                    <strong>{{ $feed->likes_count ?? 0 }}</strong> likes
+                </div>
+                
+                <div class="feed-caption">
+                    <strong>{{ $feed->user->username }}</strong> 
+                    <span>{{ $feed->caption }}</span>
+                </div>
+
+                <div class="feed-comments">
+                    <div id="comments-{{ $feed->id }}" class="comments-container" style="display: none;">
+                        <div class="comments-list" id="commentsList-{{ $feed->id }}">
+                            <!-- Comments loaded dynamically -->
+                        </div>
+                        
+                        @auth
+                            <form class="comment-form" id="commentForm-{{ $feed->id }}">
+                                <input type="text" 
+                                       class="comment-input" 
+                                       placeholder="Add a comment..."
+                                       name="comment">
+                                <button type="submit" class="comment-submit">Post</button>
+                            </form>
+                        @endauth
+                    </div>
+                </div>
+
+                <div class="feed-timestamp">
+                    {{ $feed->created_at->diffForHumans() }}
+                </div>
+            </div>
+        </article>
     @empty
-        <p class="text-muted">No feeds available.</p>
+        <div class="no-feeds">
+            <p>No posts yet</p>
+        </div>
     @endforelse
 </div>
 
+<style>
+/* Enhanced Feed Styles */
+.feeds-container {
+    max-width: 470px; /* Instagram-like width */
+    margin: 0 auto;
+}
 
-<!-- Image Modal -->
-<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-body">
-                <img src="" id="modalImage" class="img-fluid" alt="Full View">
-            </div>
-        </div>
-    </div>
-</div>
+.feed {
+    background: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
 
+/* Header Styles */
+.feed-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+}
+
+.feed-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.feed-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: none;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.feed-username {
+    font-weight: 600;
+    color: #262626;
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 18px;
+}
+
+.feed-location {
+    font-size: 12px;
+    color: #262626;
+    line-height: 15px;
+}
+
+.feed-more-btn {
+    padding: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #262626;
+}
+
+/* Media Gallery Styles */
+.media-gallery {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: #000;
+    overflow: hidden;
+}
+
+.media-item {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.media-item.active {
+    opacity: 1;
+    z-index: 1;
+}
+
+.media-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Multiple Images Indicator */
+.media-counter {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 2;
+}
+
+/* Navigation Buttons */
+.media-nav {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 8px;
+    z-index: 2;
+}
+
+.media-nav button {
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #262626;
+    transition: opacity 0.2s;
+}
+
+.media-nav button:hover {
+    opacity: 0.8;
+}
+
+/* Dots Navigation */
+.media-dots {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 4px;
+    z-index: 2;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background: #0095f6;
+    transform: scale(1.2);
+}
+
+/* Actions Section */
+.feed-actions {
+    padding: 6px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.primary-actions {
+    display: flex;
+    gap: 16px;
+}
+
+
+
+.action-btn:hover {
+    transform: scale(1.1);
+}
+
+.like-btn.active i {
+    color: #ed4956;
+    font-weight: 600;
+}
+
+/* Engagement Section */
+.feed-engagement {
+    padding: 0 16px 16px;
+}
+
+.likes-count {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.feed-caption {
+    font-size: 14px;
+    line-height: 18px;
+    margin-bottom: 8px;
+}
+
+.feed-caption strong {
+    font-weight: 600;
+    margin-right: 4px;
+}
+
+/* Comments Section */
+.comments-container {
+    border-top: 1px solid #efefef;
+    margin-top: 8px;
+    padding-top: 8px;
+}
+
+.comment-form {
+    display: flex;
+    gap: 12px;
+    padding: 16px 0 0;
+    border-top: 1px solid #efefef;
+}
+
+.comment-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0;
+    font-size: 14px;
+}
+
+.comment-submit {
+    background: none;
+    border: none;
+    color: #0095f6;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.comment-submit:hover {
+    opacity: 1;
+}
+
+/* Timestamp */
+.feed-timestamp {
+    font-size: 12px;
+    color: #8e8e8e;
+    margin-top: 8px;
+}
+/* Add more styles as needed */
+</style>
 <script>
-    $(document).ready(function() {
-        $('.reaction').on('click', function() {
-            var reaction = $(this).data('reaction');
-            var feedId = $(this).data('feed-id');
-
-            $.ajax({
-                url: '{{ route('like.store') }}',
-                method: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    description: reaction,
-                    car_media_feed_id: feedId
-                },
-                success: function(response) {
-                    if (response.success) {
-                        updateReactions(feedId);
-                    }
-                }
-            });
-        });
-
-        function updateReactions(feedId) {
-            $.ajax({
-                url: '{{ route('like.getReactions', '') }}/' + feedId,
-                method: 'GET',
-                success: function(response) {
-                    response.forEach(function(item) {
-                        $('#count-' + item.description + '-' + feedId).text(item.count);
-                    });
-                }
-            });
-        }
-
-        setInterval(function() {
-            $('.reaction').each(function() {
-                var feedId = $(this).data('feed-id');
-                updateReactions(feedId);
-            });
-        }, 5000);
+    document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all galleries
+    document.querySelectorAll('.media-gallery.has-multiple').forEach(gallery => {
+        initializeGallery(gallery);
     });
-</script>
+});
 
+function initializeGallery(gallery) {
+    const items = gallery.querySelectorAll('.media-item');
+    const dots = gallery.querySelectorAll('.dot');
+    const prevBtn = gallery.querySelector('.prev-btn');
+    const nextBtn = gallery.querySelector('.next-btn');
+    let currentIndex = 0;
 
-<script>
+    // Add image counter
+    const counter = document.createElement('div');
+    counter.className = 'media-counter';
+    counter.textContent = `1/${items.length}`;
+    gallery.appendChild(counter);
 
+    // Show first image
+    items[0].classList.add('active');
+    
+    // Update navigation state
+    function updateNavigation() {
+        // Update counter
+        counter.textContent = `${currentIndex + 1}/${items.length}`;
         
-//r
-            function reportPost(feed_id){
-
-            }                              
-
-
-    function toggleComments(feedId) {
-        const commentsSection = document.getElementById(`comments-${feedId}`);
-        commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+        // Update dots
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentIndex);
+        });
+        
+        // Update images
+        items.forEach((item, index) => {
+            item.classList.toggle('active', index === currentIndex);
+        });
     }
 
-    function submitComment(feedId) {
-        const form = document.getElementById(`commentFormMedia-${feedId}`);
-        const formData = new FormData(form);
-
-        fetch("{{  route('Ccomments.store', ['feed' => $feed->id])  }}", {
-            method: "POST",
-            body: formData,
-        })
-        .then(response => response.json())
-        .then(data => {
-            //reset form
-            $('#commentFormMedia-'+feedId).trigger("reset");
-
-        });
+    // Navigation functions
+    function showNext() {
+        if (currentIndex < items.length - 1) {
+            currentIndex++;
+            updateNavigation();
+        }
     }
 
-    // Initialize tracking for each feed
-// Initialize tracking for each feed
-const feedTracking = {};
-
-setInterval(() => {
-    document.querySelectorAll('.comments').forEach(commentSection => {
-        const feedId = commentSection.id.split('-')[1];
-        
-        // Initialize tracking for the feed
-        if (!feedTracking[feedId]) {
-            feedTracking[feedId] = {
-                lastFetchedCount: 0,
-                lastFetchedId: 0,
-            };
+    function showPrev() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateNavigation();
         }
+    }
 
-        const { lastFetchedCount, lastFetchedId } = feedTracking[feedId];
+    // Event listeners
+    if (prevBtn) prevBtn.addEventListener('click', showPrev);
+    if (nextBtn) nextBtn.addEventListener('click', showNext);
 
-        // Fetch the current count of comments for the feed
-        fetch(`/feeds/${feedId}/comment-count`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.count > lastFetchedCount) {
-                    // Update the count and fetch new comments
-                    feedTracking[feedId].lastFetchedCount = data.count;
+    // Touch events for swipe
+    let touchStartX = 0;
+    let touchEndX = 0;
 
-                    fetch(`/feeds/${feedId}/comments?last_fetched_id=${lastFetchedId}`)
-                        .then(response => response.json())
-                        .then(newComments => {
-                            if (newComments.length > 0) {
-                                const commentsList = document.getElementById(`commentsList-${feedId}`);
-
-                                newComments.forEach(comment => {
-                                    const newComment = `
-                                        <div style="text-align:left" class="comment mb-3 d-flex align-items-start">
-                                            <img src="{{ asset('storage/') }}/${comment.user.profile_image}" alt="User" class="rounded-circle me-2" width="30" height="30">
-                                            <div>
-                                                <strong>${comment.user.username}</strong>
-                                                <p>${comment.comment}</p>
-                                                <small class="text-muted">${comment.time}</small>
-                                            </div>
-                                        </div>`;
-                                    commentsList.insertAdjacentHTML("beforeend", newComment);
-                                });
-
-                                // Update last fetched ID
-                                feedTracking[feedId].lastFetchedId = newComments[newComments.length - 1].id;
-                            }
-                        });
-                }
-            })
-            .catch(error => console.error('Error fetching comment count:', error));
+    gallery.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
     });
-}, 5000);
 
+    gallery.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                showNext();
+            } else {
+                showPrev();
+            }
+        }
+    }
+}
 </script>

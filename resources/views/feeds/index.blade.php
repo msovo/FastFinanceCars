@@ -1,964 +1,1552 @@
 @extends('layouts.index')
 
 @section('content')
+<!-- Core Styles -->
 <style>
-/* General Layout Enhancements */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f9f9f9;
-}
-.modal-backdrop{
-        z-index: 0;
-    }
-.container {
-    max-width: 900px;
-    margin: 0 auto;
+:root {
+    --ig-primary: #0095f6;
+    --ig-secondary: #262626;
+    --ig-background: #fafafa;
+    --ig-border: #dbdbdb;
+    --ig-text: #262626;
+    --ig-text-light: #8e8e8e;
+    --ig-gradient: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
 }
 
-h1 {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #333;
+/* Base Layout */
+body {
+    background-color: var(--ig-background);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.container {
+    max-width: 935px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
 /* Stories Section */
-.stories {
-    gap: 1rem;
-}
-
-.story-thumb img {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.story-thumb img:hover {
-    transform: scale(1.1);
-}
-small.text-truncate {
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.modal-body {
-    background-color: #000;
-    color: #fff;
-    text-align: center;
-}
-.swiper-slide img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 15px;
-}
-
-/* Feed Card Styling */
-.feed {
-    border: 1px solid #ddd;
-    transition: box-shadow 0.3s ease;
-}
-
-.feed:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.feed-header img {
-    object-fit: cover;
-}
-
-.feed img {
-    max-height: 400px;
-    object-fit: cover;
-}
-
-/* Buttons and Forms */
-button {
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-button:hover {
-    transform: translateY(-2px);
-}
-
-/* Comments */
-.comments {
-    background-color: #f1f1f1;
-    padding: 10px;
-    border-radius: 5px;
-}
-</style>
-
-<style>
-    body {
-        background-color: #f0f2f5;
-    }
-    .feed-upload .card {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-    }
-    .feed-upload .card-header {
-        background-color: #ffffff;
-        border-bottom: 1px solid #dee2e6;
-    }
-    .feed-upload .card-title {
-        margin-bottom: 0;
-    }
-    .feed-upload .form-label {
-        font-weight: 600;
-    }
-    .feed-upload .form-control {
-        border-radius: 5px;
-    }
-    .feed-upload .btn-outline-primary {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 10px;
-        font-size: 16px;
-    }
-    .feed-upload .btn-outline-primary i {
-        margin-right: 8px;
-    }
-    .feed-upload .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
-    }
-    .feed-upload .btn-primary:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
-    }
-    .feed-preview-item {
-        position: relative;
-        display: inline-block;
-    }
-    .feed-preview-item img, .feed-preview-item video {
-        max-width: 100px;
-        max-height: 100px;
-        border-radius: 5px;
-    }
-    
-    .feed-preview-item .remove-btn {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        background: rgba(0, 0, 0, 0.5);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 20px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
-
-    .story-thumb {
-    width: 60px;
-    height: 60px;
-    position: relative;
-}
-.progress-ring svg {
-    fill: none;
-    stroke:#aa0101; /* Progress line color */
-    stroke-width: 2;
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
-    top: -1px!important;
-    left: -1px!important;
-
-}
-.story-viewer {
-    position: relative;
-    height: 80vh;
-    width: 100%;
-    display: flex;
-    overflow: hidden;
-}
-
-.story-preview {
-    opacity: 0.6;
-    transition: all 0.3s ease;
-}
-
-.story-active {
-    flex: 1;
-    text-align: center;
-}
-
-.story-actions {
-    margin-top: 20px;
-}
-
-.modal .modal-footer {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.modal-content {
-    width: 80%;
-}
-/* General Styles */
-body {
-    color: black;
-    background-color: white;
-}
-
-.modal-content {
-    background-color: white;
-    color: black;
+.stories-section {
+    background: white;
+    border: 1px solid var(--ig-border);
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 0;
-    margin: 0;
+    padding: 16px 0;
+    margin-bottom: 24px;
+    overflow: hidden;
 }
 
-.modal-header .btn-close {
-    background-color: black;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    padding: 5px 10px;
-    cursor: pointer;
+.stories-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    padding: 0 16px;
+    scrollbar-width: none;
 }
 
-.modal-header .btn-close:hover {
-    background-color: #333;
+.stories-container::-webkit-scrollbar {
+    display: none;
+}
+
+.story-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
 }
 
 .story-thumb {
-    width: 60px;
-    height: 60px;
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    padding: 2px;
+    background: var(--ig-gradient);
+    margin-bottom: 8px;
     position: relative;
+    cursor: pointer;
 }
 
-.story-viewer {
-    position: relative;
-    height: 80vh;
+.story-thumb img {
     width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid white;
+    object-fit: cover;
+}
+
+/* Feed Styles */
+.feed {
+    background: white;
+    border: 1px solid var(--ig-border);
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.feed-header {
+    padding: 14px 16px;
     display: flex;
-    overflow: hidden;
-    padding: 0;
-    margin: 0;
-}
-
-.story-preview {
-    opacity: 0.6;
-    transition: all 0.3s ease;
-}
-
-.story-active {
-    flex: 1;
-    text-align: center;
-}
-
-.story-actions {
-    margin-top: 10px;
-    padding: 0;
-}
-
-/* Progress Bar Styles */
-.progress-bars {
-    display: flex;
-    justify-content: center;
     align-items: center;
-    position: absolute;
-    top: 10px;
+    justify-content: space-between;
+}
+
+.feed-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.feed-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.feed-username {
+    font-weight: 600;
+    color: var(--ig-text);
+}
+
+.feed-media {
+    position: relative;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+}
+
+.feed-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.feed-actions {
+    padding: 12px 16px;
+    border-top: 1px solid var(--ig-border);
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.primary-actions {
+    display: flex;
+    gap: 16px;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Comments Section */
+.comments-section {
+    padding: 12px 16px;
+    border-top: 1px solid var(--ig-border);
+}
+
+.comment-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.comment {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.comment-input {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    border-top: 1px solid var(--ig-border);
+}
+
+/* Story Modal */
+.story-modal {
+    position: fixed;
+    top: 0;
     left: 0;
     right: 0;
-    padding: 0 10px;
-    gap: 5px;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1050;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.story-modal.active {
+    display: flex;
+}
+
+.story-container {
+    max-width: 400px;
+    width: 100%;
+    height: 100vh;
+    max-height: 800px;
+    position: relative;
+}
+
+/* Progress Bar */
+.progress-bars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 4px;
+    padding: 12px;
+    z-index: 2;
 }
 
 .progress-bar {
     flex: 1;
-    height: 4px;
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 2px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 1px;
     overflow: hidden;
 }
 
-.progress-bar .progress {
+.progress {
     height: 100%;
-    background-color: green;
+    background: white;
     width: 0;
     transition: width 0.1s linear;
 }
 
-/* Story Content Styles */
-.story-content {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: auto;
-    padding: 0;
-    margin: 0;
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .container {
+        padding: 0;
+    }
+
+    .feed {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+    .story-modal .story-container {
+        width: 100vw;
+        height: 100vh;
+    }
 }
 
-.story-content img {
-    max-height: 100%;
-    max-width: 100%;
+
+/* Create Post Section Styles */
+.create-post-section {
+    margin-bottom: 24px;
+}
+
+.create-post-card {
+    background: white;
+    border: 1px solid var(--ig-border);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--ig-border);
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     object-fit: cover;
 }
 
-.story-caption,
-.story-timestamp {
-    color: black;
+.create-post-btn {
+    flex: 1;
+    background: var(--ig-background);
+    border: 1px solid var(--ig-border);
+    border-radius: 20px;
+    padding: 8px 16px;
+    text-align: left;
+    color: var(--ig-text-light);
     font-size: 14px;
-    margin: 5px 0;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-/* Modal Footer Styles */
-.modal-footer {
+.create-post-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 12px;
+}
+
+.action-btn {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 0;
-    margin: 0;
-}
-
-.story-actions {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-}
-
-.story-actions .btn {
-    padding: 5px 10px;
-    font-size: 14px;
-    background-color: #007bff;
-    color: white;
+    gap: 8px;
+    background: none;
     border: none;
+    padding: 8px 16px;
+    color: var(--ig-text);
+    font-size: 14px;
+    cursor: pointer;
     border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.action-btn:hover {
+    background-color: var(--ig-background);
+}
+
+.action-btn i {
+    font-size: 20px;
+}
+
+.photo-btn {
+    color: #45bd62;
+}
+
+.story-btn {
+    color: #f7b928;
+}
+
+.live-btn {
+    color: #f5533d;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .create-post-card {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+    .post-actions {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .action-btn {
+        flex: 1;
+        min-width: 100px;
+        justify-content: center;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .create-post-card {
+        background: #262626;
+        border-color: #363636;
+    }
+
+    .create-post-btn {
+        background: #363636;
+        border-color: #363636;
+        color: #a8a8a8;
+    }
+
+    .action-btn {
+        color: #a8a8a8;
+    }
+
+    .action-btn:hover {
+        background-color: #363636;
+    }
+}
+
+/* Animations */
+.create-post-card {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hover Effects */
+.create-post-btn,
+.action-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.create-post-btn::after,
+.action-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: inherit;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.create-post-btn:active::after,
+.action-btn:active::after {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+/* Loading State */
+.action-btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.action-btn.loading i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Fix navigation buttons alignment */
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.prev-btn {
+    left: 16px;
+}
+
+.next-btn {
+    right: 16px;
+}
+
+/* Style ellipsis button */
+.more-options-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--ig-text);
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.more-options-btn:hover {
+    opacity: 1;
+}
+
+/* Comments styling */
+.comments-count {
+    font-size: 14px;
+    color: var(--ig-text-light);
+    margin-bottom: 8px;
+}
+
+.comment {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+    align-items: flex-start;
+}
+
+.comment-content {
+    flex: 1;
+}
+
+.comment-content strong {
+    margin-right: 8px;
+}
+
+.story-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.story-container {
+    max-width: 400px;
+    width: 100%;
+    height: 100vh;
+    max-height: 800px;
+    background: #000;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.story-header {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.progress-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 4px;
+    padding: 12px;
+    z-index: 2;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 1px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: white;
+    width: 0;
+    transition: width 0.1s linear;
+}
+
+.story-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.media-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.media-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+}
+
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.prev-btn {
+    left: 16px;
+}
+
+.next-btn {
+    right: 16px;
+}
+
+.story-footer {
+    padding: 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.reply-container {
+    display: flex;
+    gap: 12px;
+}
+
+.reply-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    color: white;
+}
+
+.send-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
     cursor: pointer;
 }
 
-.story-actions .btn:hover {
-    background-color: #0056b3;
+.story-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.reaction-options .btn {
-    margin: 0 5px;
-    font-size: 14px;
+.story-container {
+    max-width: 400px;
+    width: 100%;
+    height: 100vh;
+    max-height: 800px;
+    background: #000;
+    position: relative;
 }
 
+.story-controls {
+    display: flex;
+    gap: 12px;
+}
+
+.pause-btn, .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.pause-btn:hover, .close-btn:hover {
+    opacity: 1;
+}
+
+.story-media {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Add any missing styles from the previous implementation */
 </style>
 
-<div class="container mt-4">
+<div class="container">
     <h1 class="text-center mb-4">Car Media</h1>
+    
     @auth
-    <button class="btn btn-primary" id="uploadStoryBtn">Share Your Story</button>
+        <button class="btn btn-primary upload-story-btn" id="uploadStoryBtn">
+            Share Your Story
+        </button>
     @else
-    <p class="text-center">Please <a href="{{ route('login') }}">login</a> to share your stories.</p>
-
+        <p class="text-center">Please <a href="{{ route('login') }}">login</a> to share your stories.</p>
     @endauth
 
-    <div id="stories-container">
+    <!-- Stories Section -->
     @include('partials._stories', ['stories' => $stories])
-    </div>
 
-<!-- Story Modal -->
-
-<div id="modalStoryPlaceholder"></div>
-
-
-
-<!-- Modal for Comments -->
-<div id="commentsModal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5>Comments</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="commentsContent">
-                <!-- Dynamically loaded comments -->
-            </div>
-            <div class="modal-footer">
-                <input type="text" id="commentInput" placeholder="Write a comment..." class="form-control">
-                <button class="btn btn-primary" id="submitComment">Post</button>
-            </div>
+    @auth
+ 
+    <div class="modalStoryPlaceholder" id="modalStoryPlaceholder"></div>
+<div class="create-post-section">
+    <div class="create-post-card">
+        <div class="post-header">
+            <img src="{{ Auth::user()->profile_image ? Storage::url(Auth::user()->profile_image) : asset('images/default_avatar.jpg') }}" 
+                 alt="Profile" 
+                 class="user-avatar">
+            <button type="button" 
+                    class="create-post-btn" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#feedUploadModal">
+                What's on your mind, {{ Auth::user()->username }}?
+            </button>
+        </div>
+        <div class="post-actions">
+            <button type="button" 
+                    class="action-btn photo-btn" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#feedUploadModal">
+                <i class="far fa-images"></i>
+                <span>Photo/Video</span>
+            </button>
+            <button type="button" 
+                    class="action-btn story-btn"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#storyUploadModal">
+                <i class="far fa-clock"></i>
+                <span>Story</span>
+            </button>
+            <button type="button" 
+                    class="action-btn live-btn">
+                <i class="fas fa-video"></i>
+                <span>Go Live</span>
+            </button>
         </div>
     </div>
 </div>
-
-<!-- Modal for Messaging -->
-<div id="messageModal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5>Send a Message</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <textarea id="messageInput" placeholder="Type your message..." class="form-control"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="sendMessage">Send</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-    <div class="modal fade" id="storyUploadModal" tabindex="-1" aria-labelledby="storyUploadModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="storyUploadModalLabel">Share Your Story</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ route('stories.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="row g-4">
-                        <!-- Column 1: Upload Button -->
-                        <div class="col-md-6 d-flex flex-column align-items-center">
-                            <label for="story-media" class="btn btn-outline-primary mb-3 w-100">
-                                <i class="bi bi-upload"></i> Choose Media
-                            </label>
-                            <input type="file" class="d-none" id="story-media" name="media" accept="image/*,video/*" onchange="previewStoryMedia()" required>
-                            <p class="text-muted small text-center">Max 2 mins for videos.</p>
-                        </div>
-                        <!-- Column 2: Content Input -->
-                        <div class="col-md-6">
-                            <label for="story-caption" class="form-label">Add a Caption</label>
-                            <input type="text" class="form-control" id="story-caption" name="caption" placeholder="What's on your mind?">
-                        </div>
-                    </div>
-                    <!-- Preview Section -->
-                    <div id="story-preview-section" class="mt-4" style="display: none;">
-                        <p class="fw-bold">Preview:</p>
-                        <div id="story-preview" class="d-flex align-items-center gap-3 flex-wrap">
-                            <!-- Preview will dynamically display here -->
-                        </div>
-                    </div>
-                    <!-- Upload Button -->
-                    <div class="mt-4 text-center">
-                        <button type="submit" class="btn btn-primary w-50">Post Story</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
+@endauth
     <!-- Feed Upload Section -->
     @auth
-
-    <div class="feed-upload mb-4">
-    <form id="feed-form" enctype="multipart/form-data">
-        @csrf
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Share Your Feed</h5>
-            </div>
-            <div class="card-body">
-                <div class="mb-3 text-center">
-                    <label for="feed-media" class="btn btn-outline-primary w-100">
-                        <i class="bi bi-upload"></i> Choose Media
-                    </label>
-                    <input type="file" class="d-none" id="feed-media" name="media[]" accept="image/*,video/*" multiple required onchange="previewFeedMedia()">
-                    <p class="text-muted small">Max: 5 mins for videos.</p>
-                </div>
-                <div class="mb-3">
-                    <label for="feed-caption" class="form-label">Caption</label>
-                    <input type="text" class="form-control" id="feed-caption" name="caption" placeholder="What's on your mind?">
-                </div>
-                <div id="feed-preview" class="mb-3" style="display: none;">
-                    <p class="fw-bold">Preview:</p>
-                    <div id="feed-preview-container" class="d-flex gap-2 overflow-auto"></div>
-                </div>
-                <style>
-
-            </style>
-                <div class="progress mb-3" style="display: none;">
-                    <div id="upload-progress" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-            <input type="hidden" name="ajax" value="ajax"/>
-            <div class="card-footer text-center">
-                <button type="submit" class="btn btn-primary w-50">Post Feed</button>
-            </div>
-        </div>
-    </form>
-</div>
+        @include('partials._feed_upload')
     @endauth
 
-    <div id="feeds-container">
-    @include('partials._feeds',  ['feeds' => $feeds])
-</div>
     <!-- Feeds Section -->
-  
+    <div id="feeds-container">
+        @include('partials._feeds', ['feeds' => $feeds])
+    </div>
 </div>
 
+<!-- Modals -->
+@include('partials._story_modal')
+@include('partials._image_modal')
+@include('partials._comment_modal')
+
+<!-- Scripts -->
 <script>
+// Main initialization functions
+function initializeStoryViewer() {
+    const storyThumbs = document.querySelectorAll('.story-thumb');
+    storyThumbs.forEach(thumb => {
+        thumb.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            const stories = JSON.parse(this.dataset.userStories);
+            if (stories && stories.length > 0) {
+                openStoryViewer(stories);
+            }
+        });
+    });
+}
 
-    // Function to preview story media and enable delete functionality
-    function previewStoryMedia() {
-        const input = document.getElementById('story-media');
-        const previewSection = document.getElementById('story-preview-section');
-        const previewContainer = document.getElementById('story-preview');
+function initializeFeedInteractions() {
+    // Initialize like buttons
+    document.querySelectorAll('.reaction').forEach(button => {
+        button.addEventListener('click', function() {
+            const reaction = this.dataset.reaction;
+            const feedId = this.dataset.feedId;
+            handleReaction(feedId, reaction);
+        });
+    });
 
-        previewContainer.innerHTML = ''; // Clear previous previews
+    // Initialize comment buttons
+    document.querySelectorAll('.comment-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const feedId = this.closest('.feed').dataset.feedId;
+            toggleComments(feedId);
+        });
+    });
+}
 
-        if (input.files && input.files[0]) {
-            const file = input.files[0];
-            const url = URL.createObjectURL(file);
-            const wrapper = document.createElement('div');
-            wrapper.className = 'position-relative';
+function initializeCommentSystem() {
+    // Initialize comment forms
+    document.querySelectorAll('.comment-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const feedId = this.closest('.feed').dataset.feedId;
+            submitComment(feedId, this);
+        });
+    });
+}
 
-            const media = document.createElement(file.type.startsWith('image/') ? 'img' : 'video');
-            media.src = url;
-            media.className = 'rounded border';
-            media.style.width = '120px';
-            media.style.height = '120px';
-            media.controls = file.type.startsWith('video/');
 
-            // Delete button for preview
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'btn btn-danger btn-sm position-absolute top-0 end-0';
-            deleteButton.innerHTML = '<i class="bi bi-x"></i>';
-            deleteButton.onclick = () => {
-                input.value = ''; // Clear file input
-                wrapper.remove(); // Remove preview
-                previewSection.style.display = previewContainer.children.length === 0 ? 'none' : 'block';
-            };
+// Main initialization when document is ready
+document.addEventListener('DOMContentLoaded', function() {
+  //  initializeStoryViewer();
+    initializeFeedInteractions();
+    initializeCommentSystem();
 
-            wrapper.appendChild(media);
-            wrapper.appendChild(deleteButton);
-            previewContainer.appendChild(wrapper);
-
-            previewSection.style.display = 'block';
-        }
-    }
 
    
-    let selectedFiles = [];
-    const MAX_FILES = 8;
+});
 
-    function previewFeedMedia() {
-    const previewContainer = document.getElementById('feed-preview-container');
-    const previewSection = document.getElementById('feed-preview');
-    const files = document.getElementById('feed-media').files;
 
-    // Add new files to the selectedFiles array
-    for (let i = 0; i < files.length; i++) {
-        if (selectedFiles.length < MAX_FILES) {
-            selectedFiles.push(files[i]);
-        } else {
-            alert('You can only upload up to ' + MAX_FILES + ' files.');
-            break;
+
+
+// Story Viewer Enhancement
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize story click handlers
+    document.querySelectorAll('.story-item').forEach(storyItem => {
+        if (!storyItem.classList.contains('upload-story')) { // Skip upload button
+            storyItem.addEventListener('click', function() {
+                const userId = this.dataset.userId;
+                const storiesCount = this.dataset.storiesCount;
+                openStoryViewer(userId);
+            });
         }
-    }
-
-    previewContainer.innerHTML = '';
-    if (selectedFiles.length > 0) {
-        previewSection.style.display = 'block';
-    } else {
-        previewSection.style.display = 'none';
-    }
-
-    selectedFiles.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const previewItem = document.createElement('div');
-            previewItem.classList.add('feed-preview-item');
-
-            if (file.type.startsWith('image/')) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                previewItem.appendChild(img);
-            } else if (file.type.startsWith('video/')) {
-                const video = document.createElement('video');
-                video.src = e.target.result;
-                video.controls = true;
-                previewItem.appendChild(video);
-            }
-
-            const removeBtn = document.createElement('button');
-            removeBtn.classList.add('remove-btn');
-            removeBtn.innerHTML = '&times;';
-            removeBtn.onclick = function() {
-                removeMedia(index);
-            };
-            previewItem.appendChild(removeBtn);
-
-            previewContainer.appendChild(previewItem);
-        };
-        reader.readAsDataURL(file);
     });
-}
+});
 
 
 
-function removeMedia(index) {
-    selectedFiles.splice(index, 1);
+async function openStoryViewer(userId) {
+    try {
+        const stories = @json($stories);
+        const userStories = stories.filter(story => story.user.user_id === parseInt(userId));
+        const storageBasePath = "{{ asset('storage/') }}";
 
-    const dataTransfer = new DataTransfer();
-    selectedFiles.forEach(file => dataTransfer.items.add(file));
-    document.getElementById('feed-media').files = dataTransfer.files;
-    selectedFiles=[];
-    previewFeedMedia();
-}
-
-$('#feed-form').on('submit', function(event) {
-        event.preventDefault(); // Prevent the default form submission
-
-        var formData = new FormData(this);
-        var progressBar = $('#upload-progress');
-        var progressContainer = $('.progress');
-
-        $.ajax({
-            url: '{{ route('feeds.store') }}',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            xhr: function() {
-                var xhr = new window.XMLHttpRequest();
-                xhr.upload.addEventListener('progress', function(evt) {
-                    if (evt.lengthComputable) {
-                        var percentComplete = (evt.loaded / evt.total) * 100;
-                        console.log('Progress:', percentComplete); // Debugging line
-                        progressBar.css('width', percentComplete + '%');
-                        progressBar.attr('aria-valuenow', percentComplete);
-                    } else {
-                        console.log('Unable to compute progress information since the total size is unknown.');
-                    }
-                }, false);
-                return xhr;
-            },
-            beforeSend: function() {
-                progressContainer.show();
-                progressBar.css('width', '0%');
-                progressBar.attr('aria-valuenow', '0');
-            },
-            success: function(response) {
-                // Handle the response data
-                $('#feeds-container').html(response);
-                $('#feed-form')[0].reset();
-                $('#feed-preview').hide();
-                progressContainer.hide();
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-                // Optionally, you can show an error message
-                progressContainer.hide();
-            }
-        });
-    });
-
-
-</script>
-
-<script>
-
-function closeModalStory(){
-    $('#storyModal').hide();
-    $('.modal-backdrop').hide();
-    
-}
-document.addEventListener("DOMContentLoaded", () => {
-    const users = @json($stories); // Backend data with nested stories
-    const thumbs = document.querySelectorAll(".story-thumb");
-    const modalPlaceholder = document.getElementById("modalStoryPlaceholder");
-    let currentTimer = null;
-    const storageBasePath = "{{ asset('storage/') }}";
-    // Clear Timer Function
-    const clearExistingTimer = () => {
-        if (currentTimer) {
-            clearTimeout(currentTimer);
-            currentTimer = null;
-        }
-    };
-
-    // Create and Render Modal Function
-    const renderModal = (userStories, username) => {
-        clearExistingTimer();
         const modalHTML = `
-            <div class="modal fade" id="storyModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">${username}'s Stories</h5>
-                            <button type="button" class="btn-close" onclick="closeModalStory()" data-bs-dismiss="modal" aria-label="Close">X</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="swiper" id="storySwiper">
-                                <div class="swiper-wrapper">
-                                    ${userStories.map(story => `
-                                        <div class="swiper-slide">
-                                            <div class="story-content">
-                                                <img src ='${storageBasePath}/${story.media_path}' alt="Story Image" class="img-fluid">
-                                                <div class="story-caption">${story.caption || ""}</div>
-                                                <div class="story-timestamp">${humanizeTimestamp(story.created_at)}</div>
-                                            </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            <div class="progress-bars">
-                                ${userStories.map(() => `<div class="progress-bar"><div class="progress"></div></div>`).join('')}
+            <div class="story-modal" id="storyModal">
+                <div class="story-container">
+                    <div class="story-header">
+                        <div class="user-info">
+                            <img src="${userStories[0].user.profile_image}" class="user-avatar">
+                            <div class="user-details">
+                                <span class="username">${userStories[0].user.username}</span>
+                                <span class="time">${formatTime(userStories[0].created_at)}</span>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                              <div class="story-actions d-flex justify-content-between align-items-center mt-3">
-                                        <div class="reactions">
-                                            <button class="btn btn-outline-primary reaction-btn">React</button>
-                                            <div class="reaction-options d-none">
-                                                <button class="btn btn-outline-primary reaction" data-reaction="love">❤️</button>
-                                                <button class="btn btn-outline-success reaction" data-reaction="like">👍</button>
-                                                <button class="btn btn-outline-warning reaction" data-reaction="sad">😢</button>
-                                                <button class="btn btn-outline-info reaction" data-reaction="laugh">😂</button>
-                                            </div>
-                                        </div>
-                                      <button class="btn btn-light comment-btn">Comment</button>
-                                  <button class="btn btn-light dm-btn">DM</button>
-                           </div>
+                        <div class="story-controls">
+                            <button class="pause-btn" onclick="togglePause()">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                            <button class="close-btn" onclick="closeStoryViewer()">×</button>
+                        </div>
+                    </div>
+
+                    <div class="progress-container">
+                        ${userStories.map(() => `
+                            <div class="progress-bar">
+                                <div class="progress"></div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="story-content">
+                        <button class="nav-btn prev-btn" onclick="previousStory()">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        
+                        <div class="media-container">
+                            <img src="${storageBasePath}/${userStories[0].media_path}" alt="Story" class="story-media">
+                        </div>
+
+                        <button class="nav-btn next-btn" onclick="nextStory()">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="story-footer">
+                        <div class="reply-container">
+                            <input type="text" placeholder="Reply to story..." class="reply-input">
+                            <button class="send-btn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>`;
+            </div>
+        `;
 
-        modalPlaceholder.innerHTML = modalHTML;
-        initializeSwiper(userStories.length);
+        document.getElementById('modalStoryPlaceholder').innerHTML = modalHTML;
+        
+        // Initialize story viewer with the current user's stories
+        initializeStoryViewer(userStories);
 
-        const modalElement = document.getElementById("storyModal");
-        const modalInstance = new bootstrap.Modal(modalElement, { backdrop: "static" });
-        modalInstance.show();
+        // Add touch events for mobile
+        addTouchEvents();
+    } catch (error) {
+        console.error('Error loading stories:', error);
+    }
+}
 
-        modalElement.addEventListener("hidden.bs.modal", () => {
-            clearExistingTimer();
-            modalPlaceholder.innerHTML = ""; // Clear modal content
-        });
+// Global variables for story control
+let currentStoryIndex = 0;
+let currentUserStories = [];
+let storyTimer;
+let isPaused = false;
 
-        setupReactions();
-    };
+function initializeStoryViewer(stories) {
+    currentUserStories = stories;
+    currentStoryIndex = 0;
+    isPaused = false;
+    startStoryProgress();
 
-    // Initialize Swiper with Logic
-    const initializeSwiper = (storyCount) => {
-        const swiper = new Swiper("#storySwiper", {
-            loop: false,
-            allowTouchMove: true,
-        });
+    // Add keyboard controls
+    document.addEventListener('keydown', handleKeyPress);
+}
 
-        const progressBars = document.querySelectorAll(".progress-bar .progress");
-        let currentStoryIndex = 0;
+function startStoryProgress() {
+    if (storyTimer) clearInterval(storyTimer);
+    if (isPaused) return;
 
-        const updateProgressBar = () => {
-            progressBars.forEach((bar, index) => {
-                bar.style.width = index === currentStoryIndex ? "0%" : "0%";
-            });
-            const activeBar = progressBars[currentStoryIndex];
-            let progress = 0;
+    const progressBars = document.querySelectorAll('.progress-bar .progress');
+    // Reset previous progress bars
+    progressBars.forEach((bar, index) => {
+        bar.style.width = index < currentStoryIndex ? '100%' : '0%';
+    });
 
-            clearExistingTimer();
-            currentTimer = setInterval(() => {
-                progress += 2;
-                if (progress > 100) {
-                    clearInterval(currentTimer);
-                    currentStoryIndex++;
+    const currentProgress = progressBars[currentStoryIndex];
+    let progress = 0;
 
-                    if (currentStoryIndex < storyCount) {
-                        swiper.slideTo(currentStoryIndex);
-                        updateProgressBar();
-                    } else {
-                        swiper.slideTo(0);
-                        const modalElement = document.getElementById("storyModal");
-                        const modalInstance = bootstrap.Modal.getInstance(modalElement);
-                        modalInstance.hide();
-                    }
-                } else {
-                    activeBar.style.width = `${progress}%`;
-                }
-            }, 100);
-        };
+    storyTimer = setInterval(() => {
+        if (!isPaused) {
+            progress += 0.5;
+            currentProgress.style.width = `${progress}%`;
 
-        swiper.on("slideChange", () => {
-            currentStoryIndex = swiper.activeIndex;
-            updateProgressBar();
-        });
+            if (progress >= 100) {
+                nextStory();
+            }
+        }
+    }, 30);
+}
 
-        updateProgressBar(); // Start for the first story
-    };
+function togglePause() {
+    isPaused = !isPaused;
+    const pauseBtn = document.querySelector('.pause-btn i');
+    pauseBtn.className = isPaused ? 'fas fa-play' : 'fas fa-pause';
+    
+    if (!isPaused) {
+        startStoryProgress();
+    }
+}
 
-    // Setup Reaction Buttons
-    const setupReactions = () => {
-        const reactionButtons = document.querySelectorAll(".reaction");
-        reactionButtons.forEach(button => {
-            button.addEventListener("click", () => {
-                const reactionType = button.dataset.reaction;
-                console.log(`Reacted with: ${reactionType}`);
-            });
-        });
+function nextStory() {
+    if (currentStoryIndex < currentUserStories.length - 1) {
+        currentStoryIndex++;
+        updateStoryContent();
+    } else {
+        // Find next user's stories
+        const allStories = @json($stories);
+        const currentUserId = currentUserStories[0].user.user_id;
+        const nextUserStories = findNextUserStories(allStories, currentUserId);
+        
+        if (nextUserStories.length > 0) {
+            currentUserStories = nextUserStories;
+            currentStoryIndex = 0;
+            updateStoryContent();
+        } else {
+            closeStoryViewer();
+        }
+    }
+}
 
-        document.querySelector(".comment-btn").addEventListener("click", () => {
-            console.log("Comment button clicked.");
-        });
+function previousStory() {
+    if (currentStoryIndex > 0) {
+        currentStoryIndex--;
+        updateStoryContent();
+    } else {
+        // Find previous user's stories
+        const allStories = @json($stories);
+        const currentUserId = currentUserStories[0].user.user_id;
+        const prevUserStories = findPreviousUserStories(allStories, currentUserId);
+        
+        if (prevUserStories.length > 0) {
+            currentUserStories = prevUserStories;
+            currentStoryIndex = prevUserStories.length - 1;
+            updateStoryContent();
+        }
+    }
+}
 
-        document.querySelector(".dm-btn").addEventListener("click", () => {
-            console.log("DM button clicked.");
-        });
-    };
+function updateStoryContent() {
+    const storageBasePath = "{{ asset('storage/') }}";
+    const story = currentUserStories[currentStoryIndex];
+    
+    // Update media
+    const mediaContainer = document.querySelector('.media-container');
+    mediaContainer.innerHTML = `<img src="${storageBasePath}/${story.media_path}" alt="Story" class="story-media">`;
+    
+    // Update user info
+    document.querySelector('.user-avatar').src = story.user.profile_image;
+    document.querySelector('.username').textContent = story.user.username;
+    document.querySelector('.time').textContent = formatTime(story.created_at);
+    
+    // Restart progress
+    startStoryProgress();
+}
 
-    // Convert Timestamp to Human Readable Format
-    const humanizeTimestamp = (timestamp) => {
-        const date = new Date(timestamp);
-        return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-    };
+function findNextUserStories(allStories, currentUserId) {
+    const userIds = [...new Set(allStories.map(story => story.user.user_id))];
+    const currentIndex = userIds.indexOf(currentUserId);
+    if (currentIndex < userIds.length - 1) {
+        const nextUserId = userIds[currentIndex + 1];
+        return allStories.filter(story => story.user.user_id === nextUserId);
+    }
+    return [];
+}
 
-    // Click Event for Thumbnails
-    thumbs.forEach(thumb => {
-        thumb.addEventListener("click", () => {
-            const userId = thumb.dataset.userId;
-            const groupedUsers = users.reduce((acc, row) => {
-                const { user, ...story } = row;
-                const existingUser = acc.find(u => u.user_id === user.user_id);
+function findPreviousUserStories(allStories, currentUserId) {
+    const userIds = [...new Set(allStories.map(story => story.user.user_id))];
+    const currentIndex = userIds.indexOf(currentUserId);
+    if (currentIndex > 0) {
+        const prevUserId = userIds[currentIndex - 1];
+        return allStories.filter(story => story.user.user_id === prevUserId);
+    }
+    return [];
+}
 
-                if (existingUser) {
-                    existingUser.stories.push(story);
-                } else {
-                    user.stories = [story];
-                    acc.push(user);
-                }
+function addTouchEvents() {
+    const storyContent = document.querySelector('.story-content');
+    let touchStartX = 0;
+    let touchStartTime = 0;
 
-                return acc;
-                }, []);
+    storyContent.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartTime = Date.now();
+        isPaused = true;
+    });
 
-                const user = groupedUsers.find(user => user.user_id == userId);
+    storyContent.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndTime = Date.now();
+        const touchDuration = touchEndTime - touchStartTime;
+        const touchDistance = touchStartX - touchEndX;
 
-            if (user && user.stories.length > 0) {
-                renderModal(user.stories, user.username);
+        isPaused = false;
+        
+        // If it's a quick swipe
+        if (touchDuration < 300 && Math.abs(touchDistance) > 50) {
+            if (touchDistance > 0) {
+                nextStory();
             } else {
-                alert("No stories available for this user.");
+                previousStory();
             }
-        });
-    });
-});
-
-
-
-$(document).ready(function () {
-    // Open modal with correct message type and IDs
-    $('.send-message-btn').click(function () {
-        const messageType = $(this).data('type');
-        const feedId = $(this).data('feed-id') || '';
-        const storyId = $(this).data('story-id') || '';
-
-        // Set values in the modal
-        $('#messageType').val(messageType);
-        $('#feedId').val(feedId);
-        $('#storyId').val(storyId);
-
-        // Open the modal
-        $('#sendMessageModal').modal('show');
-    });
-
-    // Handle form submission via Ajax
-    $('#sendMessageForm').submit(function (e) {
-        e.preventDefault();
-
-        $.ajax({
-            url: '{{ route("messages.store") }}',
-            method: 'POST',
-            data: $(this).serialize(),
-            success: function (response) {
-                alert(response.message);
-                $('#sendMessageModal').modal('hide');
-                $('#sendMessageForm')[0].reset(); // Clear the form
-            },
-            error: function (xhr) {
-                alert('Error: ' + xhr.responseJSON.message);
+        } else {
+            // If it's a tap
+            const screenWidth = window.innerWidth;
+            const touchX = touchEndX;
+            
+            if (touchX < screenWidth / 3) {
+                previousStory();
+            } else if (touchX > (screenWidth * 2) / 3) {
+                nextStory();
             }
+        }
+        
+        startStoryProgress();
+    });
+}
+
+function handleKeyPress(e) {
+    switch(e.key) {
+        case 'ArrowLeft':
+            previousStory();
+            break;
+        case 'ArrowRight':
+            nextStory();
+            break;
+        case ' ':
+            togglePause();
+            break;
+        case 'Escape':
+            closeStoryViewer();
+            break;
+    }
+}
+
+function closeStoryViewer() {
+    if (storyTimer) clearInterval(storyTimer);
+    document.removeEventListener('keydown', handleKeyPress);
+    const modal = document.getElementById('storyModal');
+    if (modal) modal.remove();
+}
+
+function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return date.toLocaleDateString();
+}
+// Feed Interactions Enhancement
+class FeedInteraction {
+    constructor(feedId) {
+        this.feedId = feedId;
+        this.isLoadingComments = false;
+        this.lastCommentId = 0;
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        // Reaction handling
+        document.querySelectorAll(`.reaction[data-feed-id="${this.feedId}"]`).forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const reaction = e.currentTarget.dataset.reaction;
+                this.handleReaction(reaction);
+            });
         });
-    });
-});
 
+        // Comment toggle
+        const commentBtn = document.querySelector(`[onclick="toggleComments(${this.feedId})"]`);
+        if (commentBtn) {
+            commentBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.toggleComments();
+            });
+        }
+    }
 
-document.addEventListener("DOMContentLoaded", function () {
-    // Initialize Swiper
-    const swiper = new Swiper(".swiper", {
-        navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-        },
-        loop: true,
-    });
-
-    // Handle Reactions
-    document.addEventListener("click", function (event) {
-        if (event.target.classList.contains("reaction")) {
-            const reactionType = event.target.dataset.reaction;
-            const storyId = swiper.slides[swiper.activeIndex].dataset.storyId; // Assuming story ID is stored in slide
-
-            // Send Reaction to Backend
-            fetch('/api/reactions', {
+    async handleReaction(reaction) {
+        try {
+            const response = await fetch('/like/store', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ story_id: storyId, reaction: reactionType }),
-            })
-                .then(response => response.json())
-                .then(data => alert(data.message))
-                .catch(error => console.error('Error:', error));
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    description: reaction,
+                    car_media_feed_id: this.feedId
+                })
+            });
+
+            if (response.ok) {
+                this.updateReactionCount(reaction);
+            }
+        } catch (error) {
+            console.error('Error handling reaction:', error);
         }
-    });
-    const activeSlide = swiper.slides[swiper.activeIndex];
+    }
 
-    // Handle Comments
-    document.addEventListener("click", function (event) {
-        if (event.target.classList.contains("open-comments")) {
-            const storyId = swiper.slides[swiper.activeIndex].dataset.storyId;
-
-            // Show Comment Modal or Load Comments via Ajax
-            alert("Comments for Story ID: " + storyId);
+    updateReactionCount(reaction) {
+        const countElement = document.getElementById(`count-${reaction}-${this.feedId}`);
+        if (countElement) {
+            const currentCount = parseInt(countElement.textContent);
+            countElement.textContent = currentCount + 1;
         }
-    });
+    }
 
-    // Handle Direct Messages
-    document.addEventListener("click", function (event) {
-        if (event.target.classList.contains("dm-user")) {
-            const storyId = swiper.slides[swiper.activeIndex].dataset.storyId;
+    async loadComments() {
+        if (this.isLoadingComments) return;
 
-            // Open DM Modal or Redirect
-            alert("Message for Story ID: " + storyId);
+        this.isLoadingComments = true;
+        try {
+            const response = await fetch(`/feeds/${this.feedId}/comments?last_fetched_id=${this.lastCommentId}`);
+            const comments = await response.json();
+            
+            if (comments.length > 0) {
+                this.renderComments(comments);
+                this.lastCommentId = comments[comments.length - 1].id;
+            }
+        } catch (error) {
+            console.error('Error loading comments:', error);
+        } finally {
+            this.isLoadingComments = false;
         }
+    }
+
+    renderComments(comments) {
+        const commentsList = document.getElementById(`commentsList-${this.feedId}`);
+        comments.forEach(comment => {
+            const commentHTML = `
+                <div class="comment">
+                    <img src="/storage/${comment.user.profile_image}" alt="${comment.user.username}" class="rounded-circle" width="32" height="32">
+                    <div class="comment-content">
+                        <strong>${comment.user.username}</strong>
+                        <p>${comment.comment}</p>
+                        <small class="text-muted">${this.humanizeTimestamp(comment.created_at)}</small>
+                    </div>
+                </div>
+            `;
+            commentsList.insertAdjacentHTML('beforeend', commentHTML);
+        });
+    }
+}
+
+// Initialize everything
+function initializeApp() {
+    // Initialize Story Viewer
+    const storyViewer = new StoryViewer();
+    
+    // Initialize Feed Interactions
+    document.querySelectorAll('.feed').forEach(feed => {
+        const feedId = feed.dataset.feedId;
+        new FeedInteraction(feedId);
     });
+
+    // Story Upload Button
+    const uploadStoryBtn = document.getElementById('uploadStoryBtn');
+    if (uploadStoryBtn) {
+        uploadStoryBtn.addEventListener('click', () => {
+            const modal = new bootstrap.Modal(document.getElementById('storyUploadModal'));
+            modal.show();
+        });
+    }
+
+    // Feed Form Submit
+    const feedForm = document.getElementById('feed-form');
+    if (feedForm) {
+        feedForm.addEventListener('submit', handleFeedSubmit);
+    }
+}
+
+// Feed Form Submit Handler
+async function handleFeedSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const progressBar = document.getElementById('upload-progress');
+    const progressContainer = document.querySelector('.progress');
+
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+
+        if (response.ok) {
+            const result = await response.text();
+            document.getElementById('feeds-container').innerHTML = result;
+            form.reset();
+            document.getElementById('feed-preview').style.display = 'none';
+            progressContainer.style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Error submitting feed:', error);
+    }
+}
+
+// Initialize when document is ready
+document.addEventListener('DOMContentLoaded', initializeApp);
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle button loading states
+    const actionButtons = document.querySelectorAll('.action-btn');
+    
+    actionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Add loading state
+            this.classList.add('loading');
+            
+            // Remove loading state after modal is shown
+            const modalId = this.getAttribute('data-bs-target');
+            const modal = document.querySelector(modalId);
+            
+            modal.addEventListener('shown.bs.modal', () => {
+                this.classList.remove('loading');
+            }, { once: true });
+        });
+    });
+
+    // Handle drag and drop for the entire create post card
+    const createPostCard = document.querySelector('.create-post-card');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        createPostCard.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        createPostCard.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        createPostCard.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        createPostCard.classList.add('drag-highlight');
+    }
+
+    function unhighlight(e) {
+        createPostCard.classList.remove('drag-highlight');
+    }
+
+    createPostCard.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files.length > 0) {
+            // Trigger the feed upload modal
+            const modal = new bootstrap.Modal(document.getElementById('feedUploadModal'));
+            modal.show();
+
+            // Set the files in the file input
+            const fileInput = document.getElementById('feed-media');
+            const dataTransfer = new DataTransfer();
+            
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+                    dataTransfer.items.add(file);
+                }
+            });
+
+            fileInput.files = dataTransfer.files;
+            // Trigger the change event to update the preview
+            fileInput.dispatchEvent(new Event('change'));
+        }
+    }
 });
-// Pause timer when interacting with the active story
-
-
-            $("#uploadStoryBtn").on("click", function(){
-                $("#storyUploadModal").modal("show");
-            })
-</script>
-<script>
-    $('#imageModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var src = button.data('src');
-        var modal = $(this);
-        modal.find('#modalImage').attr('src', src);
-    });
-
-
-</script>
-<script>
 
 
 
 
 
+class FeedComments {
+    constructor(feedId) {
+        this.feedId = feedId;
+        this.commentsCount = 0;
+        this.isLoading = false;
+        this.page = 1;
+    }
 
+    async showComments() {
+        const modalHTML = `
+            <div class="comments-modal" id="commentsModal-${this.feedId}">
+                <div class="comments-container">
+                    <div class="comments-header">
+                        <h5>Comments</h5>
+                        <span class="comments-count">${this.commentsCount} comments</span>
+                        <button class="close-btn">×</button>
+                    </div>
+                    
+                    <div class="comments-list" id="commentsList-${this.feedId}">
+                        <!-- Comments will be loaded here -->
+                    </div>
+                    
+                    <div class="comments-footer">
+                        <form class="comment-form" id="commentForm-${this.feedId}">
+                            <input type="text" 
+                                   class="comment-input" 
+                                   placeholder="Add a comment..."
+                                   required>
+                            <button type="submit" class="post-btn">Post</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        this.loadComments();
+        this.initializeCommentControls();
+    }
+
+    async loadComments() {
+        if (this.isLoading) return;
+        
+        this.isLoading = true;
+        try {
+            const response = await fetch(`/feeds/${this.feedId}/comments?page=${this.page}`);
+            const data = await response.json();
+            
+            this.renderComments(data.comments);
+            this.commentsCount = data.total;
+            this.updateCommentsCount();
+            
+            this.page++;
+            this.isLoading = false;
+        } catch (error) {
+            console.error('Error loading comments:', error);
+            this.isLoading = false;
+        }
+    }
+
+    renderComments(comments) {
+        const commentsList = document.getElementById(`commentsList-${this.feedId}`);
+        
+        comments.forEach(comment => {
+            const commentHTML = `
+                <div class="comment-item">
+                    <div class="comment-user">
+                        <img src="${comment.user.profile_image}" 
+                             alt="${comment.user.username}" 
+                             class="user-avatar">
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="username">${comment.user.username}</span>
+                            <span class="time">${this.formatTime(comment.created_at)}</span>
+                        </div>
+                        <p class="comment-text">${comment.comment}</p>
+                        <div class="comment-actions">
+                            <button class="like-btn">Like</button>
+                            <button class="reply-btn">Reply</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            commentsList.insertAdjacentHTML('beforeend', commentHTML);
+        });
+    }
+
+    updateCommentsCount() {
+        // Update comments count in feed and modal
+        document.querySelector(`#feed-${this.feedId} .comments-count`)
+            .textContent = `${this.commentsCount} comments`;
+            
+        document.querySelector(`#commentsModal-${this.feedId} .comments-count`)
+            .textContent = `${this.commentsCount} comments`;
+    }
+
+    initializeCommentControls() {
+        const modal = document.getElementById(`commentsModal-${this.feedId}`);
+        const form = document.getElementById(`commentForm-${this.feedId}`);
+        const commentsList = document.getElementById(`commentsList-${this.feedId}`);
+
+        // Close modal
+        modal.querySelector('.close-btn').addEventListener('click', () => {
+            modal.remove();
+        });
+
+        // Submit new comment
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = form.querySelector('.comment-input');
+            const comment = input.value.trim();
+            
+            if (!comment) return;
+
+            try {
+                const response = await fetch(`/feeds/${this.feedId}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ comment })
+                });
+
+                const data = await response.json();
+                this.renderComments([data.comment]);
+                this.commentsCount++;
+                this.updateCommentsCount();
+                
+                input.value = '';
+            } catch (error) {
+                console.error('Error posting comment:', error);
+            }
+        });
+
+        // Infinite scroll for comments
+        commentsList.addEventListener('scroll', () => {
+            if (commentsList.scrollHeight - commentsList.scrollTop === commentsList.clientHeight) {
+                this.loadComments();
+            }
+        });
+    }
+
+    formatTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000);
+
+        if (diff < 60) return 'just now';
+        if (diff < 3600) return `${Math.floor(diff / 60)}m`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
+        return date.toLocaleDateString();
+    }
+}
+function toggleComments(feedId) {
+    const commentsSection = document.getElementById(`comments-${feedId}`);
+    if (commentsSection.style.display === 'none') {
+        commentsSection.style.display = 'block';
+        loadComments(feedId);
+    } else {
+        commentsSection.style.display = 'none';
+    }
+}
+
+async function loadComments(feedId) {
+    const commentsList = document.getElementById(`commentsList-${feedId}`);
+    try {
+        const response = await fetch(`/feeds/${feedId}/comments`);
+        const data = await response.json();
+        
+        // Update comments count
+        const countElement = document.querySelector(`.comment-count[data-feed-id="${feedId}"]`);
+        if (countElement) {
+            countElement.textContent = `${data.total} comments`;
+        }
+
+        // Render comments
+        commentsList.innerHTML = data.comments.map(comment => `
+            <div class="comment">
+                <img src="${comment.user.profile_image}" class="user-avatar">
+                <div class="comment-content">
+                    <strong>${comment.user.username}</strong>
+                    <p>${comment.comment}</p>
+                    <small class="text-muted">${formatTime(comment.created_at)}</small>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading comments:', error);
+    }
+}
 </script>
 @endsection
-
-
