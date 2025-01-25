@@ -353,6 +353,13 @@ Route::get('/feeds/{feed}/comments', [CarMediaCommentController::class, 'getLate
 Route::get('/feeds/{feed}/comment-count', [CarMediaCommentController::class, 'getCommentCount'])->name('feeds.comment.count');
 Route::get('/feeds/{feed}/comments', [CarMediaCommentController::class, 'getNewComments'])->name('feeds.comments.new');
 
+// routes/web.php
+Route::middleware(['auth'])->group(function () {
+    Route::post('comments/{comment}/like', 'CommentLikeController@toggleCommentLike');
+    Route::post('replies/{reply}/like', 'ReplyLikeController@toggleReplyiesLike');
+    Route::post('comments/{comment}/replies', 'ReplyController@store');
+});
+
 
 Route::prefix('admin')->group(function () {
     Route::get('chat-messages/{id}/messages', [AdminChatController::class, 'getMessages'])->name('admin.chat-messages.messages');
@@ -363,4 +370,5 @@ Route::prefix('admin')->group(function () {
     Route::get('chats', [AdminChatController::class, 'index'])->name('admin.chats.index');
     Route::get('chats/{id}', [AdminChatController::class, 'show'])->name('admin.chats.show');
 });
+
 

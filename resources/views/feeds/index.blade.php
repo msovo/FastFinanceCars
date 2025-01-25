@@ -145,28 +145,7 @@ body {
 }
 
 /* Comments Section */
-.comments-section {
-    padding: 12px 16px;
-    border-top: 1px solid var(--ig-border);
-}
 
-.comment-list {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.comment {
-    display: flex;
-    gap: 12px;
-    padding: 8px 0;
-}
-
-.comment-input {
-    display: flex;
-    gap: 12px;
-    padding: 16px;
-    border-top: 1px solid var(--ig-border);
-}
 
 /* Story Modal */
 .story-modal {
@@ -774,6 +753,9 @@ body {
 
 <!-- Scripts -->
 <script>
+
+const feedInteractions = new Map();
+
 // Main initialization functions
 function initializeStoryViewer() {
     const storyThumbs = document.querySelectorAll('.story-thumb');
@@ -798,13 +780,7 @@ function initializeFeedInteractions() {
         });
     });
 
-    // Initialize comment buttons
-    document.querySelectorAll('.comment-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const feedId = this.closest('.feed').dataset.feedId;
-            toggleComments(feedId);
-        });
-    });
+
 }
 
 function initializeCommentSystem() {
@@ -830,7 +806,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize all feeds
+    document.querySelectorAll('[data-feed-id]').forEach(feed => {
+        const feedId = feed.dataset.feedId;
+        feedInteractions.set(feedId, new FeedInteraction(feedId));
+    });
+});
 
 // Story Viewer Enhancement
 document.addEventListener('DOMContentLoaded', function() {
@@ -969,6 +951,7 @@ function togglePause() {
         startStoryProgress();
     }
 }
+
 
 function nextStory() {
     if (currentStoryIndex < currentUserStories.length - 1) {
@@ -1121,432 +1104,8 @@ function formatTime(timestamp) {
     if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
     return date.toLocaleDateString();
 }
-// Feed Interactions Enhancement
-class FeedInteraction {
-    constructor(feedId) {
-        this.feedId = feedId;
-        this.isLoadingComments = false;
-        this.lastCommentId = 0;
-        this.setupEventListeners();
-    }
-
-    setupEventListeners() {
-        // Reaction handling
-        document.querySelectorAll(`.reaction[data-feed-id="${this.feedId}"]`).forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const reaction = e.currentTarget.dataset.reaction;
-                this.handleReaction(reaction);
-            });
-        });
-
-        // Comment toggle
-        const commentBtn = document.querySelector(`[onclick="toggleComments(${this.feedId})"]`);
-        if (commentBtn) {
-            commentBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.toggleComments();
-            });
-        }
-    }
-
-    async handleReaction(reaction) {
-        try {
-            const response = await fetch('/like/store', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({
-                    description: reaction,
-                    car_media_feed_id: this.feedId
-                })
-            });
-
-            if (response.ok) {
-                this.updateReactionCount(reaction);
-            }
-        } catch (error) {
-            console.error('Error handling reaction:', error);
-        }
-    }
-
-    updateReactionCount(reaction) {
-        const countElement = document.getElementById(`count-${reaction}-${this.feedId}`);
-        if (countElement) {
-            const currentCount = parseInt(countElement.textContent);
-            countElement.textContent = currentCount + 1;
-        }
-    }
-
-    async loadComments() {
-        if (this.isLoadingComments) return;
-
-        this.isLoadingComments = true;
-        try {
-            const response = await fetch(`/feeds/${this.feedId}/comments?last_fetched_id=${this.lastCommentId}`);
-            const comments = await response.json();
-            
-            if (comments.length > 0) {
-                this.renderComments(comments);
-                this.lastCommentId = comments[comments.length - 1].id;
-            }
-        } catch (error) {
-            console.error('Error loading comments:', error);
-        } finally {
-            this.isLoadingComments = false;
-        }
-    }
-
-    renderComments(comments) {
-        const commentsList = document.getElementById(`commentsList-${this.feedId}`);
-        comments.forEach(comment => {
-            const commentHTML = `
-                <div class="comment">
-                    <img src="/storage/${comment.user.profile_image}" alt="${comment.user.username}" class="rounded-circle" width="32" height="32">
-                    <div class="comment-content">
-                        <strong>${comment.user.username}</strong>
-                        <p>${comment.comment}</p>
-                        <small class="text-muted">${this.humanizeTimestamp(comment.created_at)}</small>
-                    </div>
-                </div>
-            `;
-            commentsList.insertAdjacentHTML('beforeend', commentHTML);
-        });
-    }
-}
-
-// Initialize everything
-function initializeApp() {
-    // Initialize Story Viewer
-    const storyViewer = new StoryViewer();
-    
-    // Initialize Feed Interactions
-    document.querySelectorAll('.feed').forEach(feed => {
-        const feedId = feed.dataset.feedId;
-        new FeedInteraction(feedId);
-    });
-
-    // Story Upload Button
-    const uploadStoryBtn = document.getElementById('uploadStoryBtn');
-    if (uploadStoryBtn) {
-        uploadStoryBtn.addEventListener('click', () => {
-            const modal = new bootstrap.Modal(document.getElementById('storyUploadModal'));
-            modal.show();
-        });
-    }
-
-    // Feed Form Submit
-    const feedForm = document.getElementById('feed-form');
-    if (feedForm) {
-        feedForm.addEventListener('submit', handleFeedSubmit);
-    }
-}
-
-// Feed Form Submit Handler
-async function handleFeedSubmit(event) {
-    event.preventDefault();
-    const form = event.target;
-    const formData = new FormData(form);
-    const progressBar = document.getElementById('upload-progress');
-    const progressContainer = document.querySelector('.progress');
-
-    try {
-        const response = await fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
-
-        if (response.ok) {
-            const result = await response.text();
-            document.getElementById('feeds-container').innerHTML = result;
-            form.reset();
-            document.getElementById('feed-preview').style.display = 'none';
-            progressContainer.style.display = 'none';
-        }
-    } catch (error) {
-        console.error('Error submitting feed:', error);
-    }
-}
-
-// Initialize when document is ready
-document.addEventListener('DOMContentLoaded', initializeApp);
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle button loading states
-    const actionButtons = document.querySelectorAll('.action-btn');
-    
-    actionButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Add loading state
-            this.classList.add('loading');
-            
-            // Remove loading state after modal is shown
-            const modalId = this.getAttribute('data-bs-target');
-            const modal = document.querySelector(modalId);
-            
-            modal.addEventListener('shown.bs.modal', () => {
-                this.classList.remove('loading');
-            }, { once: true });
-        });
-    });
-
-    // Handle drag and drop for the entire create post card
-    const createPostCard = document.querySelector('.create-post-card');
-    
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        createPostCard.addEventListener(eventName, preventDefaults, false);
-    });
-
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
-    ['dragenter', 'dragover'].forEach(eventName => {
-        createPostCard.addEventListener(eventName, highlight, false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        createPostCard.addEventListener(eventName, unhighlight, false);
-    });
-
-    function highlight(e) {
-        createPostCard.classList.add('drag-highlight');
-    }
-
-    function unhighlight(e) {
-        createPostCard.classList.remove('drag-highlight');
-    }
-
-    createPostCard.addEventListener('drop', handleDrop, false);
-
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-
-        if (files.length > 0) {
-            // Trigger the feed upload modal
-            const modal = new bootstrap.Modal(document.getElementById('feedUploadModal'));
-            modal.show();
-
-            // Set the files in the file input
-            const fileInput = document.getElementById('feed-media');
-            const dataTransfer = new DataTransfer();
-            
-            Array.from(files).forEach(file => {
-                if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
-                    dataTransfer.items.add(file);
-                }
-            });
-
-            fileInput.files = dataTransfer.files;
-            // Trigger the change event to update the preview
-            fileInput.dispatchEvent(new Event('change'));
-        }
-    }
-});
 
 
 
-
-
-class FeedComments {
-    constructor(feedId) {
-        this.feedId = feedId;
-        this.commentsCount = 0;
-        this.isLoading = false;
-        this.page = 1;
-    }
-
-    async showComments() {
-        const modalHTML = `
-            <div class="comments-modal" id="commentsModal-${this.feedId}">
-                <div class="comments-container">
-                    <div class="comments-header">
-                        <h5>Comments</h5>
-                        <span class="comments-count">${this.commentsCount} comments</span>
-                        <button class="close-btn">×</button>
-                    </div>
-                    
-                    <div class="comments-list" id="commentsList-${this.feedId}">
-                        <!-- Comments will be loaded here -->
-                    </div>
-                    
-                    <div class="comments-footer">
-                        <form class="comment-form" id="commentForm-${this.feedId}">
-                            <input type="text" 
-                                   class="comment-input" 
-                                   placeholder="Add a comment..."
-                                   required>
-                            <button type="submit" class="post-btn">Post</button>
-                        </form>
-
-                    </div>
-                </div>
-            </div>
-        `;
-
-        document.body.insertAdjacentHTML('beforeend', modalHTML);
-        this.loadComments();
-        this.initializeCommentControls();
-    }
-
-    async loadComments() {
-        if (this.isLoading) return;
-        
-        this.isLoading = true;
-        try {
-            const response = await fetch(`/feeds/${this.feedId}/comments?page=${this.page}`);
-            const data = await response.json();
-            
-            this.renderComments(data.comments);
-            this.commentsCount = data.total;
-            this.updateCommentsCount();
-            
-            this.page++;
-            this.isLoading = false;
-        } catch (error) {
-            console.error('Error loading comments:', error);
-            this.isLoading = false;
-        }
-    }
-
-    renderComments(comments) {
-        const commentsList = document.getElementById(`commentsList-${this.feedId}`);
-        
-        comments.forEach(comment => {
-            const commentHTML = `
-                <div class="comment-item">
-                    <div class="comment-user">
-                        <img src="${comment.user.profile_image}" 
-                             alt="${comment.user.username}" 
-                             class="user-avatar">
-                    </div>
-                    <div class="comment-content">
-                        <div class="comment-header">
-                            <span class="username">${comment.user.username}</span>
-                            <span class="time">${this.formatTime(comment.created_at)}</span>
-                        </div>
-                        <p class="comment-text">${comment.comment}</p>
-                        <div class="comment-actions">
-                            <button class="like-btn">Like</button>
-                            <button class="reply-btn">Reply</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            commentsList.insertAdjacentHTML('beforeend', commentHTML);
-        });
-    }
-
-    updateCommentsCount() {
-        // Update comments count in feed and modal
-        document.querySelector(`#feed-${this.feedId} .comments-count`)
-            .textContent = `${this.commentsCount} comments`;
-            
-        document.querySelector(`#commentsModal-${this.feedId} .comments-count`)
-            .textContent = `${this.commentsCount} comments`;
-    }
-
-    initializeCommentControls() {
-        const modal = document.getElementById(`commentsModal-${this.feedId}`);
-        const form = document.getElementById(`commentForm-${this.feedId}`);
-        const commentsList = document.getElementById(`commentsList-${this.feedId}`);
-
-        // Close modal
-        modal.querySelector('.close-btn').addEventListener('click', () => {
-            modal.remove();
-        });
-
-        // Submit new comment
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const input = form.querySelector('.comment-input');
-            const comment = input.value.trim();
-            
-            if (!comment) return;
-
-            try {
-                const response = await fetch(`/feeds/${this.feedId}/comments`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({ comment })
-                });
-
-                const data = await response.json();
-                this.renderComments([data.comment]);
-                this.commentsCount++;
-                this.updateCommentsCount();
-                
-                input.value = '';
-            } catch (error) {
-                console.error('Error posting comment:', error);
-            }
-        });
-
-        // Infinite scroll for comments
-        commentsList.addEventListener('scroll', () => {
-            if (commentsList.scrollHeight - commentsList.scrollTop === commentsList.clientHeight) {
-                this.loadComments();
-            }
-        });
-    }
-
-    formatTime(timestamp) {
-        const date = new Date(timestamp);
-        const now = new Date();
-        const diff = Math.floor((now - date) / 1000);
-
-        if (diff < 60) return 'just now';
-        if (diff < 3600) return `${Math.floor(diff / 60)}m`;
-        if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
-        return date.toLocaleDateString();
-    }
-}
-function toggleComments(feedId) {
-    const commentsSection = document.getElementById(`comments-${feedId}`);
-    if (commentsSection.style.display === 'none') {
-        commentsSection.style.display = 'block';
-        loadComments(feedId);
-    } else {
-        commentsSection.style.display = 'none';
-    }
-}
-
-async function loadComments(feedId) {
-    const commentsList = document.getElementById(`commentsList-${feedId}`);
-    try {
-        const response = await fetch(`/feeds/${feedId}/comments`);
-        const data = await response.json();
-        
-        // Update comments count
-        const countElement = document.querySelector(`.comment-count[data-feed-id="${feedId}"]`);
-        if (countElement) {
-            countElement.textContent = `${data.total} comments`;
-        }
-
-        // Render comments
-        commentsList.innerHTML = data.comments.map(comment => `
-            <div class="comment">
-                <img src="${comment.user.profile_image}" class="user-avatar">
-                <div class="comment-content">
-                    <strong>${comment.user.username}</strong>
-                    <p>${comment.comment}</p>
-                    <small class="text-muted">${formatTime(comment.created_at)}</small>
-                </div>
-            </div>
-        `).join('');
-    } catch (error) {
-        console.error('Error loading comments:', error);
-    }
-}
 </script>
 @endsection

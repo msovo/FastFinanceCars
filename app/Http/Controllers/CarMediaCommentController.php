@@ -49,19 +49,45 @@ class CarMediaCommentController extends Controller
           $count = car_media_comment::where('car_media_feed_id', $feedId)->count();
           return response()->json(['count' => $count]);
       }
+
+
       public function getNewComments($feedId, Request $request)
-      {
-          $lastFetchedId = $request->input('last_fetched_id');
-          
-          $newComments = car_media_comment::where('car_media_feed_id', $feedId)
-              ->where('id', '>', $lastFetchedId)
-              ->with('user')
-              ->get();
-        
-          foreach ($newComments as $comment) {
-              $comment->time = $comment->created_at->diffForHumans();
-          }
-          return response()->json($newComments);
-      }      
+{
+    $perPage = 10;
+    $lastFetchedId = $request->input('last_fetched_id', 0);
+    
+    $comments = car_media_comment::where('car_media_feed_id', $feedId)
+        ->where('id', '>', $lastFetchedId)
+        ->with(['user', 'replies.user', 'likes'])
+        ->withCount(['replies', 'likes'])
+        ->orderBy('id', 'asc')
+        ->take($perPage)
+        ->get()
+        ->map(function ($comment) {
+            return [
+                'id' => $comment->id,
+                'comment' => $comment->comment,
+                'user' => $comment->user,
+                'created_at' => $comment->created_at,
+                'likes_count' => $comment->likes_count,
+                'replies_count' => $comment->replies_count,
+                'replies' => $comment->replies->map(function ($reply) {
+                    return [
+                        'id' => $reply->id,
+                        'reply' => $reply->reply,
+                        'user' => $reply->user,
+                        'created_at' => $reply->created_at,
+                        'likes_count' => $reply->likes()->count()
+                    ];
+                }),
+                'is_liked_by_user' => $comment->likes->contains('user_id', auth()->id())
+            ];
+        });
+
+    return response()->json([
+        'comments' => $comments,
+        'has_more' => $comments->count() === $perPage
+    ]);
+}
       
 }

@@ -27,4 +27,16 @@ class car_media_comment extends Model
     {
         return $this->hasMany(car_media_reply::class);
     }
+    public function likes()
+    {
+        return $this->hasMany(CommentLike::class, 'comment_id');
+    }
+    public function isLikedByUser($userId = null)
+    {
+        if (!$userId && auth()->check()) {
+            $userId = auth()->id();
+        }
+        
+        return $this->likes()->where('user_id', $userId)->exists();
+    }
 }

@@ -18,12 +18,27 @@ class ReplyController extends Controller
             'reply' => 'required|string|max:255',
         ]);
 
-        car_media_reply::create([
+        $reply = car_media_reply::create([
             'user_id' => auth()->id(),
             'car_media_comment_id' => $comment->id,
             'reply' => $request->reply,
         ]);
 
-        return redirect()->route('feeds.index');
+        $reply->load('user');
+
+        return response()->json([
+            'success' => true,
+            'reply' => [
+                'id' => $reply->id,
+                'reply' => $reply->reply,
+                'user' => [
+                    'id' => $reply->user->id,
+                    'username' => $reply->user->username,
+                    'profile_image' => $reply->user->profile_image,
+                ],
+                'created_at' => $reply->created_at,
+                'likes_count' => 0,
+            ]
+        ]);
     }
 }

@@ -44,7 +44,7 @@
                     <button class="action-btn like-btn" data-feed-id="{{ $feed->id }}">
                         <i class="far fa-heart"></i>
                     </button>
-                    <button class="action-btn comment-btn" onclick="toggleComments({{ $feed->id }})">
+                    <button class="action-btn comment-btn" id="toggleComments-{{ $feed->id }}">
                         <i class="far fa-comment"> {{ $feed->comments_count ?? 0 }} </i>
                    
                     </button>
@@ -59,7 +59,7 @@
 
             <div class="feed-engagement">
                 <div class="likes-count">
-                    <strong>{{ $feed->likes_count ?? 0 }}</strong> likes
+                    <strong>{{ $feed->total_likes ?? 0 }}</strong> likes
                 </div>
                 
                 <div class="feed-caption">
@@ -68,22 +68,36 @@
                 </div>
 
                 <div class="feed-comments">
-                    <div id="comments-{{ $feed->id }}" class="comments-container" style="display: none;">
-                        <div class="comments-list" id="commentsList-{{ $feed->id }}">
-                            <!-- Comments loaded dynamically -->
-                        </div>
-                        
-                        @auth
-                            <form class="comment-form" id="commentForm-{{ $feed->id }}">
-                                <input type="text" 
-                                       class="comment-input" 
-                                       placeholder="Add a comment..."
-                                       name="comment">
-                                <button type="submit" class="comment-submit">Post</button>
-                            </form>
-                        @endauth
-                    </div>
+    <div id="comments-{{ $feed->id }}" class="comments-container" style="display: none;">
+        <!-- Mobile comment modal -->
+        <div class="mobile-comment-modal">
+            <div class="modal-header">
+                <button class="close-modal">&times;</button>
+                <h4>Comments</h4>
+            </div>
+            
+            <div class="comments-wrapper">
+                <div class="comments-list" id="commentsList-{{ $feed->id }}">
+                    <!-- Comments loaded dynamically -->
                 </div>
+                
+                <div class="loading-spinner" style="display: none;">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+            
+            @auth
+                <form class="comment-form" id="commentForm-{{ $feed->id }}">
+                    <input type="text" 
+                           class="comment-input" 
+                           placeholder="Add a comment..."
+                           name="comment">
+                    <button type="submit" class="comment-submit">Post</button>
+                </form>
+            @endauth
+        </div>
+    </div>
+</div>
 
                 <div class="feed-timestamp">
                     {{ $feed->created_at->diffForHumans() }}
@@ -304,48 +318,314 @@
 }
 
 /* Comments Section */
-.comments-container {
+.container {
     border-top: 1px solid #efefef;
     margin-top: 8px;
     padding-top: 8px;
 }
 
-.comment-form {
+/* Add these styles to your existing CSS */
+
+/* Core Variables */
+:root {
+    --ig-primary: #0095f6;
+    --ig-text: #262626;
+    --ig-secondary-text: #8e8e8e;
+    --ig-border: #dbdbdb;
+    --ig-background: #ffffff;
+    --ig-error: #ed4956;
+    --modal-height: 90vh;
+    --header-height: 44px;
+    --comment-form-height: 60px;
+}
+
+/* Feed Container */
+.feeds-container {
+    max-width: 470px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+/* Comments Section */
+.feed-comments {
+    position: relative;
+    background: var(--ig-background);
+}
+
+/* Mobile Comment Modal */
+.mobile-comment-modal {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--modal-height);
+    background: var(--ig-background);
+    z-index: 1000;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    flex-direction: column;
+}
+
+.mobile-comment-modal.active {
     display: flex;
-    gap: 12px;
-    padding: 16px 0 0;
-    border-top: 1px solid #efefef;
+    animation: slideUp 0.3s ease-out forwards;
 }
 
-.comment-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    padding: 0;
-    font-size: 14px;
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
 }
 
-.comment-submit {
+/* Modal Header */
+.modal-header {
+    height: var(--header-height);
+    padding: 0 16px;
+    border-bottom: 1px solid var(--ig-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: var(--ig-background);
+}
+
+.modal-header h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--ig-text);
+}
+
+.close-modal {
+    position: absolute;
+    left: 8px;
+    height: 44px;
+    width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: none;
     border: none;
-    color: #0095f6;
-    font-weight: 600;
-    font-size: 14px;
     cursor: pointer;
+    font-size: 24px;
+    color: var(--ig-text);
+}
+
+/* Comments Wrapper */
+.comments-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px;
+    background: var(--ig-background);
+}
+
+/* Comment Styles */
+.comment {
+    display: flex;
+    margin-bottom: 16px;
+    padding: 0;
+}
+
+.comment:last-child {
+    margin-bottom: var(--comment-form-height);
+}
+
+.comment-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.comment-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.comment-user {
+    font-weight: 600;
+    color: var(--ig-text);
+    margin-right: 4px;
+}
+
+.comment-text {
+    color: var(--ig-text);
+    margin: 0;
+    word-wrap: break-word;
+}
+
+/* Comment Actions */
+.comment-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.comment-like,
+.comment-reply-button {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 12px;
+    color: var(--ig-secondary-text);
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.comment-like.liked {
+    color: var(--ig-error);
+}
+
+/* Reply Section */
+.replies {
+    margin-left: 44px;
+    margin-top: 8px;
+}
+
+.reply {
+    display: flex;
+    margin-bottom: 12px;
+}
+
+/* Forms */
+.comment-form {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 16px;
+    background: var(--ig-background);
+    border-top: 1px solid var(--ig-border);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    height: var(--comment-form-height);
+    z-index: 1001;
+}
+
+.reply-form {
+    margin-left: 44px;
+    margin-top: 8px;
+    padding: 8px 0;
+    display: none;
+    gap: 12px;
+    align-items: center;
+}
+
+.reply-form.active {
+    display: flex;
+}
+
+.comment-input,
+.reply-input {
+    flex: 1;
+    border: 1px solid var(--ig-border);
+    border-radius: 22px;
+    padding: 8px 16px;
+    font-size: 14px;
+    outline: none;
+    background: var(--ig-background);
+}
+
+.comment-submit,
+.reply-form button[type="submit"] {
+    background: none;
+    border: none;
+    color: var(--ig-primary);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0 8px;
     opacity: 0.5;
 }
 
-.comment-submit:hover {
+.comment-input:valid ~ .comment-submit,
+.reply-input:valid ~ button[type="submit"] {
     opacity: 1;
 }
 
-/* Timestamp */
-.feed-timestamp {
-    font-size: 12px;
-    color: #8e8e8e;
-    margin-top: 8px;
+/* Loading States */
+.loading-spinner {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-/* Add more styles as needed */
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--ig-border);
+    border-top-color: var(--ig-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Desktop Styles */
+@media (min-width: 768px) {
+    .mobile-comment-modal {
+        position: static;
+        height: auto;
+        max-height: 400px;
+        transform: none;
+        border-radius: 0;
+        box-shadow: none;
+        display: block;
+    }
+
+    .modal-header {
+        display: none;
+    }
+
+    .comments-wrapper {
+        max-height: 300px;
+    }
+
+    .comment-form {
+        position: static;
+        border-top: 1px solid var(--ig-border);
+    }
+
+    .comment:last-child {
+        margin-bottom: 16px;
+    }
+}
+
+/* Overlay for mobile */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.modal-overlay.active {
+    display: block;
+}
+
+/* Hide scrollbar on body when modal is open */
+body.modal-open {
+    overflow: hidden;
+}
+.reply-input {
+color:black !important;
+}
 </style>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -432,4 +712,444 @@ function initializeGallery(gallery) {
         }
     }
 }
+
+
+// Feed Interactions Enhancemen
+    
+class FeedInteraction {
+    constructor(feedId) {
+        if (FeedInteraction.instances.has(feedId)) {
+            return FeedInteraction.instances.get(feedId);
+        }
+        
+        this.feedId = feedId;
+        this.isLoadingComments = false;
+        this.lastCommentId = 0;
+        this.hasMoreComments = true;
+        this.isCommentsVisible = false;
+        this.setupEventListeners();
+        
+        FeedInteraction.instances.set(feedId, this);
+    }
+
+    static instances = new Map();
+
+    setupEventListeners() {
+        // Remove existing listeners first
+        this.removeEventListeners();
+
+        // Reaction handling
+        document.querySelectorAll(`.reaction[data-feed-id="${this.feedId}"]`).forEach(btn => {
+            btn.addEventListener('click', this.handleReaction.bind(this));
+        });
+
+        // Comment toggle
+        const commentBtn = document.querySelector(`[id="toggleComments-${this.feedId}"]`);
+        if (commentBtn) {
+            commentBtn.addEventListener('click', this.toggleComments.bind(this));
+        }
+
+        // Comment form
+        const commentForm = document.querySelector(`#commentForm-${this.feedId}`);
+        if (commentForm) {
+            commentForm.addEventListener('submit', this.handleCommentSubmit.bind(this));
+        }
+
+        // Scroll handler for infinite loading
+        const commentsList = document.getElementById(`commentsList-${this.feedId}`);
+        if (commentsList) {
+            const wrapper = commentsList.closest('.comments-wrapper');
+            wrapper.addEventListener('scroll', this.handleScroll.bind(this));
+        }
+
+        // Mobile modal close
+        const closeBtn = document.querySelector(`#comments-${this.feedId} .close-modal`);
+        if (closeBtn) {
+            closeBtn.addEventListener('click', this.toggleComments.bind(this));
+        }
+    }
+
+    removeEventListeners() {
+        const commentBtn = document.querySelector(`[id="toggleComments-${this.feedId}"]`);
+        if (commentBtn) {
+            const newBtn = commentBtn.cloneNode(true);
+            commentBtn.parentNode.replaceChild(newBtn, commentBtn);
+        }
+    }
+
+    toggleComments(e) {
+        if (e) e.preventDefault();
+        
+        const commentsSection = document.getElementById(`comments-${this.feedId}`);
+        const isMobile = window.innerWidth < 768;
+
+        if (!this.isCommentsVisible) {
+            commentsSection.style.display = 'block';
+            if (isMobile) {
+               $(".mobile-comment-modal").show();
+                document.body.style.overflow = 'hidden';
+                commentsSection.classList.add('active');
+            }
+            this.loadComments();
+            this.isCommentsVisible = true;
+        } else {
+            if (isMobile) {
+                const modalComment=document.querySelector('.mobile-comment-modal');
+                modalComment.style.display = 'block';
+                commentsSection.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            commentsSection.style.display = 'none';
+            this.isCommentsVisible = false;
+        }
+    }
+
+
+    async handleCommentSubmit(e) {
+        e.preventDefault();
+        const form = e.target;
+        const input = form.querySelector('input[name="comment"]');
+        const comment = input.value.trim();
+
+        if (!comment) return;
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    comment: comment,
+                    feed_id: this.feedId
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.addNewComment(data);
+                input.value = '';
+            }
+        } catch (error) {
+            console.error('Error submitting comment:', error);
+        }
+    }
+
+    async handleReplySubmit(commentId, event) {
+        event.preventDefault();
+        const form = event.target;
+        const input = form.querySelector('.reply-input');
+        const reply = input.value.trim();
+
+        if (!reply) return;
+
+        try {
+            const response = await fetch(`/comments/${commentId}/replies`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ reply })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.addNewReply(commentId, data.reply);
+                input.value = '';
+                form.classList.remove('active');
+                
+                // Update reply count
+                const replyCount = document.querySelector(`#comment-${commentId}-reply-count`);
+                if (replyCount) {
+                    replyCount.textContent = parseInt(replyCount.textContent) + 1;
+                }
+            }
+        } catch (error) {
+            console.error('Error submitting reply:', error);
+        }
+    }
+
+    async toggleCommentLike(commentId) {
+        try {
+            const response = await fetch(`/comments/${commentId}/like`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const likeButton = document.querySelector(`#comment-${commentId}-like-button`);
+                const likeCount = document.querySelector(`#comment-${commentId}-likes`);
+                
+                likeCount.textContent = data.likes_count;
+                likeButton.classList.toggle('liked', data.action === 'liked');
+            }
+        } catch (error) {
+            console.error('Error toggling comment like:', error);
+        }
+    }
+
+    async toggleReplyLike(replyId) {
+        try {
+            const response = await fetch(`/replies/${replyId}/like`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const likeButton = document.querySelector(`#reply-${replyId}-like-button`);
+                const likeCount = document.querySelector(`#reply-${replyId}-likes`);
+                
+                likeCount.textContent = data.likes_count;
+                likeButton.classList.toggle('liked', data.action === 'liked');
+            }
+        } catch (error) {
+            console.error('Error toggling reply like:', error);
+        }
+    }
+toggleReplyForm(commentId) {
+    // Find all reply forms first
+    const allReplyForms = document.querySelectorAll('.reply-form');
+    
+    // Close any other open reply forms
+    allReplyForms.forEach(form => {
+        if (form.id !== `replyForm-${commentId}`) {
+            form.classList.remove('active');
+        }
+    });
+
+    // Toggle the selected reply form
+    const replyForm = document.querySelector(`#replyForm-${commentId}`);
+    if (replyForm) {
+        replyForm.classList.toggle('active');
+        
+        // Focus the input when opening
+        if (replyForm.classList.contains('active')) {
+            const input = replyForm.querySelector('.reply-input');
+            if (input) {
+                input.focus();
+            }
+        }
+    }
+}
+    handleScroll(e) {
+        const wrapper = e.target;
+        if (wrapper.scrollHeight - wrapper.scrollTop <= wrapper.clientHeight + 100) {
+            this.loadComments();
+        }
+    }
+
+    async handleReaction(reaction) {
+        try {
+            const response = await fetch('/like/store', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    description: reaction,
+                    car_media_feed_id: this.feedId
+                })
+            });
+
+            if (response.ok) {
+                this.updateReactionCount(reaction);
+            }
+        } catch (error) {
+            console.error('Error handling reaction:', error);
+        }
+    }
+
+    updateReactionCount(reaction) {
+        const countElement = document.getElementById(`count-${reaction}-${this.feedId}`);
+        if (countElement) {
+            const currentCount = parseInt(countElement.textContent);
+            countElement.textContent = currentCount + 1;
+        }
+    }
+
+    async loadComments() {
+        if (this.isLoadingComments || !this.hasMoreComments) return;
+
+        this.isLoadingComments = true;
+        const spinner = document.querySelector(`#comments-${this.feedId} .loading-spinner`);
+        spinner.style.display = 'block';
+
+        try {
+            const response = await fetch(`/feeds/${this.feedId}/comments?last_fetched_id=${this.lastCommentId}`);
+            const data = await response.json();
+            
+            if (data.comments.length > 0) {
+                this.renderComments(data.comments);
+                this.lastCommentId = data.comments[data.comments.length - 1].id;
+                this.hasMoreComments = data.has_more;
+            } else {
+                this.hasMoreComments = false;
+            }
+        } catch (error) {
+            console.error('Error loading comments:', error);
+        } finally {
+            this.isLoadingComments = false;
+            spinner.style.display = 'none';
+        }
+    }
+
+    humanizeTimestamp(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const seconds = Math.floor((now - date) / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+        const months = Math.floor(days / 30);
+        const years = Math.floor(days / 365);
+
+        if (seconds < 60) {
+            return 'just now';
+        } else if (minutes < 60) {
+            return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
+        } else if (hours < 24) {
+            return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+        } else if (days < 30) {
+            return days === 1 ? '1 day ago' : `${days} days ago`;
+        } else if (months < 12) {
+            return months === 1 ? '1 month ago' : `${months} months ago`;
+        } else {
+            return years === 1 ? '1 year ago' : `${years} years ago`;
+        }
+    }
+
+    renderComments(comments) {
+        const commentsList = document.getElementById(`commentsList-${this.feedId}`);
+        comments.forEach(comment => {
+            const commentHTML = `
+                <div class="comment" id="comment-${comment.id}">
+                    <img src="/storage/${comment.user.profile_image}" alt="${comment.user.username}" class="rounded-circle" width="32" height="32">
+                    <div class="comment-content">
+                        <strong>${comment.user.username}</strong>
+                        <p>${comment.comment}</p>
+                        <div class="comment-actions">
+                            <button 
+                                id="comment-${comment.id}-like-button"
+                                class="comment-like ${comment.is_liked_by_user ? 'liked' : ''}"
+                                data-comment-id="${comment.id}"
+                            >
+                                <span id="comment-${comment.id}-likes">${comment.likes_count}</span> likes
+                            </button>
+                            <button 
+                                class="comment-reply-button"
+                                data-comment-id="${comment.id}"
+                            >
+                                <span id="comment-${comment.id}-reply-count">${comment.replies_count}</span> replies
+                            </button>
+                        </div>
+                        <small class="text-muted">${this.humanizeTimestamp(comment.created_at)}</small>
+                        
+                        <div class="replies" id="replies-${comment.id}">
+                            ${comment.replies.map(reply => this.renderReply(reply)).join('')}
+                        </div>
+                        
+                        <form class="reply-form" id="replyForm-${comment.id}">
+                            <input type="text" placeholder="Reply to comment..." class="reply-input">
+                            <button type="submit">Reply</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+            commentsList.insertAdjacentHTML('beforeend', commentHTML);
+        });
+        
+        this.setupCommentEventListeners();
+    }
+
+    renderReply(reply) {
+        return `
+            <div class="reply" id="reply-${reply.id}">
+                <img src="/storage/${reply.user.profile_image}" alt="${reply.user.username}" class="rounded-circle" width="24" height="24">
+                <div class="reply-content">
+                    <strong>${reply.user.username}</strong>
+                    <p>${reply.reply}</p>
+                    <div class="reply-actions">
+                        <button 
+                            class="reply-like-button"
+                            data-reply-id="${reply.id}"
+                            ${reply.is_liked_by_user ? 'data-liked="true"' : ''}
+                        >
+                            <span id="reply-${reply.id}-likes">${reply.likes_count}</span> likes
+                        </button>
+                    </div>
+                    <small class="text-muted">${this.humanizeTimestamp(reply.created_at)}</small>
+                </div>
+            </div>
+        `;
+    }
+
+    setupCommentEventListeners() {
+        const commentsContainer = document.getElementById(`commentsList-${this.feedId}`);
+
+        // Like button listeners
+        commentsContainer.querySelectorAll('.comment-like').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const commentId = e.currentTarget.dataset.commentId;
+                this.toggleCommentLike(commentId);
+            });
+        });
+
+        // Reply button listeners
+        commentsContainer.querySelectorAll('.comment-reply-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const commentId = e.currentTarget.dataset.commentId;
+                this.toggleReplyForm(commentId);
+            });
+        });
+
+        // Reply like button listeners
+        commentsContainer.querySelectorAll('.reply-like-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const replyId = e.currentTarget.dataset.replyId;
+                this.toggleReplyLike(replyId);
+            });
+        });
+
+        // Reply form listeners
+        commentsContainer.querySelectorAll('.reply-form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const commentId = form.id.split('-')[1];
+                this.handleReplySubmit(commentId, e);
+            });
+        });
+    }
+
+    addNewReply(commentId, reply) {
+        const repliesContainer = document.querySelector(`#replies-${commentId}`);
+        const replyHTML = this.renderReply(reply);
+        repliesContainer.insertAdjacentHTML('beforeend', replyHTML);
+        
+        // Setup event listeners for the new reply
+        const newReplyElement = repliesContainer.lastElementChild;
+        const likeButton = newReplyElement.querySelector('.reply-like-button');
+        if (likeButton) {
+            likeButton.addEventListener('click', (e) => {
+                const replyId = e.currentTarget.dataset.replyId;
+                this.toggleReplyLike(replyId);
+            });
+        }
+    }
+}
+
+// Initialize when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-feed-id]').forEach(feed => {
+        new FeedInteraction(feed.dataset.feedId);
+    });
+});
 </script>
