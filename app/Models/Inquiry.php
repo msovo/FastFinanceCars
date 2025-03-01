@@ -33,4 +33,11 @@ class Inquiry extends Model
     {
         return $this->belongsTo(Listing::class, 'listing_id', 'listing_id');
     }
+
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class, 'vehicle_id', 'vehicle_id');
+    }
+
+  
 }

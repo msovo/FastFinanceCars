@@ -16,10 +16,16 @@ class VehicleController extends Controller
 {
     public function index()
     {
-        $vehicles = Vehicle::all();
+        $vehicles = Vehicle::with([
+            'car_brand',
+            'car_model',
+            'images',
+            'listing.dealer',
+            'listing.inquiries',
+        ])->get();
+
         return view('admin.vehicles.index', compact('vehicles'));
     }
-  
     
     public function create()
     {
@@ -89,7 +95,14 @@ class VehicleController extends Controller
 
     public function edit($id)
     {
-        $vehicle = Vehicle::with('images', 'features')->findOrFail($id);
+        $vehicle = Vehicle::with([
+            'images',
+            'features',
+            'listing.dealer', // Fetch the dealership via the listing
+            'listing.inquiries',
+             // Fetch inquiries via the listing
+        ])->findOrFail($id);
+    
         return view('admin.vehicles.edit', compact('vehicle'));
     }
 
@@ -208,4 +221,6 @@ class VehicleController extends Controller
 
         return response()->json(['isListed' => $isListed]);
     }
+
+    
 }

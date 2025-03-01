@@ -22,6 +22,7 @@ class Dealer extends Model
         'city_town',
         'postal_code',
         'logo',
+        'created_at',
     ];
  
     public function user()
@@ -34,5 +35,15 @@ class Dealer extends Model
  {
      return $this->hasMany(Listing::class, 'user_id', 'user_id');
  }
-    
+ public function soldListings()
+ {
+     return $this->listings()->where('listing_status', 'sold');
+ }
+
+ public function inquiries()
+ {
+     return $this->hasManyThrough(Inquiry::class, Listing::class);
+ }
+
+
 }

@@ -44,4 +44,9 @@ class Listing extends Model
     {
         return $this->belongsTo(Dealer::class, 'user_id', 'user_id');
     }
+
+    public function inquiries()
+    {
+        return $this->hasMany(Inquiry::class, 'listing_id', 'listing_id');
+    }
 }

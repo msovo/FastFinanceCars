@@ -783,7 +783,7 @@ function initializeFeedInteractions() {
 
 }
 
-function initializeCommentSystem() {
+/* function initializeCommentSystem() {
     // Initialize comment forms
     document.querySelectorAll('.comment-form').forEach(form => {
         form.addEventListener('submit', function(e) {
@@ -792,14 +792,14 @@ function initializeCommentSystem() {
             submitComment(feedId, this);
         });
     });
-}
+} */
 
 
 // Main initialization when document is ready
 document.addEventListener('DOMContentLoaded', function() {
   //  initializeStoryViewer();
     initializeFeedInteractions();
-    initializeCommentSystem();
+   // initializeCommentSystem();
 
 
    

@@ -89,5 +89,24 @@ class Vehicle extends Model
     public function car_model() {
         return $this->belongsTo(CarModel::class);
     }
+    public function dealer()
+    {
+        return $this->hasOneThrough(Dealer::class, User::class, 'user_id', 'user_id');
+    }
 
+    public function inquiries()
+    {
+        return $this->hasManyThrough(
+            Inquiry::class,
+            Listing::class,
+            'vehicle_id', // Foreign key on Listing table
+            'listing_id', // Foreign key on Inquiry table
+            'vehicle_id', // Local key on Vehicle table
+            'listing_id'  // Local key on Listing table
+        );
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
 }

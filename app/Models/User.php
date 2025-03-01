@@ -81,7 +81,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(car_media_like::class);
     }
 
-    
+    public function listings ()
+    {
+        return $this->hasMany(Listing::class,'user_id','user_id');
+    }
+
     public function chatMessages ()
     {
         return $this->hasMany(ChatMessage::class,'user_id','user_id');

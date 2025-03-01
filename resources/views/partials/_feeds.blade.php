@@ -39,11 +39,11 @@
     @endif
 </div>
 
-            <div class="feed-actions">
+            <div class="feed-actions row">
                 <div class="primary-actions">
-                    <button class="action-btn like-btn" data-feed-id="{{ $feed->id }}">
-                        <i class="far fa-heart"></i>
-                    </button>
+                <button class="action-btn like-btn " id="handlefeedlike-{{ $feed->id }}">
+                    <i class="far fa-heart {{ $feed->is_liked_by_user ? 'liked-btn' : '' }}"></i>
+                </button>
                     <button class="action-btn comment-btn" id="toggleComments-{{ $feed->id }}">
                         <i class="far fa-comment"> {{ $feed->comments_count ?? 0 }} </i>
                    
@@ -52,13 +52,13 @@
                         <i class="far fa-paper-plane"></i>
                     </button>
                 </div>
-                <button class="action-btn save-btn">
+               <!--  <button class="action-btn save-btn col-2" >
                     <i class="far fa-bookmark"></i>
-                </button>
+                </button> -->
             </div>
 
             <div class="feed-engagement">
-                <div class="likes-count">
+                <div class="likes-count-{{ $feed->id }}" id="likes-count-{{ $feed->id }}">
                     <strong>{{ $feed->total_likes ?? 0 }}</strong> likes
                 </div>
                 
@@ -87,17 +87,20 @@
             </div>
             
             @auth
-                <form class="comment-form" id="commentForm-{{ $feed->id }}">
-                    <input type="text" 
-                           class="comment-input" 
-                           placeholder="Add a comment..."
-                           name="comment">
-                    <button type="submit" class="comment-submit">Post</button>
-                </form>
-            @endauth
+            <form class="comment-form" id="commentForm-{{ $feed->id }}" action="{{ route('Ccomments.store', ['feed' => $feed->id]) }}" data-feed-id="{{ $feed->id }}">
+                <input type="text" 
+                    class="comment-input" 
+                    placeholder="Add a comment..."
+                    name="comment">
+                <button type="submit" class="comment-submit">Post</button>
+            </form>
+        @endauth
         </div>
     </div>
 </div>
+
+
+
 
                 <div class="feed-timestamp">
                     {{ $feed->created_at->diffForHumans() }}
@@ -295,7 +298,10 @@
     color: #ed4956;
     font-weight: 600;
 }
-
+.liked-btn{
+    color: #ed4956;
+    font-weight: 600;
+}
 /* Engagement Section */
 .feed-engagement {
     padding: 0 16px 16px;
@@ -492,7 +498,7 @@
 }
 
 .reply {
-    display: flex;
+
     margin-bottom: 12px;
 }
 
@@ -626,6 +632,31 @@ body.modal-open {
 .reply-input {
 color:black !important;
 }
+
+
+/* Default style for the like reply button */
+.reply-like-button {
+    background-color: transparent;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Style for the like reply button when the user has liked the reply */
+.reply-like-button.liked {
+    color: #e74c3c; /* Red color for liked state */
+}
+
+/* Additional styles for the like count */
+.reply-like-button span {
+    font-weight: bold;
+}
+
+
 </style>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -739,9 +770,11 @@ class FeedInteraction {
         this.removeEventListeners();
 
         // Reaction handling
-        document.querySelectorAll(`.reaction[data-feed-id="${this.feedId}"]`).forEach(btn => {
-            btn.addEventListener('click', this.handleReaction.bind(this));
-        });
+    
+       const reactionLIKEFeed = document.querySelector(`[id="handlefeedlike-${this.feedId}"]`);
+        if (reactionLIKEFeed) {
+            reactionLIKEFeed.addEventListener('click', this.handleReaction.bind(this));
+        }
 
         // Comment toggle
         const commentBtn = document.querySelector(`[id="toggleComments-${this.feedId}"]`);
@@ -806,115 +839,172 @@ class FeedInteraction {
 
 
     async handleCommentSubmit(e) {
-        e.preventDefault();
-        const form = e.target;
-        const input = form.querySelector('input[name="comment"]');
-        const comment = input.value.trim();
+    e.preventDefault();
+    const form = e.target;
+    const input = form.querySelector('input[name="comment"]');
+    const comment = input.value.trim();
 
-        if (!comment) return;
+    if (!comment) return;
 
-        try {
-            const response = await fetch(form.action, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({
-                    comment: comment,
-                    feed_id: this.feedId
-                })
-            });
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                comment: comment,
+                feed_id: form.dataset.feedId
+            })
+        });
 
-            if (response.ok) {
-                const data = await response.json();
-                this.addNewComment(data);
-                input.value = '';
-            }
-        } catch (error) {
-            console.error('Error submitting comment:', error);
+        if (response.ok) {
+            const data = await response.json();
+            this.addNewComment(data);
+            input.value = '';
         }
+    } catch (error) {
+        console.error('Error submitting comment:', error);
     }
+}
 
-    async handleReplySubmit(commentId, event) {
-        event.preventDefault();
-        const form = event.target;
-        const input = form.querySelector('.reply-input');
-        const reply = input.value.trim();
+async handleReplySubmit(commentId, event) {
+    event.preventDefault();
+    const form = event.target;
+    const input = form.querySelector('.reply-input');
+    const reply = input.value.trim();
 
-        if (!reply) return;
+    if (!reply) return;
 
-        try {
-            const response = await fetch(`/comments/${commentId}/replies`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ reply })
-            });
+    try {
+        const response = await fetch(`/comments/${commentId}/Commentreplies`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ reply })
+        });
 
-            if (response.ok) {
-                const data = await response.json();
-                this.addNewReply(commentId, data.reply);
-                input.value = '';
-                form.classList.remove('active');
-                
-                // Update reply count
-                const replyCount = document.querySelector(`#comment-${commentId}-reply-count`);
-                if (replyCount) {
-                    replyCount.textContent = parseInt(replyCount.textContent) + 1;
-                }
+        if (response.ok) {
+            const data = await response.json();
+            this.addNewReply(commentId, data.reply);
+            input.value = '';
+            form.classList.remove('active');
+            
+            // Update reply count
+            const replyCount = document.querySelector(`#comment-${commentId}-reply-count`);
+            if (replyCount) {
+                replyCount.textContent = parseInt(replyCount.textContent) + 1;
             }
-        } catch (error) {
-            console.error('Error submitting reply:', error);
         }
+    } catch (error) {
+        console.error('Error submitting reply:', error);
     }
+}
 
     async toggleCommentLike(commentId) {
-        try {
-            const response = await fetch(`/comments/${commentId}/like`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+    try {
+        const response = await fetch(`/comments/${commentId}/likeComments`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const likeButton = document.querySelector(`#comment-${commentId}-like-button`);
+            const likeCount = document.querySelector(`#comment-${commentId}-likes`);
+            
+            likeCount.textContent = data.likes_count;
+            likeButton.classList.toggle('liked', data.action === 'liked');
+        } else {
+            console.error('Failed to toggle like:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error toggling comment like:', error);
+    }
+}
+async toggleReplyLike(replyId) {
+    try {
+        const response = await fetch(`/replies/${replyId}/repliesLikes`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const likeButton = document.getElementById(`reply-${replyId}-like-button`);
+            const likeCount = document.querySelector(`#reply-${replyId}-likes`);
+            
+            likeCount.textContent = data.likes_count;
+            $(`#reply-${replyId}-like-button`).addClass('liked');
+            likeButton.classList.toggle('liked', data.action === 'liked');
+        } else {
+            console.error('Failed to toggle like:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error toggling reply like:', error);
+    }
+}
+
+
+async loadReplies(commentId) {
+    try {
+        const response = await fetch(`/comments/${commentId}/replies`, {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const repliesContainer = document.querySelector(`#renderRepliesForComment-${commentId}`);
+            let x = data.replies.map(reply => this.renderReply(reply)).join('');
+            repliesContainer.innerHTML = x;
+           // $(`#renderRepliesForComment-${commentId}`).html(x);
+           
+            
+            // Setup event listeners for the new replies
+            data.replies.forEach(reply => {
+                const likeButton = document.querySelector(`#reply-${reply.id}-like-button`);
+                if (likeButton) {
+                    likeButton.addEventListener('click', (e) => {
+                        const replyId = e.currentTarget.dataset.replyId;
+                        this.toggleReplyLike(replyId);
+                    });
                 }
             });
-
-            if (response.ok) {
-                const data = await response.json();
-                const likeButton = document.querySelector(`#comment-${commentId}-like-button`);
-                const likeCount = document.querySelector(`#comment-${commentId}-likes`);
-                
-                likeCount.textContent = data.likes_count;
-                likeButton.classList.toggle('liked', data.action === 'liked');
-            }
-        } catch (error) {
-            console.error('Error toggling comment like:', error);
+        } else {
+            console.error('Failed to load replies:', response.statusText);
         }
+    } catch (error) {
+        console.error('Error loading replies:', error);
     }
+}
 
-    async toggleReplyLike(replyId) {
-        try {
-            const response = await fetch(`/replies/${replyId}/like`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            });
 
-            if (response.ok) {
-                const data = await response.json();
-                const likeButton = document.querySelector(`#reply-${replyId}-like-button`);
-                const likeCount = document.querySelector(`#reply-${replyId}-likes`);
-                
-                likeCount.textContent = data.likes_count;
-                likeButton.classList.toggle('liked', data.action === 'liked');
-            }
-        } catch (error) {
-            console.error('Error toggling reply like:', error);
-        }
-    }
+
+
+
 toggleReplyForm(commentId) {
+
+    const replyDIv=document.getElementById(`renderRepliesForComment-${commentId}`);
+
+    if(replyDIv.style.display === 'block'){
+        replyDIv.style.display = 'none';
+    }else{
+        this.loadReplies(commentId);
+        replyDIv.style.display = 'block';
+    }
+
+
+
     // Find all reply forms first
     const allReplyForms = document.querySelectorAll('.reply-form');
     
@@ -938,6 +1028,7 @@ toggleReplyForm(commentId) {
             }
         }
     }
+
 }
     handleScroll(e) {
         const wrapper = e.target;
@@ -948,31 +1039,42 @@ toggleReplyForm(commentId) {
 
     async handleReaction(reaction) {
         try {
-            const response = await fetch('/like/store', {
+            const response = await fetch('/likeStorefeed', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: JSON.stringify({
-                    description: reaction,
+                    description: 'Like',
                     car_media_feed_id: this.feedId
                 })
             });
 
             if (response.ok) {
-                this.updateReactionCount(reaction);
+                const data = await response.json();
+
+                this.updateReactionCount(data);
             }
         } catch (error) {
             console.error('Error handling reaction:', error);
         }
     }
 
-    updateReactionCount(reaction) {
-        const countElement = document.getElementById(`count-${reaction}-${this.feedId}`);
+    updateReactionCount(data) {
+        const countElement = document.getElementById(`likes-count-${this.feedId}`);
         if (countElement) {
             const currentCount = parseInt(countElement.textContent);
-            countElement.textContent = currentCount + 1;
+            if(data.length > 0){
+                $(`#handlefeedlike-${this.feedId} i`).addClass('liked-btn');
+            
+                let currentCountA=currentCount + 1 
+                countElement.innerHTML ="<strong>" + currentCountA + "</strong> likes" ;
+            }else{
+                $(`#handlefeedlike-${this.feedId} i`).removeClass('liked-btn');
+                let currentCountA=currentCount - 1 
+                countElement.innerHTML = "<strong>"  + currentCountA + "</strong> likes";
+            }
         }
     }
 
@@ -1053,9 +1155,7 @@ toggleReplyForm(commentId) {
                         </div>
                         <small class="text-muted">${this.humanizeTimestamp(comment.created_at)}</small>
                         
-                        <div class="replies" id="replies-${comment.id}">
-                            ${comment.replies.map(reply => this.renderReply(reply)).join('')}
-                        </div>
+                                <div id="renderRepliesForComment-${comment.id}" style="display:none"></div>
                         
                         <form class="reply-form" id="replyForm-${comment.id}">
                             <input type="text" placeholder="Reply to comment..." class="reply-input">
@@ -1069,28 +1169,70 @@ toggleReplyForm(commentId) {
         
         this.setupCommentEventListeners();
     }
-
-    renderReply(reply) {
-        return `
-            <div class="reply" id="reply-${reply.id}">
-                <img src="/storage/${reply.user.profile_image}" alt="${reply.user.username}" class="rounded-circle" width="24" height="24">
-                <div class="reply-content">
-                    <strong>${reply.user.username}</strong>
-                    <p>${reply.reply}</p>
-                    <div class="reply-actions">
-                        <button 
-                            class="reply-like-button"
-                            data-reply-id="${reply.id}"
-                            ${reply.is_liked_by_user ? 'data-liked="true"' : ''}
-                        >
-                            <span id="reply-${reply.id}-likes">${reply.likes_count}</span> likes
-                        </button>
-                    </div>
-                    <small class="text-muted">${this.humanizeTimestamp(reply.created_at)}</small>
-                </div>
-            </div>
-        `;
+    addNewComment(comment) {
+    const commentsList = document.getElementById(`commentsList-${comment.feed_id}`);
+    if (!commentsList) {
+        console.error(`Comments list element not found for feed_id: ${comment.feed_id}`);
+        return;
     }
+    const commentHTML = `
+        <div class="comment" id="comment-${comment.id}">
+            <img src="/storage/${comment.user.profile_image}" alt="${comment.user.username}" class="rounded-circle" width="32" height="32">
+            <div class="comment-content">
+                <strong>${comment.user.username}</strong>
+                <p>${comment.comment}</p>
+                <div class="comment-actions">
+                    <button 
+                        id="comment-${comment.id}-like-button"
+                        class="comment-like ${comment.is_liked_by_user ? 'liked' : ''}"
+                        data-comment-id="${comment.id}"
+                    >
+                        <span id="comment-${comment.id}-likes">0</span> likes
+                    </button>
+                    <button 
+                        class="comment-reply-button"
+                        data-comment-id="${comment.id}"
+                    >
+                        <span id="comment-${comment.id}-reply-count">0</span> replies
+                    </button>
+                </div>
+                <small class="text-muted">${comment.time}</small>
+                
+                <div class="replies" id="replies-${comment.id}">
+                
+                </div>
+                
+                <form class="reply-form" id="replyForm-${comment.id}">
+                    <input type="text" placeholder="Reply to comment..." class="reply-input">
+                    <button type="submit">Reply</button>
+                </form>
+            </div>
+        </div>
+    `;
+    commentsList.insertAdjacentHTML('beforeend', commentHTML);
+    this.setupCommentEventListeners();
+}
+renderReply(reply) {
+    return `
+        <div class="reply" id="reply-${reply.id}">
+            <img src="/storage/${reply.user.profile_image}" alt="${reply.user.username}" class="rounded-circle" width="24" height="24">
+            <div class="reply-content">
+                <strong>${reply.user.username}</strong>
+                <p>${reply.reply}</p>
+                <div class="reply-actions">
+                    <button 
+                        class="reply-like-button ${reply.is_liked_by_user ? 'liked' : ''}"
+                        data-reply-id="${reply.id}"
+                        id="reply-${reply.id}-like-button"
+                    >
+                        <span id="reply-${reply.id}-likes">${reply.likes_count}</span> likes
+                    </button>
+                </div>
+                <small class="text-muted">${this.humanizeTimestamp(reply.created_at)}</small>
+            </div>
+        </div>
+    `;
+}
 
     setupCommentEventListeners() {
         const commentsContainer = document.getElementById(`commentsList-${this.feedId}`);
@@ -1130,20 +1272,20 @@ toggleReplyForm(commentId) {
     }
 
     addNewReply(commentId, reply) {
-        const repliesContainer = document.querySelector(`#replies-${commentId}`);
-        const replyHTML = this.renderReply(reply);
-        repliesContainer.insertAdjacentHTML('beforeend', replyHTML);
-        
-        // Setup event listeners for the new reply
-        const newReplyElement = repliesContainer.lastElementChild;
-        const likeButton = newReplyElement.querySelector('.reply-like-button');
-        if (likeButton) {
-            likeButton.addEventListener('click', (e) => {
-                const replyId = e.currentTarget.dataset.replyId;
-                this.toggleReplyLike(replyId);
-            });
-        }
+    const repliesContainer = document.querySelector(`#renderRepliesForComment-${commentId}`);
+    const replyHTML = this.renderReply(reply);
+    repliesContainer.insertAdjacentHTML('beforeend', replyHTML);
+    
+    // Setup event listeners for the new reply
+    const newReplyElement = repliesContainer.lastElementChild;
+    const likeButton = newReplyElement.querySelector('.reply-like-button');
+    if (likeButton) {
+        likeButton.addEventListener('click', (e) => {
+            const replyId = e.currentTarget.dataset.replyId;
+            this.toggleReplyLike(replyId);
+        });
     }
+}
 }
 
 // Initialize when the page loads

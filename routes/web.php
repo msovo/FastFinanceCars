@@ -30,7 +30,8 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\AdminChatController;
-
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\dealerAdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,7 +80,12 @@ Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEm
 Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 Auth::routes();
-
+Route::get('/routedebug', function() {
+    $routes = Route::getRoutes();
+    foreach ($routes as $route) {
+        echo $route->uri() . ' - ' . $route->getName() . '<br>';
+    }
+});
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
@@ -127,14 +133,66 @@ Route::post('/email/resend', [AuthController::class, 'resendVerificationEmail'])
             Route::get('/load-content/{parameter}', [AdminController::class, 'loadContent']);
             Route::get('/admin/categories/create', [CategoryController::class, 'create'])->name('admin.categories.create');
             Route::post('/admin/categories', [CategoryController::class, 'store'])->name('admin.categories.store');
+            Route::get('/dashboard/AIdashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard.AIdashboard');    
+            Route::get('/', [dealerAdminController::class, 'index'])->name('admin.dealers.index');
+            Route::get('/create', [dealerAdminController::class, 'create'])->name('admin.dealers.create');
+            Route::post('/', [dealerAdminController::class, 'store'])->name('admin.dealers.store');
+            Route::get('/dealers/{id}', [DealerAdminController::class, 'show'])->name('admin.dealers.show');
+            Route::get('/{dealer}/edit', [dealerAdminController::class, 'edit'])->name('admin.dealers.edit');
+            Route::put('/{dealer}', [DealerAdminController::class, 'update'])->name('admin.dealers.update');
+            Route::delete('/{dealer}', [DealerAdminController::class, 'destroy'])->name('admin.dealers.destroy');
+     
+            Route::group(['prefix' => 'admin/dealers'], function () {
+                Route::get('/createverify', [DealerAdminController::class, 'createverify'])
+                    ->name('admin.dealers.createverify');
+                    
+     
+            });
+
+            Route::prefix('dealers')->group(function () {
+                // Verification routes
+                Route::post('/{dealer}/verify', [DealerAdminController::class, 'verifyDealer'])
+                    ->name('admin.dealers.verify');
+                Route::post('/{dealer}/reject', [DealerAdminController::class, 'rejectDealer'])
+                    ->name('admin.dealers.reject');
+                
+                // Bulk actions
+                Route::post('/verify-multiple', [DealerAdminController::class, 'verifyMultiple'])
+                    ->name('admin.dealers.verifyMultiple');
+                Route::post('/reject-multiple', [DealerAdminController::class, 'rejectMultiple'])
+                    ->name('admin.dealers.rejectMultiple');
+            });
+
+            Route::get('/reports', [DealerAdminController::class, 'reports'])->name('admin.dealers.reports');
+            Route::post('/{dealer}/suspend', [DealerAdminController::class, 'suspend'])->name('admin.dealers.suspend');
+            Route::post('/{dealer}/block', [dealerAdminController::class, 'block'])->name('admin.dealers.block');
+            Route::post('/admin/dealers/filter-metrics', [DealerAdminController::class, 'filterMetrics'])->name('admin.dealers.filter-metrics');
+
+            Route::get('/admin/dealers/export-report', [DealerAdminController::class, 'exportReport'])->name('admin.dealers.export-report');
+
+            Route::get('admin/vehicles/{vehicle_id}/inquiries', [App\Http\Controllers\Admin\InquiriesController::class, 'showByVehicle'])
+        ->name('admin.inquiries.showByVehicle');
             
-       
         });
+        
     });
 
-/*     Route::prefix('admin')->name('admin.')->group(function () {
-        Route::resource('vehicles', VehicleController::class);
-    }); */
+
+
+    
+    Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
+        // Dashboard Routes
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/export', [AdminDashboardController::class, 'export'])->name('dashboard.export');
+        Route::get('/dashboard/refresh', [AdminDashboardController::class, 'refresh'])->name('dashboard.refresh');
+        // AJAX routes for dynamic updates
+        Route::prefix('dashboard')->name('dashboard.')->group(function () {
+            Route::get('/sales-data', [AdminDashboardController::class, 'getSalesData']);
+            Route::get('/dealer-metrics', [AdminDashboardController::class, 'getDealerMetrics']);
+            Route::get('/market-analysis', [AdminDashboardController::class, 'getMarketAnalysis']);
+            Route::get('/predictions', [AdminDashboardController::class, 'getPredictions']);
+        });
+    });
 
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/vehicles/create', [VehicleController::class, 'create'])->name('vehicles.create');
@@ -337,16 +395,15 @@ Route::get('dealerships.search', [CarController::class, 'searchDealer'])->name('
 Route::resource('feeds', FeedController::class)->only(['index']);
 
 Route::middleware(['auth'])->group(function () {
-    Route::resource('feeds', FeedController::class)->only(['store']);
+    Route::resource('feeds', controller: FeedController::class)->only(['store']);
     Route::resource('stories', StoryController::class)->only(['index', 'store']);
     Route::post('feeds/{feed}/comments', [CarMediaCommentController::class, 'store'])->name('Ccomments.store');
     Route::post('feeds/{feed}/likes', [LikeController::class, 'store'])->name('likes.store');
     Route::post('comments/{comment}/replies', [ReplyController::class, 'store'])->name('replies.store');
     Route::post('messages', [MessageController::class, 'store'])->name('messages.store');
     Route::get('messages', [MessageController::class, 'index'])->name('messages.index');
-    Route::post('/like', [LikeController::class, 'store'])->name('like.store');
+    Route::post('/likeStorefeed', [LikeController::class, 'store'])->name('likeStorefeed.store');
     Route::get('/like/{feedId}', [LikeController::class, 'getReactions'])->name('like.getReactions');
-
 });
 
 Route::get('/feeds/{feed}/comments', [CarMediaCommentController::class, 'getLatestComments'])->name('feeds.comments.latest');
@@ -355,10 +412,10 @@ Route::get('/feeds/{feed}/comments', [CarMediaCommentController::class, 'getNewC
 
 // routes/web.php
 Route::middleware(['auth'])->group(function () {
-    Route::post('comments/{comment}/like', 'CommentLikeController@toggleCommentLike');
-    Route::post('replies/{reply}/like', 'ReplyLikeController@toggleReplyiesLike');
-    Route::post('comments/{comment}/replies', 'ReplyController@store');
-});
+    Route::post('comments/{comment}/likeComments', [FeedController::class, 'toggleCommentLike']);
+    Route::post('replies/{reply}/repliesLikes', [ReplyController::class, 'toggleReplyiesLike']);
+    Route::post('comments/{comment}/Commentreplies', [ReplyController::class, 'store']);});
+    Route::get('comments/{comment}/replies', [ReplyController::class, 'fetchReplies'])->name('comments.replies');
 
 
 Route::prefix('admin')->group(function () {

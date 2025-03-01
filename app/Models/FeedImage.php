@@ -15,4 +15,8 @@ class FeedImage extends Model
     {
         return $this->belongsTo(car_media_feed::class, 'car_media_feed_id');
     }
+    public function accessibility()
+    {
+        return $this->hasOne(MediaAccessibility::class, 'feed_image_id');
+    }
 }

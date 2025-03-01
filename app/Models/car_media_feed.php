@@ -7,8 +7,30 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class car_media_feed extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'caption'];
+  
+    protected $fillable = [
+        'user_id',
+        'caption',
+        'post_type',
+        'price',
+        'location',
+        'is_negotiable',
+        'is_featured',
+        'is_urgent',
+        'allow_comments',
+        'show_views',
+        'allow_sharing',
+    ];
 
+    protected $casts = [
+        'is_negotiable' => 'boolean',
+        'is_featured' => 'boolean',
+        'is_urgent' => 'boolean',
+        'allow_comments' => 'boolean',
+        'show_views' => 'boolean',
+        'allow_sharing' => 'boolean',
+        'price' => 'decimal:2',
+    ];
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -28,4 +50,14 @@ class car_media_feed extends Model
     {
         return $this->hasMany(FeedImage::class, 'car_media_feed_id');
     }
+
+    public function getIsLikedByUserAttribute()
+{
+    return $this->likes()->where('user_id', auth()->id())->exists();
+}
+
+public function features()
+{
+    return $this->hasMany(PostFeature::class, 'car_media_feed_id');
+}
 }
