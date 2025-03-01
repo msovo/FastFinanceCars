@@ -51,8 +51,13 @@ jobs:
         if: steps.check_files.outputs.files_exists == 'true'
         run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
 
+      - name: Ensure artisan file exists
+        run: ls -la
+        working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
       - name: Link Laravel storage
         run: php artisan storage:link
+        working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
