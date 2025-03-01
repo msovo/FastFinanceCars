@@ -451,6 +451,7 @@
                 <i class="fas fa-sync-alt"></i> Reset
             </button>
             
+            
         </div>
         <div class="card-body">
             <form id="filterForm" class="row">
